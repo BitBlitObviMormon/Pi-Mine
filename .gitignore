@@ -1,6 +1,10 @@
 # Object files
 *.o
+bin
 
 # Executables
 *.out
 mine
+
+# Emacs backup files
+*~
