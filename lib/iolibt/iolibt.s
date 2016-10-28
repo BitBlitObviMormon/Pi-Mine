@@ -5,7 +5,7 @@
 .set	STDERR, 2
 
 // SYSCALLS
-.set	READ, 3	
+.set	READ, 3
 .set	WRITE, 4
 
 // ASCII CONSTANTS
@@ -221,14 +221,35 @@ sysWrite:
 .global	utos
 .type	utos, %function
 utos:
-	push	{r0, lr}	//Save return point for later
-	
-	pop	{r0, pc}	//Return
+	push	{r4-r5, lr}		//Save return point for later
+	mov	r4, r0			//preserve arguments over following
+	mov	r5, r1			//function calls
 
+	mov	r0, r1
+
+	//Divide r0 by ten
+	ldr	r2, =DIV10		//Load the magic number for r0 / 10
+	mul	r2, r0			//r2 *= MAGICNUM
+
+	sub	r5, r5, r0, LSL #3	//number - 8*quotient
+	sub	r5, r5, r0, LSL #1	// - 2*quotient = remainder
+
+	cmp	r0, #0			//quotient non-zero?
+	movne	r1, r0			//quotient to r1...
+	mov	r0, r4			//buffer pointer unconditionally to r0
+	blne	utos			//conditional recursive call to utos
+
+	add	r5, r5, #'0'		//final digit
+	strb	r5, [r0], #1		//store digit at end of buffer
+
+	pop	{r4-r5, pc}		//Return
+	
 .align	2
 TEXT:
 	.word	ENDLINE
 	.word	HELLO
+DIV10:
+	.word	0x1999999a
 ENDLINE:
 	.asciz	"\012"
 HELLO:

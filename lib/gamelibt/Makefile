@@ -12,4 +12,4 @@ driver.o: driver.s
 	as $(SW) -o $@ $<
 
 clean:
-	rm -vf driver *.o *# *~
+	rm -vf driver.out *.o *# *~
