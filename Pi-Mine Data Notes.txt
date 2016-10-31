@@ -1,0 +1,16 @@
+In order to allow semi-random access to the buffer each character will be expressed as a block and two colors
+before being put onto the console buffer and rendered. A painter tool will be used to convert block data to
+escape codes which will then be inserted into the console.
+
+
+Block data (byte each)        Console buffer (any size)       Console output (No mem)
+1. Forecolor
+2. Backcolor      ==========>    \e[0m\e[30m\e[47m...    ===========>    #
+3. Block shape       Paint                                   Draw
+
+
+I think that the block data should be server-side which then sends it over to the client.
+The client will then "Paint" the block data onto the console buffer and draw it.
+The client will send its input buffer data directly to the server.
+Because of how heavily dependent the client is on the server, the same client can be used
+for basically any game, be it Pi-Mine, Pacman, or Space Invaders.
