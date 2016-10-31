@@ -135,7 +135,8 @@ printi:
 .type	puti, %function
 puti:
 	push	{r0, lr}	//Save return point for later
-	ldr	r0, TEXT+4	//Ready the string for printing
+	bl	utos		//Convert the int into a string
+	mov	r0, r1		//Ready the string for printing
 	bl	prints		//Print the string
 	pop	{r0, pc}	//Return
 
@@ -221,15 +222,17 @@ sysWrite:
 .global	utos
 .type	utos, %function
 utos:
+	bx	=utosARM
+.arm
+utosARM:	
 	push	{r4-r5, lr}		//Save return point for later
 	mov	r4, r0			//preserve arguments over following
 	mov	r5, r1			//function calls
-
 	mov	r0, r1
 
 	//Divide r0 by ten
 	ldr	r2, =DIV10		//Load the magic number for r0 / 10
-	mul	r2, r0			//r2 *= MAGICNUM
+	umull	r2, r0, r2, r0		//r2 *= MAGICNUM (high bits is r0 / 10)
 
 	sub	r5, r5, r0, LSL #3	//number - 8*quotient
 	sub	r5, r5, r0, LSL #1	// - 2*quotient = remainder
@@ -242,6 +245,9 @@ utos:
 	add	r5, r5, #'0'		//final digit
 	strb	r5, [r0], #1		//store digit at end of buffer
 
+	bx	=utosTHUMB
+.thumb
+utosTHUMB:	
 	pop	{r4-r5, pc}		//Return
 	
 .align	2
