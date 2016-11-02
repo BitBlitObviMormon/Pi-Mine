@@ -5,7 +5,6 @@ bin
 # Executables
 *.out
 mine
-mine-client
 mine-server
 
 # Emacs backup files

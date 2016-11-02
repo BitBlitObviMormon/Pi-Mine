@@ -23,6 +23,6 @@
 /* Data Races: paint reads the paint stream and writes to the character array */
 .thumb
 .global	paint
-.type	paint, %function%
+.type	paint, %function
 paint:	
 	
