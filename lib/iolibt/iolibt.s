@@ -87,7 +87,7 @@ powend:
 //$$$ USE A SYSTEM CALL TO OUTPUT TEXT TO THE CONSOLE	
 /* void prints(char*) */
 /* Prints a string onto the console */
-/* Data Races: No memory is changed */
+/* Data Races: The character array is read from */
 .thumb
 .global	prints
 .type	prints, %function
@@ -142,7 +142,7 @@ puti:
 
 /* int[r1] stoi(const char*[r0]) */
 /* Takes a null-terminated char array and returns an integer */
-/* Data Races: No memory is changed */
+/* Data Races: The character array is read from */
 .thumb
 .global	stoi
 .type	stoi, %function
@@ -191,28 +191,26 @@ stoiend:
 	bne	stoimiddle
 
 	pop	{r4-r7, pc}	//Return
-	
-/* void sysRead(uint fd, char* buf, size_t count) */
+
+/* ssize_t[r0] sysRead(uint fd[r0], char* buf[r1], size_t count[r2]) */
 /* Uses the system call to read from a buffer */
-/* Data Races: No memory is changed */
+/* Data Races: The string buf is written to */
 .thumb
-.global	sysRead
-.type	sysRead, %function
 sysRead:
-	mov	r7, $READ	//Prepare to invoke syscall read
-	svc	#0		//Invoke system call read
-	bx	lr		//Return
+	push	{r7, lr}	//Save return point for later
+	mov	r7, $READ	//Prepare to invoke read system call
+	svc	#0		//Invoke read system call
+	pop	{r7, pc}	//Return
 	
-/* void sysWrite(uint fd, const char* buf, size_t count) */
+/* ssize_t[r0] sysWrite(uint fd[r0], const char* buf[r1], size_t count[r2]) */
 /* Uses the system call to write to a buffer */
-/* Data Races: No memory is changed */
+/* Data Races: The string buf is read from */
 .thumb
-.global	sysWrite
-.type	sysWrite, %function
 sysWrite:
-	mov	r7, $WRITE	//Prepare to invoke syscall write
-	svc	#0		//Invoke system call write
-	bx	lr		//Return
+	push	{r7, lr}	//Save return point for later
+	mov	r7, $WRITE	//Prepare to invoke write system call
+	svc	#0		//Invoke write system call
+	pop	{r7, pc}	//Return
 
 /* char*[r1] utos(const int[r0]) */
 /* Takes an unsigned int and returns a null-terminated char array */
