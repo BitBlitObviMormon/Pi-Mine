@@ -1,3 +1,4 @@
+# Assembler switches
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a
 
 all: input input2 info

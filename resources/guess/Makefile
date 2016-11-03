@@ -1,4 +1,7 @@
+# Compiler version
 CC = gcc-4.9
+
+# Compiler switches
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a -mtune=cortex-a7
 
 all: guess guess2

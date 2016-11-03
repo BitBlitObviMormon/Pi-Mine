@@ -1,5 +1,0 @@
-D Tasks
-- Execute a system call
-
-C Tasks
-- Write a program that compiles with as/ld, without C libs

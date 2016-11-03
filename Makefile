@@ -1,4 +1,7 @@
+# Assembler switches
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a
+
+# Directories
 LIB = lib
 BIN = bin
 SRC = src
@@ -6,7 +9,6 @@ SRC = src
 # Library Files
 IOLIBT = $(LIB)/iolibt/iolibt
 GAMELIBT = $(LIB)/gamelibt/gamelibt
-ARMMEM = $(LIB)/armmem/armmem
 NETLIBT = $(LIB)/netlibt/netlibt
 
 # Source Files
@@ -32,9 +34,6 @@ $(IOLIBT).o: $(IOLIBT).s
 
 $(GAMELIBT).o: $(GAMELIBT).s
 	cd $(LIB)/gamelibt; make; cd ../..
-
-$(ARMMEM).o: $(ARMMEM).s
-	cd $(LIB)/armmem; make; cd ../..
 
 $(NETLIBT).o: $(NETLIBT).s
 	cd $(LIB)/netlibt; make; cd ../..
