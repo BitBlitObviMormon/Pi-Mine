@@ -5,14 +5,16 @@
 .set	STDERR, 2
 
 // SYSCALLS
-.set	READ, 3
+.set	READ,  3
 .set	WRITE, 4
+.set	OPEN,  5
+.set	CLOSE, 6
 
 // ASCII CONSTANTS
-.set	ZERO, 0x30
-.set	NINE, 0x39
+.set	ZERO,    0x30
+.set	NINE,    0x39
 .set	DECIMAL, 0x2e
-.set	MINUS, 0x2d
+.set	MINUS,   0x2d
 
 // SIZE OF INT -> STRING ARRAY
 .set	ISSIZE, 12
@@ -210,6 +212,26 @@ sysWrite:
 	push	{r7, lr}	//Save return point for later
 	mov	r7, $WRITE	//Prepare to invoke write system call
 	svc	#0		//Invoke write system call
+	pop	{r7, pc}	//Return
+
+/* int[r0] open(const char* pathname[r0], int flags[r1], mode_t mode[r2]) */
+/* Uses the system call to open a file and get its file handle */
+/* Data Races: The character array pathname is read */
+.thumb
+sysOpen:	
+	push	{r7, lr}	//Save return point for later
+	mov	r7, $OPEN	//Prepare to invoke open system call
+	svc	#0		//Invoke open system call
+	pop	{r7, pc}	//Return
+
+/* int[r0] close(int fd[r0]) */
+/* Uses the system call to close a file */
+/* Data Races: close does not access memory */
+.thumb
+sysClose:
+	push	{r7, lr}	//Save return point for later
+	mov	r7, $CLOSE	//Prepare to invoke close system call
+	svc	#0		//Invoke close system call
 	pop	{r7, pc}	//Return
 
 /* char*[r1] utos(const int[r0]) */

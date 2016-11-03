@@ -14,7 +14,9 @@
 .set	BCONNECT, 0x1c
 .set	BLISTEN,  0x1d
 .set	BACCEPT,  0x1e
-	
+
+.text
+
 /* ssize_t[r0] sysRead(uint fd[r0], char* buf[r1], size_t count[r2]) */
 /* Uses the system call to read from a buffer */
 /* Data Races: The string buf is written to */

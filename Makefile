@@ -10,6 +10,7 @@ SRC = src
 IOLIBT = $(LIB)/iolibt/iolibt
 GAMELIBT = $(LIB)/gamelibt/gamelibt
 NETLIBT = $(LIB)/netlibt/netlibt
+RNDLIBT = $(LIB)/rndlibt/rndlibt
 
 # Source Files
 DRAW = /client/draw
@@ -26,7 +27,7 @@ pre-build:
 mine: $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(BIN)$(DRAW).o
 	ld -o $@ $+
 
-mine-server: $(NETLIBT).o
+mine-server: $(NETLIBT).o $(RNDLIBT).o
 	ld -o $@ $+
 
 $(IOLIBT).o: $(IOLIBT).s
@@ -37,6 +38,9 @@ $(GAMELIBT).o: $(GAMELIBT).s
 
 $(NETLIBT).o: $(NETLIBT).s
 	cd $(LIB)/netlibt; make; cd ../..
+
+$(RNDLIBT).o: $(RNDLIBT).s
+	cd $(LIB)/rndlibt; make; cd ../..
 
 $(BIN)$(DRAW).o: $(SRC)$(DRAW).s
 	mkdir -p $(BIN)/client

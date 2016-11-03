@@ -2,6 +2,9 @@
 #include <unistd.h>
 #include <termios.h>
 #include <sys/ioctl.h>
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <fcntl.h>
 
 int main() {
 	struct termios a;
@@ -10,6 +13,7 @@ int main() {
 	printf("sizeof tcflag_t = %i\n", sizeof(tcflag_t));
 	printf("sizeof cc_t = %i\n", sizeof(cc_t));
 	printf("sizeof speed_t = %i\n", sizeof(speed_t));
+	printf("sizeof mode_t = %i\n", sizeof(mode_t));
 
 	printf("\nConstants\n");
 	printf("TCGETS = %i\n", TCGETS);
@@ -25,6 +29,10 @@ int main() {
 
 	printf("STDIN = %i\n", STDIN_FILENO);
 	printf("STDOUT = %i\n", STDOUT_FILENO);
+
+	printf("O_RDONLY = %i\n", O_RDONLY);
+	printf("O_WRONLY = %i\n", O_WRONLY);
+	printf("O_RDWR = %i\n", O_RDWR);
 
 	printf("\nMemory Layout\n");
 	printf("c_iflag  : %i\n", (unsigned int)&a.c_iflag - (unsigned int)&a);
