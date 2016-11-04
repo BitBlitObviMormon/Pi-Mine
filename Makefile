@@ -7,13 +7,13 @@ BIN = bin
 SRC = src
 
 # Library Files
-IOLIBT = $(LIB)/iolibt/iolibt
+IOLIBT   = $(LIB)/iolibt/iolibt
 GAMELIBT = $(LIB)/gamelibt/gamelibt
-NETLIBT = $(LIB)/netlibt/netlibt
-RNDLIBT = $(LIB)/rndlibt/rndlibt
+NETLIBT  = $(LIB)/netlibt/netlibt
+RNDLIBT  = $(LIB)/rndlibt/rndlibt
 
 # Source Files
-DRAW = /client/draw
+DRAW   = /client/draw
 CLIENT = /client/client
 SERVER = /server/server
 
@@ -42,7 +42,7 @@ $(NETLIBT).o: $(NETLIBT).s
 $(RNDLIBT).o: $(RNDLIBT).s
 	cd $(LIB)/rndlibt; make; cd ../..
 
-# DIRECTORIES
+# BIN DIRECTORIES
 $(BIN)/server:
 	mkdir -p $(BIN)/server
 $(BIN)/client:

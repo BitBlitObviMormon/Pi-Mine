@@ -20,12 +20,12 @@ RNDPTR:
 	.word	0x00		//The file pointer
 ENTROPYSIZE:
 	.word	ENTROPY_T	//The amount of space the entropic array holds
+ENTROPY:
+	.skip	ENTROPY_T	//Space in which to store entropy
 ENTROPYPTR:
 	.word	ENTROPY		//The pointer to the entropic array
 ENTROPYLCK:		//If this is 1, then the entropic array is being used
 	.word	0x00	//This is meant to prevent data races when threaded
-ENTROPY:
-	.skip	ENTROPY_T	//Space in which to store entropy
 
 .text
 
@@ -118,18 +118,107 @@ seedRnd:
 
 	pop	{pc}	//Return
 
+/* void checkPtr() */
+/* Checks if the entropy pointer is valid and */
+/* reseeds the array if it is invalid. */
+.thumb
+checkPtr:
+	push	{lr}	//Save the return point for later
+
+	//Check if the entropy pointer is valid
+	ldr	r0, =ENTROPYPTR	//&entropyPTR
+	ldr	r1, [r0]	//entropyPTR
+	
+	//If the pointer is greater or equal to the reference then reseed
+	cmp	r1, r0
+	blo	checkSKIPSEED
+	bl	seedRnd
+checkSKIPSEED:
+	pop	{pc}	//Return
+
+/* char[r0] randByte() */
+/* Generates a random byte */
+/* Data Races: Uses lock and unlock */
+.thumb
+.global	randByte
+.type	randByte, %function
+randByte:
+	push	{lr}		//Save return point for later
+	bl	checkPtr	//Make sure the entropy pointer is valid
+	bl	lock		//Lock the entropic array
+
+	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
+	ldr	r2, [r1]	//Dereference the pointer
+	ldrb	r0, [r2]	//Dereference again and
+	add	r2, #1		//Move the pointer
+	str	r2, [r1]	//Store the updated address
+	push	{r0}		//Store the answer
+
+	bl	unlock		//Unlock the entropic array
+	pop	{r0, pc}	//Return
+
+/* short[r0] randShort() */
+/* Generates a random short */
+/* Data Races: Uses lock and unlock */
+.thumb
+.global	randShort
+.type	randShort, %function
+randShort:
+	push	{lr}		//Save return point for later
+	bl	checkPtr	//Make sure the entropy pointer is valid
+	bl	lock		//Lock the entropic array
+
+	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
+	ldr	r2, [r1]	//Dereference the pointer
+	ldrh	r0, [r2]	//Dereference again and
+	add	r2, #2		//Move the pointer
+	str	r2, [r1]	//Store the updated address
+	push	{r0}		//Store the answer
+
+	bl	unlock		//Unlock the entropic array
+	pop	{r0, pc}	//Return
+
 /* int[r0] randInt() */
 /* Generates a random int */
 /* Data Races: Uses lock and unlock */
 .thumb
+.global	randInt
+.type	randInt, %function
 randInt:
-	push	{lr}	//Save return point for later
-	bl	lock	//Lock the entropic array
+	push	{lr}		//Save return point for later
+	bl	checkPtr	//Make sure the entropy pointer is valid
+	bl	lock		//Lock the entropic array
 
-	
+	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
+	ldr	r2, [r1]	//Dereference the pointer
+	ldr	r0, [r2]	//Dereference again and
+	add	r2, #4		//Move the pointer
+	str	r2, [r1]	//Store the updated address
+	push	{r0}		//Store the answer
 
-	bl	unlock	//Unlock the entropic array
-	pop	{pc}	//Return
+	bl	unlock		//Unlock the entropic array
+	pop	{r0, pc}	//Return
+
+/* long[r0-r1] randLong() */
+/* Generates a random long */
+/* Data Races: Uses lock and unlock */
+.thumb
+.global	randLong
+.type	randLong, %function
+randLong:
+	push	{lr}		//Save return point for later
+	bl	checkPtr	//Make sure the entropy pointer is valid
+	bl	lock		//Lock the entropic array
+
+	ldr	r2, =ENTROPYPTR	//Load the entropy pointer
+	ldr	r3, [r2]	//Dereference the pointer
+	ldrd	r0, [r3]	//Dereference again and
+	add	r3, #8		//Move the pointer
+	str	r3, [r2]	//Store the updated address
+	push	{r0, r1}	//Store the answer
+
+	bl	unlock		//Unlock the entropic array
+	pop	{r0, r1, pc}	//Return
 
 /* void lock() */
 /* Waits for the entropic array to unlock before locking it again */
