@@ -3,7 +3,7 @@
 
 .data
 DISBYTES:
-	.byte	0	//A value to store a random number in
+	.skip	128	//A value to store 32 random ints in
 
 .text
 .arm
@@ -28,21 +28,12 @@ main:
 	//Get a byte of random data
 	ldr	r4, =DISBYTES	//Load our little pun into r4
 	mov	r1, r4
-	mov	r2, #1		//We're only loading one byte
+	mov	r2, #128	//We're loading 128 bytes
 
-	// Apparently this uses a bad file number... need to check out.
-	bl	randomArray	//Fill the byte with entropic data
-	
+	bl	randomArray	//Fill the array with entropic data
+
+	bl	seedRnd
+
 	bl	closeRnd	//Close the RNG engine
-	ldr	r0, [r4]	//Exit with the random number as an error code
+	ldrb	r0, [r4]	//Exit with a random number as the exit code
 	b	exit		//Exit
-
-/* ssize_t[r0] sysWrite(uint fd[r0], const char* buf[r1], size_t count[r2]) */
-/* Uses the system call to write to a buffer */
-/* Data Races: The string buf is read from */
-.thumb
-sysWrite:
-	push	{r7, lr}	//Save return point for later
-	mov	r7, $WRITE	//Prepare to invoke write system call
-	svc	#0		//Invoke write system call
-	pop	{r7, pc}	//Return

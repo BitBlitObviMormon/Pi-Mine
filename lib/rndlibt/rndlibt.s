@@ -1,6 +1,7 @@
 /* Random Library (Thumb) */
 /* SIZES */
 .set	MODE_T, 4
+.set	ENTROPY_T, 256
 
 /* SYSCALLS */
 .set	READ,  3
@@ -16,13 +17,15 @@
 .data
 .align	2	
 RNDPTR:
-	.word	0x00	//The /dev/urandom file pointer
-ENTROPY:
-	.skip	256	//Space in which to store entropy
+	.word	0x00		//The file pointer
+ENTROPYSIZE:
+	.word	ENTROPY_T	//The amount of space the entropic array holds
 ENTROPYPTR:
-	.word	ENTROPY	//The pointer to the entropic array
-ENTROPYLCK:	  //If set to 1, then the entropic array is being used
-	.byte	0 //This is meant to prevent data races when threaded
+	.word	ENTROPY		//The pointer to the entropic array
+ENTROPYLCK:		//If this is 1, then the entropic array is being used
+	.word	0x00	//This is meant to prevent data races when threaded
+ENTROPY:
+	.skip	ENTROPY_T	//Space in which to store entropy
 
 .text
 
@@ -43,7 +46,7 @@ openRnd:
 	//Open /dev/urandom
 	ldr	r0, =RANDOM	//The filename
 	mov	r1, #O_RDONLY	//Only reading privileges
-	mov	r2, #0		//Not creating a file so no mode_t
+	mov	r2, #0		//Not creating a file, so no mode_t
 	bl	sysOpen		//Open the file
 
 	//Store the pointer in memory so that we don't lose it
@@ -62,6 +65,7 @@ closeRnd:
 
 	//If there is already no value written to the file handle, skip it
 	ldr	r4, =RNDPTR
+	ldr	r0, [r4]
 	cbz	r4, closeDONE
 
 	//Close /dev/urandom
@@ -93,28 +97,67 @@ randomArray:
 .global	seedRnd
 .type	seedRnd, %function
 seedRnd:
-	push	{r4, lr}	//Save the return point for later
-randomCHECKLOCK:
-	//If the entropic array is locked then wait until its unlocked
-	ldr	r4, =ENTROPYLCK
-	cbz	r4, randomDONECHECK
-	b	randomCHECKLOCK
-randomDONECHECK:
+	push	{lr}		//Save return point for later
+
 	//Lock the entropic array
-	mov	r0, #1
-	str	r0, [r4]
+	bl	lock
 
 	//Refill the entropic array with random data
 	ldr	r1, =ENTROPY	//Load the entropic array
-	mov	r2, #255	//Set the read size to 256
-	add	r2, #1
+	mov	r3, r1
+	ldr	r2, =ENTROPYSIZE//Set the read size to 256
+	ldr	r2, [r2]
 	bl	randomArray	//Fill the entropic array with random data
 
-	//Unlock the entropic array
-	mov	r0, #0
-	str	r0, [r4]
+	//Reset the entropy pointer
+	ldr	r0, =ENTROPYPTR
+	str	r3, [r0]
 
-	pop	{r4, pc}	//Return
+	//Unlock the entropic array
+	bl	unlock
+
+	pop	{pc}	//Return
+
+/* int[r0] randInt() */
+/* Generates a random int */
+/* Data Races: Uses lock and unlock */
+.thumb
+randInt:
+	push	{lr}	//Save return point for later
+	bl	lock	//Lock the entropic array
+
+	
+
+	bl	unlock	//Unlock the entropic array
+	pop	{pc}	//Return
+
+/* void lock() */
+/* Waits for the entropic array to unlock before locking it again */
+/* Data Races: ENTROPYLCK is read and written to in a non data racey way */
+.thumb
+lock:
+	//If the entropic array is locked then wait until it's unlocked
+	ldr	r1, =ENTROPYLCK
+	ldr	r0, [r1]
+	cbz	r0, lockDONE
+	b	lock
+lockDONE:
+	//Lock the entropic array
+	mov	r0, #1
+	str	r0, [r1]
+	
+	bx	lr	//Return
+
+/* void unlock() */
+/* Unlocks the entropic array: must be called after a lock */
+/* Data Races: ENTROPYLCK is written to */
+.thumb
+unlock:
+	//Unlock the entropic array
+	ldr	r1, =ENTROPYLCK
+	mov	r0, #0
+	str	r0, [r1]
+	bx	lr	//Return
 
 /* ssize_t[r0] sysRead(uint fd[r0], char* buf[r1], size_t count[r2]) */
 /* Uses the system call to read from a buffer */
@@ -159,4 +202,4 @@ sysClose:
 .text
 .align 2
 RANDOM:
-	.asciz	"/dev/random"
+	.asciz	"/dev/urandom"
