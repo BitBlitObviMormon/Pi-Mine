@@ -34,7 +34,7 @@ int main() {
 	printf("O_WRONLY = %i\n", O_WRONLY);
 	printf("O_RDWR = %i\n", O_RDWR);
 
-	printf("\nMemory Layout\n");
+	printf("\ntermios Memory Layout\n");
 	printf("c_iflag  : %i\n", (unsigned int)&a.c_iflag - (unsigned int)&a);
 	printf("c_oflag  : %i\n", (unsigned int)&a.c_oflag - (unsigned int)&a);
 	printf("c_cflag  : %i\n", (unsigned int)&a.c_cflag - (unsigned int)&a);
@@ -42,6 +42,6 @@ int main() {
 	printf("c_cc     : %i\n", (unsigned int)&a.c_cc - (unsigned int)&a);
 	printf("c_ispeed : %i\n", (unsigned int)&a.c_ispeed - (unsigned int)&a);
 	printf("c_ospeed : %i\n", (unsigned int)&a.c_ospeed - (unsigned int)&a);
- 
+
 	return 0;
 }

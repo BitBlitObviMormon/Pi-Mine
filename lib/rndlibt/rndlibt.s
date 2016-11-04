@@ -1,4 +1,4 @@
-/* Network Library (Thumb) */
+/* Random Library (Thumb) */
 /* SIZES */
 .set	MODE_T, 4
 
@@ -22,12 +22,12 @@ ENTROPY:
 ENTROPYPTR:
 	.word	ENTROPY	//The pointer to the entropic array
 ENTROPYLCK:	  //If set to 1, then the entropic array is being used
-	.byte	0 //This is meant to prevent data races when threaded	
+	.byte	0 //This is meant to prevent data races when threaded
 
 .text
 
 /* void openRnd() */
-/* Opens /dev/random and /dev/urandom for reading */
+/* Opens /dev/urandom for reading */
 /* Data Races: RNDPTR and URNDPTR are written to */
 .thumb
 .global	openRnd
@@ -37,12 +37,13 @@ openRnd:
 
 	//If there is already a value written to the file handle, skip it
 	ldr	r4, =RNDPTR
-	cbnz	r4, openDONE
+	ldr	r0, [r4]
+	cbnz	r0, openDONE
 
 	//Open /dev/urandom
 	ldr	r0, =RANDOM	//The filename
 	mov	r1, #O_RDONLY	//Only reading privileges
-	mov	r2, #0		//No mode_t
+	mov	r2, #0		//Not creating a file so no mode_t
 	bl	sysOpen		//Open the file
 
 	//Store the pointer in memory so that we don't lose it
@@ -51,7 +52,7 @@ openDONE:
 	pop	{r4, pc}	//Return
 
 /* void closeRnd() */
-/* Closes /dev/random and /dev/urandom */
+/* Closes /dev/urandom */
 /* Data Races: RNDPTR and URNDPTR are written to */
 .thumb
 .global	closeRnd
@@ -81,6 +82,7 @@ closeDONE:
 randomArray:
 	push	{lr}		//Save return point for later
 	ldr	r0, =RNDPTR	//The file pointer to /dev/urandom
+	ldr	r0, [r0]
 	bl	sysRead		//Read entropic data from the file
 	pop	{pc}		//Return
 
@@ -157,4 +159,4 @@ sysClose:
 .text
 .align 2
 RANDOM:
-	.asciz	"/dev/urandom"
+	.asciz	"/dev/random"

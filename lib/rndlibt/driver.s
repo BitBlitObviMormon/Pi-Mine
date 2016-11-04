@@ -3,7 +3,7 @@
 
 .data
 DISBYTES:
-	.byte	100	//A value to store a random number in
+	.byte	0	//A value to store a random number in
 
 .text
 .arm
@@ -27,6 +27,7 @@ main:
 
 	//Get a byte of random data
 	ldr	r4, =DISBYTES	//Load our little pun into r4
+	mov	r1, r4
 	mov	r2, #1		//We're only loading one byte
 
 	// Apparently this uses a bad file number... need to check out.
