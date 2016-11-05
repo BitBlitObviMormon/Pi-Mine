@@ -1,4 +1,5 @@
 /* SYSCALLS */
+.set	EXIT, 1
 .set	WRITE, 4
 
 .data
@@ -16,8 +17,8 @@ _start:
 .thumb
 .global exit
 exit:
-	mov	r7, #1	//Exit with
-	svc	#0	//	whatever is in r0
+	mov	r7, #EXIT	//Exit with
+	svc	#0		//	whatever is in r0
 
 /* int[r0] main() */
 .thumb
@@ -32,7 +33,7 @@ main:
 
 	bl	randomArray	//Fill the array with entropic data
 	bl	seedRnd		//Seed the RNG engine
-	bl	randInt		//Generate a random integer
+	bl	randByte	//Generate a random byte
 	mov	r4, r0
 
 	bl	closeRnd	//Close the RNG engine

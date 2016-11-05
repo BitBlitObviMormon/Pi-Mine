@@ -1,3 +1,5 @@
+.set	EXIT, 1
+
 .text
 .arm
 .global _start
@@ -9,8 +11,8 @@ _start:
 /* void exit(int) */
 /* Exits with the error code given */
 exit:
-	mov	r7, #1	//Exit with
-	svc	#0	//	whatever is in r0
+	mov	r7, #EXIT	//Exit with
+	svc	#0		//	whatever is in r0
 
 //int main()
 .thumb
