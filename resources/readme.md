@@ -1,0 +1,2 @@
+# Resources
+&ensp; These are various learning resources that I am using to program Pi-Mine. Several of them are files made by other people to help me understand assembly while others are just files I created in order to experiment with code.

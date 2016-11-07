@@ -1,0 +1,2 @@
+# Resources - Guessing Game
+&ensp; A fun little assembly program where you have to guess an 8-bit number, a 16-bit number, a 32-bit number, and finally, a 64-bit number. Best of luck at beating it in good time!

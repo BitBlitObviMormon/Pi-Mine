@@ -1,0 +1,2 @@
+# Libraries - Input / Output Library
+&ensp; Implements common C I/O functions that are fairly simple to write. I did not implement <code>scanf</code> and <code>printf</code> because I thought the other functions would cover them perfectly well enough. I also don't plan on implementing floats for input/output until it is absolutely necessary for the game. Let's just say that floating point data is kind of complicated to read and print.
