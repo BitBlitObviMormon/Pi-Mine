@@ -1,15 +1,15 @@
 # Assembler switches
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a
 
-all: input input2 info
+all: input.out input2.out info.out
 
-input: input.o
+input.out: input.o
 	gcc -o $@ $+
 
-input2: input2.o
+input2.out: input2.o
 	ld -o $@ $+
 
-info: info.o
+info.out: info.o
 	gcc -o $@ $+
 
 input.o: input.c

@@ -1,10 +1,10 @@
-all: escape
+all: escape.out
 
-escape: escape.o
+escape.out: escape.o
 	gcc -o $@ $+
 
 escape.o: escape.c
 	gcc -c -std=c99 -O3 $<
 
 clean:
-	rm -vf escape *.o *~ *#
+	rm -vf escape.out *.o *~ *#
