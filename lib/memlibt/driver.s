@@ -3,62 +3,47 @@
 .set	BRK, 45
 
 .data
-mem_end:
+heap:
 	.word	0
-mem_break:
+heap_end:
 	.word	0
 
 .text
 .arm
 .global _start
 _start:
-	blx	main	//Call the thumb function main
+	//Ask where the heap is
+	ldr	r0, =heap
+	mov	r7, #BRK
+	mov	r0, #0
+	svc	#0
 
-.thumb
-.global exit
-/* void exit(int) */
-/* Exits with the error code given */
-exit:
-	mov	r7, #EXIT	//Exit with
-	svc	#0		//	whatever is in r0
+	//Store the heap location in memory
+	ldr	r4, =heap
+	ldr	r5, =heap_end
+	str	r0, [r4]
+	str	r0, [r5]
 
-//int main()
-.thumb
-.global main
-main:
-	ldr	r0, =_end
-	ldr	r1, =mem_end
-	str	r0, [r1]
+	mov	r4, r0
+	mov	r5, r0
+	
+.Lcount_start:
+	cmp	r4, r5
+	blo	.Lskip_alloc
 
+	add	r0, r4, #1
 	mov	r7, #BRK
 	svc	#0
 
-	ldr	r1, =mem_break
+	mov	r5, r0
+	ldr	r1, =heap_end
 	str	r0, [r1]
-
-	mov	r4, #0
-	ldr	r5, =mem_end
-	ldr	r5, [r5]
-	ldr	r6, =mem_break
-	ldr	r6, [r6]
-
-.Loop:
-	cmp	r5, r6
-	blo	.Lwrite
-
-	add	r5, r5, #1
-	mov	r7, #BRK
-	mov	r0, r5
+.Lskip_alloc:
+	add	r6, r6, #1
+	str	r6, [r4], #1
+.Lcount_test:
+	cmp	r6, #1000
+	bne	.Lcount_start
+.Lcount_end:
+	mov	r7, #EXIT
 	svc	#0
-	mov	r6, r0
-.Lwrite:
-	strb	r4, [r5]
-	add	r4, #1
-.Loop_test:
-	mov	r0, #125
-	lsl	r0, r0, #6
-	cmp	r4, r0
-	bne	.Loop
-
-	mov	r0, #13		//Move #13 to r0
-	b	exit
