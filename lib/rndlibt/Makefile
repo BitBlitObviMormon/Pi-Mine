@@ -1,10 +1,14 @@
 # Assembler switches
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a
+SYSLIBT = ../syslibt/syslibt
 
 all: driver.out
 
-driver.out: driver.o rndlibt.o
+driver.out: driver.o rndlibt.o $(SYSLIBT).o
 	ld -o $@ $+
+
+$(SYSLIBT).o: $(SYSLIBT).s
+	cd ../syslibt; make; cd ../rndlibt
 
 rndlibt.o: rndlibt.s
 	as $(SW) -o $@ $<

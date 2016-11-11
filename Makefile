@@ -11,6 +11,7 @@ IOLIBT   = $(LIB)/iolibt/iolibt
 GAMELIBT = $(LIB)/gamelibt/gamelibt
 NETLIBT  = $(LIB)/netlibt/netlibt
 RNDLIBT  = $(LIB)/rndlibt/rndlibt
+SYSLIBT  = $(LIB)/syslibt/syslibt
 
 # Source Files
 DRAW   = /client/draw
@@ -26,10 +27,10 @@ endif
 pre-build:
 	@./color make USINGSCRIPT=true
 
-mine: $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o
+mine: $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(SYSLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o
 	ld -o $@ $+
 
-mine-server: $(NETLIBT).o $(RNDLIBT).o $(BIN)$(SERVER).o
+mine-server: $(NETLIBT).o $(RNDLIBT).o $(SYSLIBT).o $(BIN)$(SERVER).o
 	ld -o $@ $+
 
 # LIBRARIES
@@ -41,6 +42,8 @@ $(NETLIBT).o: $(NETLIBT).s
 	cd $(LIB)/netlibt; make; cd ../..
 $(RNDLIBT).o: $(RNDLIBT).s
 	cd $(LIB)/rndlibt; make; cd ../..
+$(SYSLIBT).o: $(SYSLIBT).s
+	cd $(LIB)/syslibt; make; cd ../..
 
 # BIN DIRECTORIES
 $(BIN)/server:

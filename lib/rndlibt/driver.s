@@ -1,7 +1,3 @@
-/* SYSCALLS */
-.set	EXIT, 1
-.set	WRITE, 4
-
 .data
 DISBYTES:
 	.skip	128	//A value to store 32 random ints in
@@ -11,14 +7,6 @@ DISBYTES:
 .global _start
 _start:
 	blx	main	//Call the thumb function main
-
-/* void exit(int[r0]) */
-/* Exits with the error code given */
-.thumb
-.global exit
-exit:
-	mov	r7, #EXIT	//Exit with
-	svc	#0		//	whatever is in r0
 
 /* int[r0] main() */
 .thumb
@@ -38,4 +26,4 @@ main:
 
 	bl	closeRnd	//Close the RNG engine
 	mov	r0, r4		//Exit with a random number as the exit code
-	b	exit		//Exit
+	b	sysExit		//Exit

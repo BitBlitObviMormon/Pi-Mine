@@ -3,12 +3,6 @@
 .set	MODE_T, 4
 .set	ENTROPY_T, 256
 
-/* SYSCALLS */
-.set	READ,  3
-.set	WRITE, 4
-.set	OPEN,  5
-.set	CLOSE, 6
-
 /* READ CONSTANTS */
 .set	O_RDONLY, 0
 .set	O_WRONLY, 1
@@ -614,46 +608,6 @@ unlock:
 	mov	r0, #0
 	str	r0, [r1]
 	bx	lr	//Return
-
-/* ssize_t[r0] sysRead(uint fd[r0], char* buf[r1], size_t count[r2]) */
-/* Uses the system call to read from a buffer */
-/* Data Races: The string buf is written to */
-.thumb
-sysRead:
-	push	{r7, lr}	//Save return point for later
-	mov	r7, $READ	//Prepare to invoke read system call
-	svc	#0		//Invoke read system call
-	pop	{r7, pc}	//Return
-	
-/* ssize_t[r0] sysWrite(uint fd[r0], const char* buf[r1], size_t count[r2]) */
-/* Uses the system call to write to a buffer */
-/* Data Races: The string buf is read from */
-.thumb
-sysWrite:
-	push	{r7, lr}	//Save return point for later
-	mov	r7, $WRITE	//Prepare to invoke write system call
-	svc	#0		//Invoke write system call
-	pop	{r7, pc}	//Return
-
-/* int[r0] sysOpen(const char* pathname[r0], int flags[r1], mode_t mode[r2]) */
-/* Uses the system call to open a file and get its file handle */
-/* Data Races: The character array pathname is read */
-.thumb
-sysOpen:	
-	push	{r7, lr}	//Save return point for later
-	mov	r7, $OPEN	//Prepare to invoke open system call
-	svc	#0		//Invoke open system call
-	pop	{r7, pc}	//Return
-
-/* int[r0] sysClose(int fd[r0]) */
-/* Uses the system call to close a file */
-/* Data Races: close does not access memory */
-.thumb
-sysClose:
-	push	{r7, lr}	//Save return point for later
-	mov	r7, $CLOSE	//Prepare to invoke close system call
-	svc	#0		//Invoke close system call
-	pop	{r7, pc}	//Return
 
 .text
 .align 2
