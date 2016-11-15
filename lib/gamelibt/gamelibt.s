@@ -42,6 +42,26 @@ TERMIOS:	//This is where the old termios struct will be saved for later
 
 .text
 
+/* void hideCursor() */
+/* Tells the terminal to hide the cursor */
+/* Data Races: The terminal *may* hide the cursor */
+.thumb
+.global	hideCursor
+.type	hideCursor, %function
+hideCursor:
+	ldr	r1, =HIDECURSOR	//Load the escape code from memory
+	b	prints		//Print the escape code onto the console
+
+/* void showCursor() */
+/* Tells the terminal to show the cursor */
+/* Data Races: The terminal *may* show the cursor */
+.thumb
+.global	showCursor
+.type	showCursor, %function
+showCursor:
+	ldr	r1, =SHOWCURSOR	//Load the escape code from memory
+	b	prints		//Print the escape code onto the console
+
 /* void loadCursor() */
 /* Tells the terminal to load the previously saved cursor location */
 /* Data Races: The terminal *may* load the cursor location */
@@ -159,5 +179,9 @@ SAVECURSOR:
 	.asciz	"\e[s"
 LOADCURSOR:
 	.asciz	"\e[u"
+HIDECURSOR:
+	.asciz	"\e[?25l"
+SHOWCURSOR:
+	.asciz	"\e[?25h"
 CLEARFRAME:
 	.asciz	"\e[2J\e[1;1H"
