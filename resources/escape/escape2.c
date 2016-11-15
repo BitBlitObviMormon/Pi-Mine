@@ -1,21 +1,9 @@
 //Escape Codes C
 #include <stdio.h>
 
-/**********************************************************
- * Runs all of the valid character codes for the terminal *
- * The first number (i) is the style (normal, bold, etc)  *
- * The second number (x) is the foreground color          *
- * The third number (y) is the background color           *
- **********************************************************
- * Styles:                                                *
- * 0. Clear formatting                                    *
- * 1. Make bold                                           *
- * 2. Make dim                                            *
- * 4. Make underlined                                     *
- * 5. Make the text blink (although it's never done so)   *
- * 7. Swap background and foreground colors               *
- * 8. Make text hidden                                    *
- **********************************************************/
+/***********************************************************
+ * Spits out text, clears the console, then spits out more *
+ ***********************************************************/
 void codes() {
   printf("\e[2J\e[1;1H");
 
