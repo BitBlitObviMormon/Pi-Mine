@@ -1,4 +1,5 @@
 /* Memory Library (Thumb) */
+/* Depends on System Library */
 .data
 mem_end:
 	.word	0

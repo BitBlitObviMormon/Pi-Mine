@@ -1,4 +1,5 @@
 /* Input/Output Library (Thumb) */
+/* Depends on System Library */
 // I/O CONSTANTS
 .set	STDIN,  0
 .set	STDOUT, 1
