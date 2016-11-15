@@ -1,5 +1,5 @@
 # Assembler switches
-SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a
+SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a -mcpu=cortex-a7
 
 all: vfp.out arm.out
 
