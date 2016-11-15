@@ -6,6 +6,7 @@
 .set	OPEN,	 0005
 .set	CLOSE,	 0006
 .set	BRK,	 0055
+.set	IOCTL,	 0066
 .set	SELECT,	 0122
 .set	BIND,	 0432
 .set	CONNECT, 0433
@@ -81,6 +82,18 @@ sysClose:
 sysBrk:
 	push	{r7, lr}	//Save return point for later
 	mov	r7, #BRK	//Prepare to invoke read system call
+	svc	#0		//Invoke read system call
+	pop	{r7, pc}	//Return
+
+/* int[r0] sysIoctl(int d[r0], int request[r1], ... args[r2-??]) */
+/* Uses the system call to perform specific I/O Control functions */
+/* Data Races: Look up the specific ioctl call you're using */
+.thumb
+.global	sysIoctl
+.type	sysIoctl, %function
+sysIoctl:
+	push	{r7, lr}	//Save return point for later
+	mov	r7, #IOCTL	//Prepare to invoke read system call
 	svc	#0		//Invoke read system call
 	pop	{r7, pc}	//Return
 

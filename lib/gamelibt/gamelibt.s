@@ -1,9 +1,34 @@
 /* Game Input Library (Thumb) */
 /* Depends on Input/Output Library and System Library */
-// I/O CONSTANTS
-.set	STDIN,  0
-.set	STDOUT, 1
-.set	STDERR, 2
+// FILE STREAMS
+.set STDIN,  0
+.set STDOUT, 1
+
+// FUNCTION CONSTANTS
+.set	TCGETS, 0x5401
+.set	TCSETS, 0x5402
+
+// VARIABLE CONSTANTS
+.set	ICANON, 2
+.set	VTIME,  5
+.set	VMIN,   6
+.set	ECHO,   8
+.set	NCCS,  32
+
+// MEMORY SIZE
+.set	TERMIOSSIZE, 60
+.set	TCFLAG_T,     4
+.set	CC_T,	      1
+.set	SPEED_T,      4
+
+// MEMORY LAYOUT
+.set	IFLAG,   0
+.set	OFLAG,   4
+.set	CFLAG,   8
+.set	LFLAG,  12
+.set	C_CC,	  17
+.set	ISPEED, 52
+.set	OSPEED, 56
 
 .data
 COLORTEXT:	//The string to print the fore-back-color escape code
@@ -12,6 +37,8 @@ FOREGROUND:	//Edit characters at mem address to change foreground color
 	.ascii	"???m\e[48;5;"
 BACKGROUND:	//Edit characters at mem address to change background color
 	.asciz	"???m"
+TERMIOS:	//This is where the old termios struct will be saved for later
+	.skip	TERMIOSSIZE
 
 .text
 
@@ -62,35 +89,69 @@ clearFrame:
 	ldr	r1, =CLEARFRAME	//Load the escape code from memory
 	b	prints		//Print the escape code onto the console
 
-/* void loadTerminal() */
-/* Restores the terminal's state to the previously saved state */
-/* Data Races: Reads from %INSERT_VAR_HERE% */
+/* void restoreTerminal() */
+/* Restores the terminal's state to its original state. */
+/* This function MUST be called after using raw mode */
+/* or the terminal will be left in an unusable state! */
+/* Data Races: Reads from TERMIOS */
 .thumb
-.global	loadTerminal
-.type	loadTerminal, %function
-loadTerminal:
-	push	{lr}	//Save return point for later
-	pop	{pc}	//Return
-
-/* void saveTerminal() */
-/* Saves the terminal's state so that it can restored (needed for RAW mode) */
-/* Data Races: Writes to %INSERT_VAR_HERE% */
-.thumb
-.global	saveTerminal
-.type	saveTerminal, %function
-saveTerminal:
-	push	{lr}	//Save return point for later
-	pop	{pc}	//Return
+.global	restoreTerminal
+.type	restoreTerminal, %function
+restoreTerminal:
+	mov	r0, #STDIN	//Use the standard input stream
+	movw	r1, #TCSETS	//Tell the terminal to apply terminal settings
+	ldr	r2, =TERMIOS	//Tell the terminal to apply the backup settings
+	b	sysIoctl	//Use the I/O Control system call
 
 /* void rawMode() */
-/* Sets the terminal state to RAW mode; input is not echoed onto the screen */
-/* Data Races: The terminal's settings are overwritten */
+/* Sets the terminal state to raw mode; input is not echoed onto the screen */
+/* restoreTerminal MUST be called after using raw mode */
+/* or the terminal will be left in an unusable state! */
+/* Data Races: TERMIOS and the terminal's settings are overwritten */
 .thumb
 .global	rawMode
 .type	rawMode, %function
 rawMode:
-	push	{lr}	//Save return point for later
-	pop	{pc}	//Return
+	push	{lr}		//Save return point for later
+
+	sub	sp, sp, #TERMIOSSIZE	//Allocate stack space for termios
+
+	mov	r0, #STDIN	//Use the standard input stream
+	movw	r1, #TCGETS	//Tell the terminal to get terminal settings
+	ldr	r2, =TERMIOS	//Tell it to write the settings onto the backup
+	bl	sysIoctl	//Use the I/O Control system call
+
+	//Copy the global struct to local stack for modification
+	mov	r1, sp		//Get the address of the stack
+	ldr	r0, =TERMIOS	//Get the address of the global struct
+	ldm r0!, {r2-r7} // Copy 24 bytes
+	stm r1!, {r2-r7}
+	ldm r0!, {r2-r7} // Copy 24 bytes
+	stm r1!, {r2-r7}
+	ldm r0!, {r2-r4} // Copy 12 bytes
+	stm r1!, {r2-r4}
+//	vldmia.32 r0!, {s0-s14}	//Copy 60 bytes
+//	vstmia.32 r1!, {s0-s14}
+
+	//Now we need to modify the struct on the stack
+	ldr	r0, [sp, #LFLAG]	//Get the control flags
+	mov	r3, #(ECHO | ICANON)	//Disable Echo and Canonical mode
+	bic	r0, r0, r3
+	str	r0, [sp, #LFLAG]	//Set the control flags
+
+	//Make input non-blocking, with no timeout
+	//(essentially set to polling mode)
+	mov	r0, #0			//VTIME and VMIN are adjacent bytes, so
+	strh	r0, [r1, #(C_CC + VTIME)] // VTIME and VMIN are adjacent bytes, so writing a halfword to VTIME should overwrite both
+	//Ready to write back to the device driver now
+	mov	r2, sp		//Apply the terminal settings from the stack
+	mov	r0, #STDIN	//Use the standard input stream
+	movw	r1, #TCSETS	//Tell the terminal to apply terminal settings
+	bl	sysIoctl	//Use an I/O Control system call
+
+	add	sp, sp, #60	//Delete the terminal settings from the stack
+
+	pop	{pc}		//Return
 
 .text
 .align	2
