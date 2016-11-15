@@ -72,6 +72,10 @@ setConsoleFlags:
 	mov	r0, r2		//copyFrom = newState
 	ldr	r1, =savedState //copyTo = savedState
 	bl	copyConsole	//Backs up the console flags to memory
+
+	//Write the new console
+	
+	
 	pop	{r7, pc}	//Return
 
 /* void copyConsole(termios* copyFrom[r0], termios* copyTo[r1]) */
