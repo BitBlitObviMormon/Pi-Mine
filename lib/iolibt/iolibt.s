@@ -322,7 +322,7 @@ stoi:
 
 	pop	{r4-r7, pc}	//Return
 
-/* char*[r1] utos(const int[r0]) */
+/* char*[r0] utos(int[r0]) */
 /* Takes an unsigned int and returns a null-terminated char array */
 /* Data Races: Returns static memory which is overwritten on */
 /* the next utos/itos call; Needs to be replaced with a brk call! */

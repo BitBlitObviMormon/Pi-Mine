@@ -1,0 +1,2 @@
+# Libraries - Paint Library
+&ensp; This library is used for converting an array of colored "blocks" to a character array which can then be drawn onto the screen. This will be the main library on the client that will allow it to draw the data passed through the network stream.
