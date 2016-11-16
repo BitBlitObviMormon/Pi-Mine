@@ -3,6 +3,7 @@
 #include <termios.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
+#include <sys/socket.h>
 #include <sys/stat.h>
 #include <fcntl.h>
 
@@ -33,6 +34,25 @@ int main() {
 	printf("O_RDONLY = %i\n", O_RDONLY);
 	printf("O_WRONLY = %i\n", O_WRONLY);
 	printf("O_RDWR = %i\n", O_RDWR);
+
+	printf("PF_UNIX = %i\n", PF_UNIX);
+	printf("PF_LOCAL = %i\n", PF_LOCAL);
+	printf("PF_INET = %i\n", PF_INET);
+	printf("PF_INET6 = %i\n", PF_INET6);
+	printf("PF_IPX = %i\n", PF_IPX);
+	printf("PF_NETLINK = %i\n", PF_NETLINK);
+	printf("PF_X25 = %i\n", PF_X25);
+	printf("PF_AX25 = %i\n", PF_AX25);
+	printf("PF_ATMPVC = %i\n", PF_ATMPVC);
+	printf("PF_APPLETALK = %i\n", PF_APPLETALK);
+	printf("PF_PACKET = %i\n", PF_PACKET);
+
+        printf("SOCK_STREAM = %i\n", SOCK_STREAM);
+        printf("SOCK_DGRAM = %i\n", SOCK_DGRAM);
+        printf("SOCK_SEQPACKET = %i\n", SOCK_SEQPACKET);
+        printf("SOCK_RAW = %i\n", SOCK_RAW);
+        printf("SOCK_RDM = %i\n", SOCK_RDM);
+        printf("SOCK_PACKET = %i\n", SOCK_PACKET);
 
 	printf("\ntermios Memory Layout\n");
 	printf("c_iflag  : %i\n", (unsigned int)&a.c_iflag - (unsigned int)&a);
