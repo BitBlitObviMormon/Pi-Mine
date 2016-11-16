@@ -8,6 +8,7 @@
 .set	BRK,	 0055
 .set	IOCTL,	 0066
 .set	SELECT,	 0122
+.set	MMAP2,	 0300
 .set	BIND,	 0432
 .set	CONNECT, 0433
 .set	LISTEN,	 0434
@@ -82,6 +83,19 @@ sysClose:
 sysBrk:
 	push	{r7, lr}	//Save return point for later
 	mov	r7, #BRK	//Prepare to invoke read system call
+	svc	#0		//Invoke read system call
+	pop	{r7, pc}	//Return
+
+/* void*[r0] sysMMap2(void* start[r0], int length[r1], int prot[r2], */
+/*                    int flags[r3], int fd[r4], int pageoffset[r5]) */
+/* Uses the system call to map memory to a file (or simply allocate more) */
+/* Data Races: The given file handle is read, written, and possibly locked */
+.thumb
+.global	sysMMap2
+.type	sysMMap2, %function
+sysMMap2:
+	push	{r7, lr}	//Save return point for later
+	mov	r7, #MMAP2	//Prepare to invoke read system call
 	svc	#0		//Invoke read system call
 	pop	{r7, pc}	//Return
 
