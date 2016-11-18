@@ -11,3 +11,6 @@ mine-server
 *~
 \#*\#
 .\#*
+
+# Generated Source Files
+errlibt.s

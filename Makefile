@@ -19,6 +19,7 @@ MEMLIBT  = $(LIB)/memlibt/memlibt
 DRAW   = /client/draw
 CLIENT = /client/client
 SERVER = /server/server
+PAINT  = /client/paint
 
 ifeq ($(USINGSCRIPT),true)
 all: mine mine-server
@@ -62,9 +63,11 @@ $(BIN)/client:
 # SOURCE CODE
 $(BIN)$(DRAW).o: $(SRC)$(DRAW).s $(BIN)/client
 	as $(SW) -o $@ $<
-$(BIN)$(SERVER).o: $(SRC)$(SERVER).s $(BIN)/server
+$(BIN)$(PAINT).o: $(SRC)$(PAINT).s $(BIN)/client
 	as $(SW) -o $@ $<
 $(BIN)$(CLIENT).o: $(SRC)$(CLIENT).s $(BIN)/client
+	as $(SW) -o $@ $<
+$(BIN)$(SERVER).o: $(SRC)$(SERVER).s $(BIN)/server
 	as $(SW) -o $@ $<
 
 ifeq ($(USINGSCRIPT),true)

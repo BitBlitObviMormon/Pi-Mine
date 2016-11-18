@@ -1,5 +1,4 @@
-/* Paint Library (Thumb) */
-/* Depends on System Library and Input/Output Library */
+/* Painting Tool */
 
 .text
 
