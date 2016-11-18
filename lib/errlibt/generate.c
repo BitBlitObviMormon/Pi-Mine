@@ -301,7 +301,7 @@ int main()
   }
 
   // Make the text header
-  fprintf(file, "\n.text\n");
+  fprintf(file, "\n.text\n\n");
 
   // Write the code
   fprintf(file, "/* void fprinterr(int fd[r0], int errno[r1]) */\n");
@@ -370,7 +370,6 @@ int main()
   fprintf(file, "printerrdetails:\n");
   fprintf(file, "\tmov\tr0, #STDOUT\n");
   fprintf(file, "\tb\tfprinterrdetails\n");
-  fprintf(file, "\n");
 
   // Make the data header
   fprintf(file, "\n.data\n");
@@ -381,12 +380,12 @@ int main()
     fprintf(file, "\t.word\t%sSTR\n", errnos[i]);
 
   // Make the detailed errno jump table
-  fprintf(file, "\nERRNODET:\n");
+  fprintf(file, "ERRNODET:\n");
   for (int i = 0; i <= 133; i++)
     fprintf(file, "\t.word\t%sDET\n", errnos[i]);
 
   // Make the errno strings
-  fprintf(file, "\nEUNKNOWNERRSTR:\n\t.asciz\t\"EUNKNOWNERR\"\n");
+  fprintf(file, "EUNKNOWNERRSTR:\n\t.asciz\t\"EUNKNOWNERR\"\n");
   for (int i = 0; i <= 133; i++)
   {
     if (isValid(i))

@@ -20,7 +20,7 @@ errlibt.o: errlibt.s
 driver.o: driver.s
 	as $(SW) -o $@ $<
 
-generate: generate.out
+errlibt.s: generate.out
 	./generate.out
 
 generate.out: generate.o
@@ -30,4 +30,4 @@ generate.o: generate.c
 	gcc -c -std=c99 -O3 $<
 
 clean:
-	rm -vf driver.out *.o *# *~
+	rm -vf *.out *.o *# *~ errlibt.s

@@ -139,6 +139,7 @@
 .set	EHWPOISON,       133  // Memory page has hardware error
 
 .text
+
 /* void fprinterr(int fd[r0], int errno[r1]) */
 /* Writes the symbolic message of the error number errno to the stream fd */
 /* Data Races: Only static memory is accessed */
@@ -205,7 +206,6 @@ printerr:
 printerrdetails:
 	mov	r0, #STDOUT
 	b	fprinterrdetails
-
 
 .data
 
@@ -344,7 +344,6 @@ ERRNO:
 	.word	ENOTRECOVERABLESTR
 	.word	ERFKILLSTR
 	.word	EHWPOISONSTR
-
 ERRNODET:
 	.word	ESUCCDET
 	.word	EPERMDET
@@ -480,7 +479,6 @@ ERRNODET:
 	.word	ENOTRECOVERABLEDET
 	.word	ERFKILLDET
 	.word	EHWPOISONDET
-
 EUNKNOWNERRSTR:
 	.asciz	"EUNKNOWNERR"
 ESUCCSTR:

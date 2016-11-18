@@ -61,7 +61,7 @@ createServer:
 
 	//Get the local host's ip address
 
-	pop	{r0, lr}	//Return
+	pop	{r0, pc}	//Return
 
 
 /* int ip[r0] getIP() */
