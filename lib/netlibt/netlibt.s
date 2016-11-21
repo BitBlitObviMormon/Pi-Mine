@@ -71,4 +71,5 @@ createServer:
 .global	getIP
 .type	getIP, %function
 getIP:
-	
+	push	{lr}		//Save return point for later
+	pop	{pc}		//Return

@@ -83,7 +83,7 @@ clean:
 	rm -f mine mine-server
 
 	# Clean the generated code
-	rm -f $(ERRLIBT).s
+	rm -f $(ERRLIBT).s $(ERRLIBT).h
 else
 clean:
 	@./color make clean USINGSCRIPT=true

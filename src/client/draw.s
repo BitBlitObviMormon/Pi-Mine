@@ -1,18 +1,18 @@
 /*******************************
-* Paint stream format: FBS
-* F - Foreground color (byte)
-* B - Background color (byte)
-* S - Shape (byte)
-********************************
-* Shapes
-********************************
-* 0x00-0x00: ASCII 0x20-0x7e
-* 0x5f: 
-* 0x60: 
-* 0x61: 
-* 0x62: 
-* 0x63: 
-********************************/
+ * Paint stream format: FBS
+ * F - Foreground color (byte)
+ * B - Background color (byte)
+ * S - Shape (byte)
+ ********************************
+ * Shapes
+ ********************************
+ * 0x00-0x00: ASCII 0x20-0x7e
+ * 0x5f: 
+ * 0x60: 
+ * 0x61: 
+ * 0x62: 
+ * 0x63: 
+ ********************************/
 
 .text
 

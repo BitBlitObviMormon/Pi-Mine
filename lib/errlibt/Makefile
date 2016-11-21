@@ -23,6 +23,9 @@ driver.o: driver.s
 errlibt.s: generate.out
 	./generate.out
 
+errlibt.h: generate.out
+	./generate.out
+
 generate.out: generate.o
 	gcc -o $@ $+
 
@@ -30,4 +33,4 @@ generate.o: generate.c
 	gcc -c -std=c99 -O3 $<
 
 clean:
-	rm -vf *.out *.o *# *~ errlibt.s
+	rm -vf *.out *.o *# *~ errlibt.s errlibt.h
