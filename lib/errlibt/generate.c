@@ -287,18 +287,18 @@ int main()
 {
   // Open the files
   FILE* file = fopen("errlibt.s", "w"); //Write the error library
-  FILE* hfile = fopen("errlibt.h", "w");//Write the error library header
+  FILE* hfile = fopen("errno.s", "w");//Write the error library header
 
   // Write the header
   fprintf(file, "/* Error Library (Thumb) */\n/* Depends on Input/Output Library and System Library */\n\n/* FILE STREAMS */\n.set\tSTDOUT, 1\n");
-  fprintf(hfile, "/* Error Library (Thumb) */\n/* Depends on Input/Output Library and System Library */\n\n/* ERROR VALUES */\n");
+  fprintf(hfile, "/* Error Constants */\n\n/* ERROR VALUES */\n");
   
   // Make the macros
   for (int i = 0; i <= 133; i++)
   {
     if (isValid(i))
     {
-      fprintf(hfile, "#define\t%-16s%4i  // %s\n", errcomma[i], i, strerror(i));
+      fprintf(hfile, ".set\t%-16s%4i  // %s\n", errcomma[i], i, strerror(i));
     }
   }
 

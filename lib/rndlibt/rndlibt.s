@@ -1,5 +1,5 @@
 /* Random Library (Thumb) */
-/* Depends on Systemm Library */
+/* Depends on System Library */
 /* SIZES */
 .set	MODE_T, 4
 .set	ENTROPY_T, 256

@@ -14,4 +14,4 @@ mine-server
 
 # Generated Source Files
 errlibt.s
-errlibt.h
+errno.s

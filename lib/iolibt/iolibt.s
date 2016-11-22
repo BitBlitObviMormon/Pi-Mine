@@ -1,20 +1,13 @@
 /* Input/Output Library (Thumb) */
 /* Depends on System Library */
-// I/O CONSTANTS
-.set	STDIN,  0
-.set	STDOUT, 1
-.set	STDERR, 2
+
+.include "ioconst.s"	// INCLUDE I/O STREAM INFO
 
 // ASCII CONSTANTS
 .set	ZERO,    0x30
 .set	NINE,    0x39
 .set	DECIMAL, 0x2e
 .set	MINUS,   0x2d
-
-/* READ CONSTANTS */
-.set	O_RDONLY, 0
-.set	O_WRONLY, 1
-.set	O_RDWR,   2
 
 // SIZE OF INT -> STRING ARRAY
 .set	ISSIZE, 12	//sign + 10 chars + null
