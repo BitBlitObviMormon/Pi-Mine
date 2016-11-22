@@ -1,4 +1,4 @@
-/* System Call Library (Thumb) */
+/* System Call Constants */
 // SYSCALLS (In octal)
 .set	EXIT,	  0001
 .set	RESTART,  0002
