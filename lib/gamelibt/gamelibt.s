@@ -40,11 +40,12 @@ TERMIOS:	//This is where the old termios struct will be saved for later
 	.skip	TERMIOSSIZE
 
 .text
+.syntax	unified
 
 /* void hideCursor() */
 /* Tells the terminal to hide the cursor */
 /* Data Races: The terminal *may* hide the cursor */
-.thumb
+.thumb_func
 .global	hideCursor
 .type	hideCursor, %function
 hideCursor:
@@ -54,7 +55,7 @@ hideCursor:
 /* void showCursor() */
 /* Tells the terminal to show the cursor */
 /* Data Races: The terminal *may* show the cursor */
-.thumb
+.thumb_func
 .global	showCursor
 .type	showCursor, %function
 showCursor:
@@ -64,7 +65,7 @@ showCursor:
 /* void loadCursor() */
 /* Tells the terminal to load the previously saved cursor location */
 /* Data Races: The terminal *may* load the cursor location */
-.thumb
+.thumb_func
 .global	loadCursor
 .type	loadCursor, %function
 loadCursor:
@@ -74,7 +75,7 @@ loadCursor:
 /* void saveCursor() */
 /* Tells the terminal to save the cursor location */
 /* Data Races: The terminal *may* save the cursor location */
-.thumb
+.thumb_func
 .global	saveCursor
 .type	saveCursor, %function
 saveCursor:
@@ -85,7 +86,7 @@ saveCursor:
 /* Sets the foreground and background colors for the next text displayed */
 /* Data Races: The console text color is modified and the data COLORTEXT */
 /* through BACKGROUND is modified. */
-.thumb
+.thumb_func
 .global	setColor
 .type	setColor, %function
 setColor:
@@ -101,7 +102,7 @@ setColor:
 /* Clears the screen and sets the position to home */
 /* (Setting the cursor to home and simply writing over will be quicker) */
 /* Data Races: Clears the console's screen and sets cursor position to home */
-.thumb
+.thumb_func
 .global	clearFrame
 .type	clearFrame, %function
 clearFrame:
@@ -113,7 +114,7 @@ clearFrame:
 /* This function MUST be called after using raw mode */
 /* or the terminal will be left in an unusable state! */
 /* Data Races: Reads from TERMIOS */
-.thumb
+.thumb_func
 .global	restoreTerminal
 .type	restoreTerminal, %function
 restoreTerminal:
@@ -127,7 +128,7 @@ restoreTerminal:
 /* restoreTerminal MUST be called after using raw mode */
 /* or the terminal will be left in an unusable state! */
 /* Data Races: TERMIOS and the terminal's settings are overwritten */
-.thumb
+.thumb_func
 .global	rawMode
 .type	rawMode, %function
 rawMode:

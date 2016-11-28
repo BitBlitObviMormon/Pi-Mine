@@ -6,11 +6,13 @@
 .include "../errlibt/errno.s"
 
 .text
+.thumb
+.syntax	unified
 
 /* socket*[r0] createSocket() */
 /* Creates an IPv4 socket on the local host */
 /* Data Races: No memory is accessed */
-.thumb
+.thumb_func
 .global	createSocket
 .type	createSocket, %function
 createSocket:
@@ -26,7 +28,7 @@ createSocket:
 /* connects. If it is false then using acceptClient whenever there is no */
 /* client waiting to connect will return EAGAIN instead */
 /* Data Races: No memory is accessed */
-.thumb
+.thumb_func
 .global	createServer
 .type	createServer, %function
 createServer:
@@ -46,7 +48,7 @@ createServer:
 /* int ip[r0] getIP() */
 /* Gets the local host's ip address */
 /* Data Races: No memory is accessed */
-.thumb
+.thumb_func
 .global	getIP
 .type	getIP, %function
 getIP:

@@ -16,13 +16,15 @@
 INTS:	//Space for the string of an int (int -> string)
 	.skip	ISSIZE	//Make room for the int's char buffer
 	.asciz	"Ya!" //If this data is changed, we've got a memory leak
-	
+
+.text
+.syntax	unified
+
 //$$$ USE A SYSTEM CALL TO GET INPUT FROM THE CONSOLE
 /* void fgets(int fd[r0], char* buf[r1], int length[r2]) */
 /* Grabs a string from the stream fd and null-terminates it */
 /* Data Races: fgets writes to the character array buf */
-.text
-.thumb
+.thumb_func
 .global	fgets
 .type	fgets, %function
 fgets:
@@ -40,7 +42,7 @@ fgets:
 /* Grabs an integer from the stream fd */
 /* Data Races: fgeti modifies static address space, */	
 /* DON'T RUN ON MULTIPLE THREADS! */
-.thumb
+.thumb_func
 .global	fgeti
 .type	fgeti, %function
 fgeti:
@@ -56,7 +58,7 @@ fgeti:
 /* void fprinti(int fd[r0], const int num[r1]) */
 /* Prints an integer onto the stream */
 /* Data Races: No memory is changed */
-.thumb
+.thumb_func
 .global	fprinti
 .type	fprinti, %function
 fprinti:
@@ -71,7 +73,7 @@ fprinti:
 /* void fprints(int fd[r0], char* buf[r1]) */
 /* Prints a string onto the stream */
 /* Data Races: The character array is read from */
-.thumb
+.thumb_func
 .global	fprints
 .type	fprints, %function
 fprints:
@@ -91,13 +93,13 @@ fprints:
 .Lfprintsend:
 	pop	{r1}		//Retrieve the buffer address
 	bl	sysWrite	//Print the string to the stream
-	
+
 	pop	{pc}	//Return
 
 /* void fputi(const int num[r0]) */
 /* Prints an integer onto the stream and appends a newline */
 /* Data races: No memory is changed */
-.thumb
+.thumb_func
 .global	fputi
 .type	fputi, %function
 fputi:
@@ -115,7 +117,7 @@ fputi:
 /* void fputs(int fd[r0], char* buf[r1]) */
 /* Prints a string onto the stream and appends a newline */
 /* Data Races: The character array buf is read from */
-.thumb
+.thumb_func
 .global	fputs
 .type	fputs, %function
 fputs:
@@ -129,7 +131,7 @@ fputs:
 /* int[r0] fopen(int fd[r0]) */
 /* Closes the filehandle's file */
 /* Data races: No memory is accessed */
-.thumb
+.thumb_func
 .global	fclose
 .type	fclose, %function
 fclose:
@@ -138,7 +140,7 @@ fclose:
 /* int[r0] fopen(const char* filename[r0]) */
 /* Opens a file for *READING AND WRITING* and returns the file handle */
 /* Data races: The character array filename is read */
-.thumb
+.thumb_func
 .global	fopen
 .type	fopen, %function
 fopen:
@@ -149,7 +151,7 @@ fopen:
 /* int[r0] fread(const char* filename[r0]) */
 /* Opens a file for *READING* and returns the file handle */
 /* Data races: The character array filename is read */
-.thumb
+.thumb_func
 .global	fread
 .type	fread, %function
 fread:
@@ -161,7 +163,7 @@ fread:
 /* Opens a file for *WRITING* and returns the file handle */
 /* It will create a file if necessary, but will not create a directory path */
 /* Data races: The character array filename is read */
-.thumb
+.thumb_func
 .global	fwrite
 .type	fwrite, %function
 fwrite:
@@ -176,7 +178,7 @@ fwrite:
 /* Grabs a string from the console */
 /* Data Races: gets writes to the character array buf */
 .text
-.thumb
+.thumb_func
 .global	gets
 .type	gets, %function
 gets:
@@ -187,7 +189,7 @@ gets:
 /* Grabs an integer from the console */
 /* Data Races: geti modifies static address space, */	
 /* DON'T RUN ON MULTIPLE THREADS! */
-.thumb
+.thumb_func
 .global	geti
 .type	geti, %function
 geti:
@@ -198,7 +200,7 @@ geti:
 /* Takes an integer and returns a null-terminated char array */
 /* Data Races: Returns static memory which is overwritten on */
 /* the next itos call; Needs to be replaced with a brk call! */
-.thumb
+.thumb_func
 .global	itos
 .type	itos, %function
 itos:
@@ -209,7 +211,7 @@ itos:
 /* int[r2] pow(const int x[r0], int n[r1]) */
 /* Returns x ^ n */
 /* Data races: No memory is changed */
-.thumb
+.thumb_func
 pow:	//X(r0)^N(r1)
 	cbz	r1, .Lpowend	//End loop if iterator is zero
 	mul	r2, r2, r0	//Multiply by ten
@@ -222,7 +224,7 @@ pow:	//X(r0)^N(r1)
 /* void printi(const int) */
 /* Prints an integer onto the console and appends a new line */
 /* Data Races: No memory is changed */
-.thumb
+.thumb_func
 .global	printi
 .type	printi, %function
 printi:
@@ -232,7 +234,7 @@ printi:
 /* void prints(char* buf[r1]) */
 /* Prints a string onto the console */
 /* Data Races: The character array is read from */
-.thumb
+.thumb_func
 .global	prints
 .type	prints, %function
 prints:
@@ -242,7 +244,7 @@ prints:
 /* void puti(const int num[r0]) */
 /* Prints an integer onto the console */
 /* Data races: No memory is changed */
-.thumb
+.thumb_func
 .global	puti
 .type	puti, %function
 puti:
@@ -256,7 +258,7 @@ puti:
 /* void puts(char* buf[r1]) */
 /* Prints a string onto the console and appends a newline */
 /* Data Races: The character array is read from */
-.thumb
+.thumb_func
 .global	puts
 .type	puts, %function
 puts:
@@ -266,7 +268,7 @@ puts:
 /* int[r1] stoi(const char*[r0]) */
 /* Takes a null-terminated char array and returns an integer */
 /* Data Races: The character array is read from */
-.thumb
+.thumb_func
 .global	stoi
 .type	stoi, %function
 stoi:
@@ -319,7 +321,7 @@ stoi:
 /* Takes an unsigned int and returns a null-terminated char array */
 /* Data Races: Returns static memory which is overwritten on */
 /* the next utos/itos call; Needs to be replaced with a brk call! */
-.thumb
+.thumb_func
 .global	utos
 .type	utos, %function
 utos:
@@ -347,11 +349,11 @@ utos:
 	strb	r5, [r0], #1		//store digit at end of buffer
 
 	bx	=.LutosTHUMB
-.thumb
+.thumb_func
 .LutosTHUMB:	
 	pop	{r4-r5, pc}		//Return
 	
-.align	2
+.balign	2
 TEXT:
 	.word	ENDLINE
 	.word	HELLO

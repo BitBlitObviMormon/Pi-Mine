@@ -10,7 +10,7 @@
 .set	O_RDWR,   2
 
 .data
-.align	2	
+.balign	2	
 RNDPTR:
 	.word	0x00		//The file pointer
 ENTROPYSIZE:
@@ -23,7 +23,10 @@ ENTROPYLCK:		//If this is 1, then the entropic array is being used
 	.word	0x00	//This is meant to prevent data races when threaded
 
 .text
-.align	2
+.thumb
+.syntax	unified
+.balign	2
+
 /* float[s0] ... float[s31] randFloat(int numFloats[r0]) */
 /* Generates the specified number of floats in registers s0-s31 */
 /* All of the random values are between 0 and 1 */
@@ -583,7 +586,7 @@ randLong:
 /* void lock() */
 /* Waits for the entropic array to unlock before locking it again */
 /* Data Races: ENTROPYLCK is read and written to in a non data racey way */
-.align 2
+.balign 2
 .thumb
 lock:
 	//If the entropic array is locked then wait until it's unlocked
@@ -601,7 +604,7 @@ lock:
 /* void unlock() */
 /* Unlocks the entropic array: must be called after a lock */
 /* Data Races: ENTROPYLCK is written to */
-.align	2
+.balign	2
 .thumb
 unlock:
 	//Unlock the entropic array
@@ -611,7 +614,7 @@ unlock:
 	bx	lr	//Return
 
 .text
-.align 2
+.balign 2
 RANDOM:
 	.asciz	"/dev/urandom"
 MAX32:

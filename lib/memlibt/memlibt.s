@@ -7,3 +7,5 @@ mem_break:
 	.word	0
 
 .text
+.thumb
+.syntax	unified

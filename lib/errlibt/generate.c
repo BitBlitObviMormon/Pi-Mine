@@ -306,13 +306,13 @@ int main()
   fclose(hfile);
 
   // Make the text header
-  fprintf(file, "\n.text\n\n");
+  fprintf(file, "\n.text\n.thumb\n.syntax\tunified\n\n");
 
   // Write the code
   fprintf(file, "/* void fprinterr(int fd[r0], int errno[r1]) */\n");
   fprintf(file, "/* Writes the symbolic message of the error number errno to the stream fd */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
-  fprintf(file, ".thumb\n");
+  fprintf(file, ".thumb_func\n");
   fprintf(file, ".global\tfprinterr\n");
   fprintf(file, ".type\tfprinterr, %%function\n");
   fprintf(file, "fprinterr:\n");
@@ -330,7 +330,7 @@ int main()
   fprintf(file, "/* void fprinterrdetails(int fd[r0], int errno[r1]) */\n");
   fprintf(file, "/* Writes a detailed description of the error number errno to the stream fd */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
-  fprintf(file, ".thumb\n");
+  fprintf(file, ".thumb_func\n");
   fprintf(file, ".global\tfprinterrdetails\n");
   fprintf(file, ".type\tfprinterrdetails, %%function\n");
   fprintf(file, "fprinterrdetails:\n");
@@ -348,7 +348,7 @@ int main()
   fprintf(file, "/* int [r1] makePositive(int num[r1]) */\n");
   fprintf(file, "/* If the number is negative then it will become positive */\n");
   fprintf(file, "/* Data Races: No memory is accessed */\n");
-  fprintf(file, ".thumb\n");
+  fprintf(file, ".thumb_func\n");
   fprintf(file, "makePositive:\n");
   fprintf(file, "\tcmp\tr1, #0\t// If r0 is greater or equal to zero then skip\n");
   fprintf(file, "\tbpl\t.LskipPositive\n");
@@ -359,7 +359,7 @@ int main()
   fprintf(file, "/* void printerr(int errno[r1]) */\n");
   fprintf(file, "/* Prints the symbolic message of the error number errno to the console */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
-  fprintf(file, ".thumb\n");
+  fprintf(file, ".thumb_func\n");
   fprintf(file, ".global\tprinterr\n");
   fprintf(file, ".type\tprinterr, %%function\n");
   fprintf(file, "printerr:\n");
@@ -369,7 +369,7 @@ int main()
   fprintf(file, "/* void printerrdetails(int fd[r0], int errno[r1]) */\n");
   fprintf(file, "/* Prints a detailed description of the error number errno to the console */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
-  fprintf(file, ".thumb\n");
+  fprintf(file, ".thumb_func\n");
   fprintf(file, ".global\tprinterrdetails\n");
   fprintf(file, ".type\tprinterrdetails, %%function\n");
   fprintf(file, "printerrdetails:\n");
