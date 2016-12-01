@@ -90,4 +90,4 @@ clean:
 endif
 
 todo:
-	@grep --color=yes --exclude=Makefile -Rnwi '.' -e "TODO"
+	@grep --color=yes --exclude=Makefile --exclude-dir=.git --exclude-dir=bin -Rnwi '.' -e "TODO"
