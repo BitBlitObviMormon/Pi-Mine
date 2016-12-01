@@ -1,2 +1,2 @@
 # Libraries
-&ensp; These are various thumb-2 assembly libraries that are used by the game Pi-Mine. They are meant to give C-like functionality to an assembly program that lacks access to external libraries or simply wants to be lightweight. Note that not everything is in these libraries, I don't want to spend an eternity programming <code>printf</code> and <code>scanf</code>.
+&emsp; These are various thumb-2 assembly libraries that are used by the game Pi-Mine. They are meant to give C-like functionality to an assembly program that lacks access to external libraries or simply wants to be lightweight. Note that not everything is in these libraries, I don't want to spend an eternity programming <code>printf</code> and <code>scanf</code>.

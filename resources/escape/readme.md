@@ -1,2 +1,2 @@
 # Resources - Terminal VT100 Escape Codes
-&ensp; These are programs that experiment with various escape codes. Most of these programs test color codes that are used by terminals that support them. Most terminals support full 256 color support whereas some terminals (like OpenSSH at the time of this post) only support 8 or 16 colors.
+&emsp; These are programs that experiment with various escape codes. Most of these programs test color codes that are used by terminals that support them. Most terminals support full 256 color support whereas some terminals (like OpenSSH at the time of this post) only support 8 or 16 colors.
