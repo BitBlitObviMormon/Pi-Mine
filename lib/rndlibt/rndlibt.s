@@ -43,8 +43,8 @@ randFloat:
 	//Jump to the code that loads the desired number of floats
 	ldr	r1, =.LrfJUMP
 	ldr	r0, [sp]//Peek at the top of the stack
-	add	r0, r0	//Double r0 (2 bytes per register)
-	add	r1, r0	//then add r1
+	adds	r0, r0	//Double r0 (2 bytes per register)
+	adds	r1, r0	//then add r1
 	bx	r1	//Jump to somewhere on the jump table
 	
 //A jump table for the switch-case block
@@ -83,7 +83,7 @@ randFloat:
 	b	.Lrf31
 .Lrf0:
 	vldr.32	s0, [r3]	//Load the register
-	add	r3, #4		//Increment the pointer
+	adds	r3, #4		//Increment the pointer
 	b	.LrfCON	//Exit the switch
 .Lrf1:
 	vldmia.32	r3!, {s0-s1}	//Load the registers and increment
@@ -184,97 +184,97 @@ randFloat:
 
 	//Convert the random values to floats
 	vcvt.f32.u32	s0, s0
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s1, s1
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s2, s2
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s3, s3
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s4, s4
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s5, s5
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s6, s6
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s7, s7
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s8, s8
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s9, s9
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s10, s10
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s11, s11
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s12, s12
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s13, s13
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s14, s14
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s15, s15
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s16, s16
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s17, s17
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s18, s18
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s19, s19
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s20, s20
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s21, s21
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s22, s22
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s23, s23
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s24, s24
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s25, s25
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s26, s26
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s27, s27
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s28, s28
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s29, s29
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	vcvt.f32.u32	s30, s30
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfDIV
 	//Special case for s31 (Not enough room)
 	vcvt.f32.u32	s31, s31
@@ -286,97 +286,97 @@ randFloat:
 
 	//Divide each float by the max value
 	vdiv.f32	s0, s0, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s1, s1, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s2, s2, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s3, s3, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s4, s4, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s5, s5, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s6, s6, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s7, s7, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s8, s8, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s9, s9, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s10, s10, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s11, s11, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s12, s12, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s13, s13, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s14, s14, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s15, s15, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s16, s16, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s17, s17, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s18, s18, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s19, s19, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s20, s20, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s21, s21, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s22, s22, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s23, s23, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s24, s24, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s25, s25, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s26, s26, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s27, s27, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s28, s28, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s29, s29, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	vdiv.f32	s30, s30, s31
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 	//Special case for s31 (Stored the actual 32nd value earlier)
 	vpop.f32	{s31}	//Recover the old value
@@ -384,7 +384,7 @@ randFloat:
 	vldr.f32	s30, [r3]	//Load the max 32-bit value again
 	vdiv.f32	s31, s31, s30	//s31 / MAX32
 	vpop.f32	{s30}	//Retrieve s30
-	sub	r0, #1
+	subs	r0, #1
 	beq	.LrfEND
 
 .LrfEND:
@@ -407,8 +407,8 @@ openRnd:
 
 	//Open /dev/urandom
 	ldr	r0, =RANDOM	//The filename
-	mov	r1, #O_RDONLY	//Only reading privileges
-	mov	r2, #0		//Not creating a file, so no mode_t
+	movs	r1, #O_RDONLY	//Only reading privileges
+	movs	r2, #0		//Not creating a file, so no mode_t
 	bl	sysOpen		//Open the file
 
 	//Store the pointer in memory so that we don't lose it
@@ -434,7 +434,7 @@ closeRnd:
 	bl	sysClose	//Close the file
 
 	//Clear the pointer from memory so that we don't use it again
-	mov	r0, #0
+	movs	r0, #0
 	str	r0, [r4]
 .LcloseDONE:
 	pop	{r4, pc}	//Return
@@ -466,7 +466,7 @@ seedRnd:
 
 	//Refill the entropic array with random data
 	ldr	r1, =ENTROPY	//Load the entropic array
-	mov	r3, r1
+	movs	r3, r1
 	ldr	r2, =ENTROPYSIZE//Set the read size to 256
 	ldr	r2, [r2]
 	bl	randomArray	//Fill the entropic array with random data
@@ -513,7 +513,7 @@ randByte:
 	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
 	ldr	r2, [r1]	//Dereference the pointer
 	ldrb	r0, [r2]	//Dereference again and
-	add	r2, #1		//Move the pointer
+	adds	r2, #1		//Move the pointer
 	str	r2, [r1]	//Store the updated address
 	push	{r0}		//Store the answer
 
@@ -534,7 +534,7 @@ randShort:
 	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
 	ldr	r2, [r1]	//Dereference the pointer
 	ldrh	r0, [r2]	//Dereference again and
-	add	r2, #2		//Move the pointer
+	adds	r2, #2		//Move the pointer
 	str	r2, [r1]	//Store the updated address
 	push	{r0}		//Store the answer
 
@@ -555,7 +555,7 @@ randInt:
 	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
 	ldr	r2, [r1]	//Dereference the pointer
 	ldr	r0, [r2]	//Dereference again and
-	add	r2, #4		//Move the pointer
+	adds	r2, #4		//Move the pointer
 	str	r2, [r1]	//Store the updated address
 	push	{r0}		//Store the answer
 
@@ -576,7 +576,7 @@ randLong:
 	ldr	r2, =ENTROPYPTR	//Load the entropy pointer
 	ldr	r3, [r2]	//Dereference the pointer
 	ldrd	r0, [r3]	//Dereference again and
-	add	r3, #8		//Move the pointer
+	adds	r3, #8		//Move the pointer
 	str	r3, [r2]	//Store the updated address
 	push	{r0, r1}	//Store the answer
 
@@ -596,7 +596,7 @@ lock:
 	b	lock
 .LockDONE:
 	//Lock the entropic array
-	mov	r0, #1
+	movs	r0, #1
 	str	r0, [r1]
 	
 	bx	lr	//Return
@@ -609,7 +609,7 @@ lock:
 unlock:
 	//Unlock the entropic array
 	ldr	r1, =ENTROPYLCK
-	mov	r0, #0
+	movs	r0, #0
 	str	r0, [r1]
 	bx	lr	//Return
 

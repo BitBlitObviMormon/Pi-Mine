@@ -12,7 +12,7 @@
 .global	sysExit
 .type	sysExit, %function
 sysExit:
-	mov	r7, #EXIT	//Exit with
+	movs	r7, #EXIT	//Exit with
 	svc	#0		//	whatever is in r0
 
 /* ssize_t[r0] sysRead(uint fd[r0], char* buf[r1], size_t count[r2]) */
@@ -23,7 +23,7 @@ sysExit:
 .type	sysRead, %function
 sysRead:
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #READ	//Prepare to invoke read system call
+	movs	r7, #READ	//Prepare to invoke read system call
 	svc	#0		//Invoke read system call
 	pop	{r7, pc}	//Return
 	
@@ -35,7 +35,7 @@ sysRead:
 .type	sysWrite, %function
 sysWrite:
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #WRITE	//Prepare to invoke write system call
+	movs	r7, #WRITE	//Prepare to invoke write system call
 	svc	#0		//Invoke write system call
 	pop	{r7, pc}	//Return
 
@@ -47,7 +47,7 @@ sysWrite:
 .type	sysOpen, %function
 sysOpen:	
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #OPEN	//Prepare to invoke open system call
+	movs	r7, #OPEN	//Prepare to invoke open system call
 	svc	#0		//Invoke open system call
 	pop	{r7, pc}	//Return
 
@@ -59,7 +59,7 @@ sysOpen:
 .type	sysClose, %function
 sysClose:
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #CLOSE	//Prepare to invoke close system call
+	movs	r7, #CLOSE	//Prepare to invoke close system call
 	svc	#0		//Invoke close system call
 	pop	{r7, pc}	//Return
 
@@ -71,7 +71,7 @@ sysClose:
 .type	sysBrk, %function
 sysBrk:
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #BRK	//Prepare to invoke read system call
+	movs	r7, #BRK	//Prepare to invoke read system call
 	svc	#0		//Invoke read system call
 	pop	{r7, pc}	//Return
 
@@ -84,7 +84,7 @@ sysBrk:
 .type	sysMMap2, %function
 sysMMap2:
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #MMAP2	//Prepare to invoke mmap2 system call
+	movs	r7, #MMAP2	//Prepare to invoke mmap2 system call
 	svc	#0		//Invoke mmap2 system call
 	pop	{r7, pc}	//Return
 
@@ -96,7 +96,7 @@ sysMMap2:
 .type	sysIoctl, %function
 sysIoctl:
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #IOCTL	//Prepare to invoke read system call
+	movs	r7, #IOCTL	//Prepare to invoke read system call
 	svc	#0		//Invoke read system call
 	pop	{r7, pc}	//Return
 
@@ -204,6 +204,6 @@ sysRecv:
 .type	sysSelect, %function
 sysSelect:
 	push	{r7, lr}	//Save return point for later
-	mov	r7, #SELECT	//Prepare to invoke select system call
+	movs	r7, #SELECT	//Prepare to invoke select system call
 	svc	#0		//Invoke select system call
 	pop	{r7, pc}	//Return

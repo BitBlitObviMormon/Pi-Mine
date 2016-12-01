@@ -318,12 +318,12 @@ int main()
   fprintf(file, "fprinterr:\n");
   fprintf(file, "\tpush\t{r1, lr}\t// Save return point\n");
   fprintf(file, "\tbl\tmakePositive\t// Make the number positive\n");
-  fprintf(file, "\tmov\tr2, #4\n");
+  fprintf(file, "\tmovs\tr2, #4\n");
   fprintf(file, "\tmul\tr1, r1, r2\t// Multiply the number by 4 (for addresses)\n");
   fprintf(file, "\tldr\tr2, =ERRNO\t// Load the address\n");
-  fprintf(file, "\tadd\tr2, r2, r1\t// Add the offset to the address\n");
+  fprintf(file, "\tadds\tr2, r2, r1\t// Add the offset to the address\n");
   fprintf(file, "\tldr\tr2, [r2]\t\t// Load the string from that address\n");
-  fprintf(file, "\tmov\tr1, r2\n");
+  fprintf(file, "\tmovs\tr1, r2\n");
   fprintf(file, "\tbl\tfprints\t\t// Print the error string\n");
   fprintf(file, "\tpop\t{r1, pc}\t// Return\n");
   fprintf(file, "\n");
@@ -336,12 +336,12 @@ int main()
   fprintf(file, "fprinterrdetails:\n");
   fprintf(file, "\tpush\t{r1, lr}\t// Save return point\n");
   fprintf(file, "\tbl\tmakePositive\t// Make the number positive\n");
-  fprintf(file, "\tmov\tr2, #4\n");
+  fprintf(file, "\tmovs\tr2, #4\n");
   fprintf(file, "\tmul\tr1, r1, r2\t// Multiply the number by 4 (for addresses)\n");
   fprintf(file, "\tldr\tr2, =ERRNODET\t// Load the address\n");
-  fprintf(file, "\tadd\tr2, r2, r1\t// Add the offset to the address\n");
+  fprintf(file, "\tadds\tr2, r2, r1\t// Add the offset to the address\n");
   fprintf(file, "\tldr\tr2, [r2]\t\t// Load the string from that address\n");
-  fprintf(file, "\tmov\tr1, r2\n");
+  fprintf(file, "\tmovs\tr1, r2\n");
   fprintf(file, "\tbl\tfprints\t\t// Print the error string\n");
   fprintf(file, "\tpop\t{r1, pc}\t// Return\n");
   fprintf(file, "\n");
@@ -363,7 +363,7 @@ int main()
   fprintf(file, ".global\tprinterr\n");
   fprintf(file, ".type\tprinterr, %%function\n");
   fprintf(file, "printerr:\n");
-  fprintf(file, "\tmov\tr0, #STDOUT\n");
+  fprintf(file, "\tmovs\tr0, #STDOUT\n");
   fprintf(file, "\tb\tfprinterr\n");
   fprintf(file, "\n");
   fprintf(file, "/* void printerrdetails(int fd[r0], int errno[r1]) */\n");
@@ -373,7 +373,7 @@ int main()
   fprintf(file, ".global\tprinterrdetails\n");
   fprintf(file, ".type\tprinterrdetails, %%function\n");
   fprintf(file, "printerrdetails:\n");
-  fprintf(file, "\tmov\tr0, #STDOUT\n");
+  fprintf(file, "\tmovs\tr0, #STDOUT\n");
   fprintf(file, "\tb\tfprinterrdetails\n");
 
   // Make the data header

@@ -29,12 +29,12 @@ INTS:	//Space for the string of an int (int -> string)
 .type	fgets, %function
 fgets:
 	push	{r1, r4, lr}//Save return point for later
-	sub	r2, #1		//Make room for the null-terminator
+	subs	r2, #1		//Make room for the null-terminator
 	push	{r2}		//Save the length of the buffer
 	bl	sysRead
-	mov	r3, #0
+	movs	r3, #0
 	pop	{r1, r2}	//Get the arguments again: length, *buf
-	add	r2, r1		//Move the buffer pointer over to the end
+	adds	r2, r1		//Move the buffer pointer over to the end
 	strb	r3, [r1]	//Null-terminate the buffer
 	pop	{r4, pc}	//Return
 
@@ -48,10 +48,10 @@ fgets:
 fgeti:
 	push	{lr}	//Save the return point for later
 	ldr	r1, =INTS
-	mov	r2, #ISSIZE
+	movs	r2, #ISSIZE
 	bl	fgets	//Get a string from the console
 	bl	stoi	//String -> Int
-	mov	r0, r2
+	movs	r0, r2
 	pop	{pc}	//Return
 
 //$$$ USE A SYSTEM CALL TO OUTPUT AN INTEGER TO CONSOLE
@@ -63,9 +63,9 @@ fgeti:
 .type	fprinti, %function
 fprinti:
 	push	{r0, lr}//Save return point for later
-	mov	r0, r1
+	movs	r0, r1
 	bl	itos	//Convert the int into a string
-	mov	r1, r0	//Ready the string for printing
+	movs	r1, r0	//Ready the string for printing
 	pop	{r0}
 	bl	fprints	//Print the string
 	pop	{pc}	//Return
@@ -80,15 +80,15 @@ fprints:
 	push	{lr}	//Store return point for later
 
 	//Prepare sysWrite(uint fd, const char* buf, size_t count)
-	mov	r2, #0	//count = 0
+	movs	r2, #0	//count = 0
 
 	//Calculate the length of the string
 	push	{r1}		//Save the buffer address for later
 .Lfprintsloop:
 	ldrb	r3, [r1]	//temp = buf[i]
-	add	r1, #1		//i++
+	adds	r1, #1		//i++
 	cbz	r3, .Lfprintsend//If character is null, end the loop
-	add	r2, #1		//count++
+	adds	r2, #1		//count++
 	b	.Lfprintsloop	//Loop back to the beginning
 .Lfprintsend:
 	pop	{r1}		//Retrieve the buffer address
@@ -105,7 +105,7 @@ fprints:
 fputi:
 	push	{r0, lr}//Save return point for later
 	bl	itos	//Convert the int into a string
-	mov	r1, r0	//Ready the string for printing
+	movs	r1, r0	//Ready the string for printing
 	pop	{r0}	//Get the file stream
 	bl	fputs	//Print the string
 	pop	{pc}	//Return
@@ -144,8 +144,8 @@ fclose:
 .global	fopen
 .type	fopen, %function
 fopen:
-	mov	r1, #O_RDWR	//Declare reading and writing
-	mov	r2, #0		//Not creating a file, so no mode_t
+	movs	r1, #O_RDWR	//Declare reading and writing
+	movs	r2, #0		//Not creating a file, so no mode_t
 	b	sysOpen		//Open the file
 
 /* int[r0] fread(const char* filename[r0]) */
@@ -155,8 +155,8 @@ fopen:
 .global	fread
 .type	fread, %function
 fread:
-	mov	r1, #O_RDONLY	//Declare reading only
-	mov	r2, #0		//Not creating a file, so no mode_t
+	movs	r1, #O_RDONLY	//Declare reading only
+	movs	r2, #0		//Not creating a file, so no mode_t
 	b	sysOpen		//Open the file
 	
 /* int[r0] fwrite(const char* filename[r0]) */
@@ -167,10 +167,10 @@ fread:
 .global	fwrite
 .type	fwrite, %function
 fwrite:
-	mov	r1, #O_WRONLY	//Declare writing only
+	movs	r1, #O_WRONLY	//Declare writing only
 
 	//TODO: CREATING A FILE SO I NEED TO IMPLEMENT A MODE_T
-	mov	r2, #0		//Not creating a file, so no mode_t
+	movs	r2, #0		//Not creating a file, so no mode_t
 	b	sysOpen		//Open the file
 	
 //$$$ USE A SYSTEM CALL TO GET INPUT FROM THE CONSOLE
@@ -182,7 +182,7 @@ fwrite:
 .global	gets
 .type	gets, %function
 gets:
-	mov	r0, #STDIN	//Use the standard input stream and
+	movs	r0, #STDIN	//Use the standard input stream and
 	b	fgets		//Pretend we called fgets instead
 
 /* int[r0] geti()  */
@@ -193,7 +193,7 @@ gets:
 .global	geti
 .type	geti, %function
 geti:
-	mov	r0, #STDIN	//Use the standard input stream and
+	movs	r0, #STDIN	//Use the standard input stream and
 	b	fgeti		//Pretend we called fgeti instead
 
 /* char*[r1] itos(const int[r0]) */
@@ -215,7 +215,7 @@ itos:
 pow:	//X(r0)^N(r1)
 	cbz	r1, .Lpowend	//End loop if iterator is zero
 	mul	r2, r2, r0	//Multiply by ten
-	sub	r1, #1		//One less power to go
+	subs	r1, #1		//One less power to go
 	b	pow		//If the loop isn't over keep going
 .Lpowend:	
 	bx	lr	//Return
@@ -228,7 +228,7 @@ pow:	//X(r0)^N(r1)
 .global	printi
 .type	printi, %function
 printi:
-	mov	r0, #STDOUT	//Use the standard output stream and
+	movs	r0, #STDOUT	//Use the standard output stream and
 	b	fprinti		//Pretend we called fprinti instead
 
 /* void prints(char* buf[r1]) */
@@ -238,7 +238,7 @@ printi:
 .global	prints
 .type	prints, %function
 prints:
-	mov	r0, #STDOUT	//Use the standard output stream and
+	movs	r0, #STDOUT	//Use the standard output stream and
 	b	fprints		//Pretend we called fprints instead
 
 /* void puti(const int num[r0]) */
@@ -248,7 +248,7 @@ prints:
 .global	puti
 .type	puti, %function
 puti:
-	mov	r0, #STDOUT	//Use the standard output stream and
+	movs	r0, #STDOUT	//Use the standard output stream and
 	b	fputi		//Pretend we called fputi instead
 
 //$$$ CREATE A FOR LOOP USING THUMB2 INSTRUCTIONS
@@ -262,7 +262,7 @@ puti:
 .global	puts
 .type	puts, %function
 puts:
-	mov	r0, #STDOUT	//Use the standard output stream and
+	movs	r0, #STDOUT	//Use the standard output stream and
 	b	fputs		//Pretend we called fputs instead
 
 /* int[r1] stoi(const char*[r0]) */
@@ -273,43 +273,43 @@ puts:
 .type	stoi, %function
 stoi:
 	push	{r4-r7, lr}	//Save return point for later
-	mov	r3, r0
-	mov	r4, r0
-	mov	r5, #0		//i = 0
-	mov	r6, #0  	//Ans = 0
+	movs	r3, r0
+	movs	r4, r0
+	movs	r5, #0		//i = 0
+	movs	r6, #0  	//Ans = 0
 
 	//Check the sign of the number
 	ldrb	r7, [r4]
-	sub	r7, #MINUS
+	subs	r7, #MINUS
 
 	//If the sign is negative then trim the '-'
 	cbnz	r7, .Lstoiloop
-	add	r3, #1
+	adds	r3, #1
 .Lstoiloop:
 	// Seek to the end of the string
 	ldrb	r0, [r4]
-	add	r4, #1
+	adds	r4, #1
 
 	//If we're not done seeking then loop back up
 	cbz	r0, .Lstoimiddle	//If null then end the loop
 	b	.Lstoiloop
 .Lstoimiddle:
 	// Add each number to the register result
-	sub	r4, #1
+	subs	r4, #1
 	ldrb	r2, [r4]
-	add	r5, #1	//i++
-	mov	r0, #10	//n = 10 (n^x)
-	sub	r2, #48	//ASCII -> INT
-	mov	r1, r5	//x = i  (n^x)
+	adds	r5, #1	//i++
+	movs	r0, #10	//n = 10 (n^x)
+	subs	r2, #48	//ASCII -> INT
+	movs	r1, r5	//x = i  (n^x)
 	bl	pow	//n^x
 
 	//If the answer is positive then add, else subtract
 	cbnz	r7, .Lstoiadd
 .Lstoisub:
-	sub	r6, r2	//Ans -= pow()
+	subs	r6, r2	//Ans -= pow()
 	b	.Lstoiend
 .Lstoiadd:
-	add	r6, r2	//Ans += pow()
+	adds	r6, r2	//Ans += pow()
 .Lstoiend:
 	//If address of r4 equals address of r3 then end the loop
 	cmp	r3, r4

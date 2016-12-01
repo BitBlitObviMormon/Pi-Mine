@@ -118,7 +118,7 @@ clearFrame:
 .global	restoreTerminal
 .type	restoreTerminal, %function
 restoreTerminal:
-	mov	r0, #STDIN	//Use the standard input stream
+	movs	r0, #STDIN	//Use the standard input stream
 	movw	r1, #TCSETS	//Tell the terminal to apply terminal settings
 	ldr	r2, =TERMIOS	//Tell the terminal to apply the backup settings
 	b	sysIoctl	//Use the I/O Control system call
@@ -134,9 +134,9 @@ restoreTerminal:
 rawMode:
 	push	{lr}		//Save return point for later
 
-	sub	sp, sp, #TERMIOSSIZE	//Allocate stack space for termios
+	subs	sp, sp, #TERMIOSSIZE	//Allocate stack space for termios
 
-	mov	r0, #STDIN	//Use the standard input stream
+	movs	r0, #STDIN	//Use the standard input stream
 	movw	r1, #TCGETS	//Tell the terminal to get terminal settings
 	ldr	r2, =TERMIOS	//Tell it to write the settings onto the backup
 	bl	sysIoctl	//Use the I/O Control system call
@@ -155,21 +155,21 @@ rawMode:
 
 	//Now we need to modify the struct on the stack
 	ldr	r0, [sp, #LFLAG]	//Get the control flags
-	mov	r3, #(ECHO | ICANON)	//Disable Echo and Canonical mode
+	movs	r3, #(ECHO | ICANON)	//Disable Echo and Canonical mode
 	bic	r0, r0, r3
 	str	r0, [sp, #LFLAG]	//Set the control flags
 
 	//Make input non-blocking, with no timeout
 	//(essentially set to polling mode)
-	mov	r0, #0			//VTIME and VMIN are adjacent bytes, so
+	movs	r0, #0			//VTIME and VMIN are adjacent bytes, so
 	strh	r0, [r1, #(C_CC + VTIME)] // VTIME and VMIN are adjacent bytes, so writing a halfword to VTIME should overwrite both
 	//Ready to write back to the device driver now
 	mov	r2, sp		//Apply the terminal settings from the stack
-	mov	r0, #STDIN	//Use the standard input stream
+	movs	r0, #STDIN	//Use the standard input stream
 	movw	r1, #TCSETS	//Tell the terminal to apply terminal settings
 	bl	sysIoctl	//Use an I/O Control system call
 
-	add	sp, sp, #60	//Delete the terminal settings from the stack
+	adds	sp, sp, #60	//Delete the terminal settings from the stack
 
 	pop	{pc}		//Return
 

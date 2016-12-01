@@ -55,6 +55,7 @@ int main() {
         printf("SOCK_PACKET = %i\n", SOCK_PACKET);
 
 	printf("SIOCGIFADDR = %i\n", SIOCGIFADDR);
+	printf("SIOCGIDNAME = %i\n", SIOCGIFNAME);
 
 	printf("\ntermios Memory Layout\n");
 	printf("c_iflag  : %i\n", (unsigned int)&a.c_iflag - (unsigned int)&a);
