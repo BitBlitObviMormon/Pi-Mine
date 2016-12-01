@@ -1,25 +1,44 @@
 /* Network Library (Thumb) */
 /* Depends on System Library */
 
+/* CONSTANTS */
+.set	ADDRLEN, 16	//The length of the address
+
 /* Include network constants and error values */
 .include "netconst.s"
 .include "../errlibt/errno.s"
 
 .data
 STRUCT:
-	// IFREQ(PF_INET) STRUCTURE
-	// char*   ifr_name   [0] -> [3]
-	// short   family     [4] -> [5]
-	// short   port       [6] -> [7]  (REVERSE BYTE ORDER!) 0x1234->0x4321
-	// int     ip_address [8] -> [11] (REVERSE BYTE ORDER!) 0x1234->0x4321
-	// char[8] (padding)  [12] -> [19]
-	.skip	20	//20 bytes of space for ifreq or sockaddr structs
+	// IFREQ [PF_INET]
+	// char*   ifr_name
+	// short   family
+	// short   port       (REVERSE BYTE ORDER!) 0x01020304 -> 0x04030201
+	// int     ip_address (REVERSE BYTE ORDER!) 0x01020304 -> 0x04030201
+	// char[8] (padding)
+	//
+	// CLIENT
+	// char*    name       //The client's name
+	// int      ip_address //The client's ip address
+	// char[12] (padding)  //Miscellaneous data to go with the client
+	.skip	20	//20 bytes space for ifreq, sockaddr, or client structs
+TIMEVAL:
+	// TIMEVAL [select()]
+	// int tv_sec  (seconds)
+	// int tv_usec (microseconds)
+	//
+	// TIMESPEC [pselect()]
+	// int tv_sec  (seconds)
+	// int tv_nsec (nanoseconds)
+	.skip	8	//8 bytes of space for timeval or timespec
+POLL:
+	.skip	40	//Space to hold the selection poll
 
 .text
 .thumb
 .syntax	unified
 
-/* socket*[r0] createSocket() */
+/* sockfd[r0] createSocket() */
 /* Creates an IPv4 socket */
 /* Data Races: No memory is accessed */
 .thumb_func
@@ -32,17 +51,14 @@ createSocket:
 	mov	r2, #0		//Use the recommended protocol
 	b	sysSocket	//Call socket system call
 
-/* socket*[r0] createServer(int ip [r0], short port[r1], int backlog[r2],
-	bool block[r3]) */
+/* sockfd[r0] createServer(sockfd ip [r0], short port[r1], int backlog[r2]) */
 /* Creates an IPv4 socket on the local host and binds it to a local address */
 /* on the specified port where it will listen for incoming clients */
 /* The backlog is the maximum amount of data the socket can hold before */
 /* further requests are rejected */
-/* If block is set to true, any acceptClient calls will wait until a client */
-/* connects. If it is false then using acceptClient whenever there is no */
-/* client waiting to connect will return EAGAIN instead */
 /* The return value is negative and set to errno if it fails */
 /* Data Races: The memory STRUCT is read and written to */
+/* TODO: Need to set server socket to be nonblocking! */
 .thumb_func
 .global	createServer
 .type	createServer, %function
@@ -57,9 +73,8 @@ createServer:
 				//r8 = socket
 
 	//Reverse the byte order of the ip and port (because memory structure)
-	revsh	r4, r4		//Reverse ip's byte order
+	rev	r4, r4		//Reverse ip's byte order
 	revsh	r5, r5		//Reverse port's byte order
-
 
 	//Create a socket to work with
 	movs	r0, #PF_INET	//Use IPv4 domain
@@ -96,7 +111,7 @@ createServer:
 	//Bind the server to the returned address and the given port
 	movs	r0, r8		//Get the socket
 	ldr	r1, =STRUCT+4	//Get the sockaddr part of the struct
-	movs	r2, #16		//The length of the struct is 8 bytes
+	movs	r2, #ADDRLEN	//Give the length of the address
 	bl	sysBind		//Call the Bind system call
 
 	//Tell the server to listen for incoming connections
@@ -107,12 +122,119 @@ createServer:
 	movs	r0, r8			//Return the socket file descriptor
 	pop	{r4, r5, r6, r7, pc}	//Return
 
-/* sockaddr* ip[r0] getIP() */
-/* Gets the local host's ip address */
-/* Data Races: No memory is accessed */
+/* sockfd[r0] connect(sockfd socket[r0], int ip[r1], short port[r2]) */
+/* Connects the socket to the given address and port. */
+/* Returns a negative error number on failure */
 .thumb_func
-.global	getIP
-.type	getIP, %function
-getIP:
+.global	connect
+.type	connect, %function
+connect:
+	push	{r4, lr}	//Save return point for later
+
+	//Save the socket for later
+	movs	r4, r0
+
+	//Reverse the byte order of the ip and port (because memory structure)
+	rev	r1, r1		//Reverse ip's byte order
+	revsh	r2, r2		//Reverse port's byte order
+
+	//Set the network's family to PF_INET
+	ldr	r0, =STRUCT+4	//Load the family part of the struct
+	movs	r3, #PF_INET	//Prepare to write PF_INET to family
+	strh	r3, [r0]	//Write PF_INET to family 
+
+	//Set the network's port
+	adds	r0, r0, #2	//Load the port part of the struct
+	strh	r2, [r0]	//Store the port number in the struct
+
+	//Set the network's ip address
+	adds	r0, r0, #2	//Load the address part of the struct
+	str	r1, [r0]	//Write the ip address
+
+	//Use the connect system call
+	movs	r0, r4		//Get the socket
+	ldr	r1, =STRUCT+4	//Get the sockaddr part of the struct
+	movs	r2, #ADDRLEN	//Give the length of the address
+	bl	sysConnect	//Use the connect system call
+
+	pop	{r4, pc}	//Return
+
+/* sockaddr* [r0] createAddress() */
+/* Allocates memory for and returns the pointer to an address */
+/* TODO: Allocate memory for the address! */
+.thumb_func
+.type	createAddress, %function
+createAddress:
+	push	{lr}
+	pop	{pc}
+
+/* sockfd[r0], sockaddr*[r1] acceptClient(sockfd server[r0]) */
+/* The server will accept any client that is waiting to connect to the server.*/
+/* If a client connects then acceptClient will return its socket and ip */
+/* address; it will return EAGAIN if no clients connected or a negative */
+/* error number if an error occurred. */
+/* TODO: Allocate memory for the address using createAddress! */
+.thumb_func
+.global	acceptClient
+.type	acceptClient, %function
+acceptClient:
 	push	{lr}		//Save return point for later
+	
+	ldr	r1, =STRUCT	//Load the socket address
+	mov	r2, #ADDRLEN	//Give the length of the address
+	bl	sysAccept	//Use the accept system call
+	ldr	r1, =STRUCT	//Return the address
+
 	pop	{pc}		//Return
+
+
+/* sockfd[r0], sockaddr*[r1] waitForClient(sockfd server[r0], int timeout[r1])*/
+/* The server will wait for timeout number of microseconds until a client */
+/* connects to the server. If a client connects then waitForClient will return*/
+/* its socket and ip address; it will return EAGAIN if no clients connected */
+/* or a negative error number if an error occurred. */
+/* If timeout is equal to zero then the server will not wait for a client. */
+/* If timeout is negative then server will wait indefinitely for a client. */
+.thumb_func
+.global	waitForClient
+.type	waitForClient, %function
+waitForClient:
+	push	{r4, r5, r6, lr}//Save return point for later
+
+	//Save the arguments for later use
+	movs	r5, r0		//Server socket
+	movs	r6, r1		//timeout (in microseconds)
+
+	//If the value is not negative then set up a timeout
+	bpl	.LTimeout
+	movs	r4, #0		//Otherwise, make no timeout
+	b	.LSkipTimeout	//Skip the timeout setup
+.LTimeout:
+	ldr	r4, =TIMEVAL	//Get the timeval struct
+	movs	r1, #0		//Prepare to...
+	str	r1, [r4]	//Store 0 into the seconds area
+	adds	r0, r4, #4	//Increment to the microseconds
+	str	r6, [r0]	//Write the microseconds
+.LSkipTimeout:
+	ldr	r1, =POLL	//Set up the poll
+	str	r5, [r1]	//Store the server's socket in the poll
+	movs	r2, #0		//Don't watch for writing in the server
+	movs	r3, #0		//Don't watch for exceptions in the server
+	movs	r0, #1		//Watch for only 1 element (the server)
+	bl	sysSelect	//Use the select system call
+
+	mov	r1, #0		//Set the socket address to null for now
+	adds	r0, r0, #0	//Test the return value
+	beq	.LWaitSetZero	//If it's zero then return EAGAIN
+	bmi	.LWaitReturn	//If it's an error then return it
+
+	//Accept the incoming connection
+	bl	acceptClient	//Get the client
+	b	.LWaitReturn	//Return the client and its address
+.LWaitSetZero:
+	mov	r0, #-EAGAIN	//Return EAGAIN
+.LWaitReturn:
+	pop	{r4, r5, r6, pc}//Return
+	
+
+
