@@ -88,3 +88,6 @@ else
 clean:
 	@./color make clean USINGSCRIPT=true
 endif
+
+todo:
+	@grep --color=yes --exclude=Makefile -Rnwi '.' -e "TODO"
