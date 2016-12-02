@@ -9,11 +9,12 @@
 .include "../errlibt/errno.s"
 
 .data
+.balign	4
 STRUCT:
 	// IFREQ [PF_INET]
 	// char*   ifr_name
 	// short   family
-	// short   port       (REVERSE BYTE ORDER!) 0x01020304 -> 0x04030201
+	// short   port       (REVERSE BYTE ORDER!) 0x0102 -> 0x0201
 	// int     ip_address (REVERSE BYTE ORDER!) 0x01020304 -> 0x04030201
 	// char[8] (padding)
 	//
@@ -22,6 +23,7 @@ STRUCT:
 	// int      ip_address //The client's ip address
 	// char[12] (padding)  //Miscellaneous data to go with the client
 	.skip	20	//20 bytes space for ifreq, sockaddr, or client structs
+.balign	4
 TIMEVAL:
 	// TIMEVAL [select()]
 	// int tv_sec  (seconds)
@@ -31,6 +33,7 @@ TIMEVAL:
 	// int tv_sec  (seconds)
 	// int tv_nsec (nanoseconds)
 	.skip	8	//8 bytes of space for timeval or timespec
+.balign	4
 POLL:
 	.skip	40	//Space to hold the selection poll
 
@@ -125,6 +128,7 @@ createServer:
 /* sockfd[r0] connect(sockfd socket[r0], int ip[r1], short port[r2]) */
 /* Connects the socket to the given address and port. */
 /* Returns a negative error number on failure */
+/* Data Races: STRUCT is read and written to */
 .thumb_func
 .global	connect
 .type	connect, %function
@@ -161,6 +165,7 @@ connect:
 
 /* sockaddr* [r0] createAddress() */
 /* Allocates memory for and returns the pointer to an address */
+/* Data Races: Allocates memory space */
 /* TODO: Allocate memory for the address! */
 .thumb_func
 .type	createAddress, %function
@@ -173,20 +178,31 @@ createAddress:
 /* If a client connects then acceptClient will return its socket and ip */
 /* address; it will return EAGAIN if no clients connected or a negative */
 /* error number if an error occurred. */
+/* Data Races: No memory is accessed */
 /* TODO: Allocate memory for the address using createAddress! */
 .thumb_func
 .global	acceptClient
 .type	acceptClient, %function
 acceptClient:
+	mov	r1, sp		//Get the address
+	movs	r2, #ADDRLEN	//Give the length of the address
+	adds	sp, sp, r2	//Make room on the stack for it
 	push	{lr}		//Save return point for later
-	
-	ldr	r1, =STRUCT	//Load the socket address
-	mov	r2, #ADDRLEN	//Give the length of the address
+
 	bl	sysAccept	//Use the accept system call
-	ldr	r1, =STRUCT	//Return the address
+	ldr	r1, [sp]	//Return the address
+	subs	r1, #ADDRLEN
 
 	pop	{pc}		//Return
 
+/* int[r0] closeSocket(sockfd socket[r0]) */
+/* Closes the given socket and returns zero if successful */
+/* Data Races: No memory is accessed */
+.thumb_func
+.global	closeSocket
+.type	closeSocket, %function
+closeSocket:
+	b	sysClose
 
 /* sockfd[r0], sockaddr*[r1] waitForClient(sockfd server[r0], int timeout[r1])*/
 /* The server will wait for timeout number of microseconds until a client */
@@ -195,6 +211,7 @@ acceptClient:
 /* or a negative error number if an error occurred. */
 /* If timeout is equal to zero then the server will not wait for a client. */
 /* If timeout is negative then server will wait indefinitely for a client. */
+/* Data Races: The data POLL and TIMEVAL are read and written to */
 .thumb_func
 .global	waitForClient
 .type	waitForClient, %function
