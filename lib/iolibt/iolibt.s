@@ -82,16 +82,7 @@ fprints:
 	//Prepare sysWrite(uint fd, const char* buf, size_t count)
 	movs	r2, #0	//count = 0
 
-	//Calculate the length of the string
-	push	{r1}		//Save the buffer address for later
-.Lfprintsloop:
-	ldrb	r3, [r1]	//temp = buf[i]
-	adds	r1, #1		//i++
-	cbz	r3, .Lfprintsend//If character is null, end the loop
-	adds	r2, #1		//count++
-	b	.Lfprintsloop	//Loop back to the beginning
-.Lfprintsend:
-	pop	{r1}		//Retrieve the buffer address
+	bl	len		//Get the length of the string
 	bl	sysWrite	//Print the string to the stream
 
 	pop	{pc}	//Return
@@ -207,6 +198,25 @@ itos:
 	push	{r0, lr}	//Save return point for later
 	
 	pop	{r0, pc}	//Return
+
+/* int[r2] len(const char* buf[r1]) */
+/* IMPORTANT: This function passes register ONE and returns register TWO! */
+/* Calculates the length of the null-terminated buffer */
+/* The pointer to the buffer[r1] is left unchanged */
+/* Data Races: The array buf is read */
+.thumb_func
+.global	len
+.type	len, %function
+len:
+	push	{r1, lr}	//Save return point and buffer address
+.Lenloop:
+	ldrb	r3, [r1]	//temp = buf[i]
+	adds	r1, #1		//i++
+	cbz	r3, .Lenend	//If character is null, end the loop
+	adds	r2, #1		//count++
+	b	.Lenloop	//Loop back to the beginning
+.Lenend:
+	pop	{r1, pc}	//Return
 
 /* int[r2] pow(const int x[r0], int n[r1]) */
 /* Returns x ^ n */

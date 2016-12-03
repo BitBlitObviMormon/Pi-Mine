@@ -113,7 +113,7 @@ sysSocket:
 	pop	{r7, pc}	//Return
 	
 /* int[r0] sysBind(int sockfd[r0], struct sockaddr* my_addr[r1],
-		socklen_t addrlen[r2]) */
+/*                 socklen_t addrlen[r2]) */
 /* Uses the system call to bind an address to a socket */
 /* Data Races: The socket address my_addr is written to */
 .thumb_func
@@ -126,7 +126,7 @@ sysBind:
 	pop	{r7, pc}	//Return
 	
 /* int[r0] sysConnect(int sockfd[r0], const struct sockaddr* serv_addr[r1],
-		socklen_t addrlen[r2]) */
+/*                    socklen_t addrlen[r2]) */
 /* Uses the system call to initiate a connection on a socket */
 /* Data Races: The socket address serv_addr is read from */
 .thumb_func
@@ -151,7 +151,7 @@ sysListen:
 	pop	{r7, pc}	//Return
 	
 /* int[r0] sysAccept(int s[r0], struct sockaddr* addr[r1],
-		socklen_t addrlen[r2]) */
+/*                   socklen_t addrlen[r2]) */
 /* Uses the system call to accept an incoming connection */
 /* Data Races: The socket address addr is written to */
 .thumb_func
@@ -193,12 +193,27 @@ sysRecv:
 	svc	#0		//Invoke recieve system call
 	pop	{r7, pc}	//Return
 
+
+/* int[r0] sysShutdown(int sockfd[r0], int how[r1]) */
+/* Shuts down all instances of sockfd and returns zero if successful */
+/* If how is SHUT_RD, socket output is blocked */
+/* If how is SHUT_WR, socket input is blocked */
+/* If how is SHUT_RDWR, socket input and output are blocked */
+/* Data Races: All instances of sockfd are shut down */
+.thumb_func
+.global	sysShutdown
+.type	sysShutdown, %function
+sysShutdown:
+	push	{r7, lr}	//Save return point for later
+	movw	r7, #SHUTDOWN	//Prepare to invoke shutdown system call
+	svc	#0		//Invoke shutdown system call
+	pop	{r7, pc}	//Return
+
 /* int[r0] sysSelect(int n[r0], fd_set* readfds[r1], fd_set* writefds[r2],
-		fd_set* exceptfds[r3], struct timeval* timeout[r4]) */
+/*                   fd_set* exceptfds[r3], struct timeval* timeout[r4]) */
 /* Uses the select system call to wait for a bunch of files to change status */
-/* Data Races: The filehandle structs readfds and exceptfds are read from,
-		the time value struct timeout is read from,
-		and the filehandle struct writefds is written to */
+/* Data Races: The filehandle structs readfds, writefds, and exceptfds
+               are read from, and the time value struct timeout is read from */
 .thumb_func
 .global	sysSelect
 .type	sysSelect, %function

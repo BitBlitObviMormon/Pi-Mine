@@ -1,5 +1,5 @@
 /* Network Library (Thumb) */
-/* Depends on System Library */
+/* Depends on System and Input/Output Libraries */
 
 /* CONSTANTS */
 .set	ADDRLEN, 16	//The length of the address
@@ -36,6 +36,8 @@ TIMEVAL:
 .balign	4
 POLL:
 	.skip	40	//Space to hold the selection poll
+ADDRLENMEM:
+	.word	ADDRLEN
 
 .text
 .thumb
@@ -184,14 +186,12 @@ createAddress:
 .global	acceptClient
 .type	acceptClient, %function
 acceptClient:
-	mov	r1, sp		//Get the address
-	movs	r2, #ADDRLEN	//Give the length of the address
-	adds	sp, sp, r2	//Make room on the stack for it
+	ldr	r1, =STRUCT	//Get the address
+	ldr	r2, =ADDRLENMEM	//Give the length of the address
 	push	{lr}		//Save return point for later
 
 	bl	sysAccept	//Use the accept system call
-	ldr	r1, [sp]	//Return the address
-	subs	r1, #ADDRLEN
+	ldr	r1, =STRUCT	//Return the address
 
 	pop	{pc}		//Return
 
@@ -203,6 +203,23 @@ acceptClient:
 .type	closeSocket, %function
 closeSocket:
 	b	sysClose
+
+/* int[r0] shutdownSocket(int sockfd[r0], int how) */
+/* Shuts down all instances of sockfd and returns zero if successful */
+/* Use this if you want to stop it on all threads or interrupt the connection */
+/* between that socket and all of its clients without discarding the data */
+/* previously recieved from them. */
+/* If how is SHUT_RD, socket output is blocked */
+/* If how is SHUT_WR, socket input is blocked */
+/* If how is SHUT_RDWR, socket input and output are blocked */
+/* Note: Shutting down the socket does not close it, you'll still need */
+/*       to call closeSocket when you're done using it */
+/* Data Races: All instances of sockfd are shut down */
+.thumb_func
+.global	shutdownSocket
+.type	shutdownSocket, %function
+shutdownSocket:
+	b	sysShutdown
 
 /* sockfd[r0], sockaddr*[r1] waitForClient(sockfd server[r0], int timeout[r1])*/
 /* The server will wait for timeout number of microseconds until a client */
@@ -253,5 +270,40 @@ waitForClient:
 .LWaitReturn:
 	pop	{r4, r5, r6, pc}//Return
 	
+/* int sendBuffer(int sockfd[r0], char* buf[r1], int len[r2]) */
+/* Sends the buffer to the socket sockfd and returns the number of bytes sent */
+/* Data Races: The memory buf is read */
+.thumb_func
+.global	sendBuffer
+.type	sendBuffer, %function
+sendBuffer:
+	//Use the send syscall
+	mov	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
+	b	sysSend
 
+/* int receiveBuffer(int sockfd[r0], char* buf[r1], int len[r2]) */
+/* Sends the buffer to the socket sockfd and returns the number of bytes sent */
+/* Data Races: The memory buf is written to */
+.thumb_func
+.global	receiveBuffer
+.type	receiveBuffer, %function
+receiveBuffer:
+	//Use the receive syscall
+	mov	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
+	b	sysRecv
 
+/* int sendMessage(int sockfd[r0], char* buf[r1]) */
+/* Sends the buffer to the socket sockfd and returns the number of bytes sent */
+/* Data Races: The memory buf is read */
+.thumb_func
+.global	sendMessage
+.type	sendMessage, %function
+sendMessage:
+	push	{lr}		//Save return point for later
+
+	//Use the send syscall
+	bl	len		//Determine the length of the array
+	mov	r3, #0		//No flags for now
+	bl	sysSend
+
+	pop	{pc}		//Return

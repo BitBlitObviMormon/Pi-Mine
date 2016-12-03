@@ -35,6 +35,22 @@ int main() {
 	printf("O_WRONLY = %i\n", O_WRONLY);
 	printf("O_RDWR = %i\n", O_RDWR);
 
+	printf("SHUT_RD = %i\n", SHUT_RD);
+	printf("SHUT_WR = %i\n", SHUT_WR);
+	printf("SHUT_RDWR = %i\n", SHUT_RDWR);
+
+	printf("MSG_OOB = 0x%x\n", MSG_OOB);
+	printf("MSG_PEEK = 0x%x\n", MSG_PEEK);
+	printf("MSG_DONTROUTE = 0x%x\n", MSG_DONTROUTE);
+	printf("MSG_CTRUNC = 0x%x\n", MSG_CTRUNC);
+	printf("MSG_TRUNC = 0x%x\n", MSG_TRUNC);
+	printf("MSG_DONTWAIT = 0x%x\n", MSG_DONTWAIT);
+	printf("MSG_EOR = 0x%x\n", MSG_EOR);
+	printf("MSG_WAITALL = 0x%x\n", MSG_WAITALL);
+	printf("MSG_CONFIRM = 0x%x\n", MSG_CONFIRM);
+	printf("MSG_ERRQUEUE = 0x%x\n", MSG_ERRQUEUE);
+	printf("MSG_NOSIGNAL = 0x%x\n", MSG_NOSIGNAL);
+
 	printf("PF_UNIX = %i\n", PF_UNIX);
 	printf("PF_LOCAL = %i\n", PF_LOCAL);
 	printf("PF_INET = %i\n", PF_INET);

@@ -19,3 +19,4 @@
 .set	SENDTO,	  0442
 .set	RECV,	  0443
 .set	RECVFROM, 0444
+.set	SHUTDOWN, 0445
