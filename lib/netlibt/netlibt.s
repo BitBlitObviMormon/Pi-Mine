@@ -51,9 +51,9 @@ ADDRLENMEM:
 .type	createSocket, %function
 createSocket:
 	//Create a socket
-	mov	r0, #PF_INET	//Use IPv4 domain
-	mov	r1, #SOCK_STREAM//Use standard socket stream
-	mov	r2, #0		//Use the recommended protocol
+	movs	r0, #PF_INET	//Use IPv4 domain
+	movs	r1, #SOCK_STREAM//Use standard socket stream
+	movs	r2, #0		//Use the recommended protocol
 	b	sysSocket	//Call socket system call
 
 /* sockfd[r0] createServer(sockfd ip [r0], short port[r1], int backlog[r2]) */
@@ -89,13 +89,13 @@ createServer:
 	movs	r8, r0		//Save the socket for later
 
 //	//Get the local host's ip name
-//	mov	r0, r8		//Get the socket
+//	movs	r0, r8		//Get the socket
 //	movw	r1, #SIOCGIFNAME//Prepare to use SIOCGIFNAME Ioctl call
 //	ldr	r2, =STRUCT	//Prepare space for the ifreq struct
 //	bl	sysIoctl	//Call the Ioctl system call
 //
 //	//Get the local host's ip address
-//	mov	r0, r8		//Get the socket
+//	movs	r0, r8		//Get the socket
 //	movw	r1, #SIOCGIFADDR//Prepare to use SIOCGIFADDR Ioctl call
 //	ldr	r2, =STRUCT	//Prepare space for the ifreq struct
 //	bl	sysIoctl	//Call the Ioctl system call
@@ -257,7 +257,7 @@ waitForClient:
 	movs	r0, #1		//Watch for only 1 element (the server)
 	bl	sysSelect	//Use the select system call
 
-	mov	r1, #0		//Set the socket address to null for now
+	movs	r1, #0		//Set the socket address to null for now
 	adds	r0, r0, #0	//Test the return value
 	beq	.LWaitSetZero	//If it's zero then return EAGAIN
 	bmi	.LWaitReturn	//If it's an error then return it
@@ -266,7 +266,7 @@ waitForClient:
 	bl	acceptClient	//Get the client
 	b	.LWaitReturn	//Return the client and its address
 .LWaitSetZero:
-	mov	r0, #-EAGAIN	//Return EAGAIN
+	movs	r0, #-EAGAIN	//Return EAGAIN
 .LWaitReturn:
 	pop	{r4, r5, r6, pc}//Return
 	
@@ -278,7 +278,7 @@ waitForClient:
 .type	sendBuffer, %function
 sendBuffer:
 	//Use the send syscall
-	mov	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
+	movs	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
 	b	sysSend
 
 /* int receiveBuffer(int sockfd[r0], char* buf[r1], int len[r2]) */
@@ -289,7 +289,7 @@ sendBuffer:
 .type	receiveBuffer, %function
 receiveBuffer:
 	//Use the receive syscall
-	mov	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
+	movs	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
 	b	sysRecv
 
 /* int sendMessage(int sockfd[r0], char* buf[r1]) */
@@ -303,7 +303,7 @@ sendMessage:
 
 	//Use the send syscall
 	bl	len		//Determine the length of the array
-	mov	r3, #0		//No flags for now
+	movs	r3, #0		//No flags for now
 	bl	sysSend
 
 	pop	{pc}		//Return
