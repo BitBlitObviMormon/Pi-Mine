@@ -17,10 +17,16 @@ ERRNO    = $(LIB)/errlibt/errno
 MEMLIBT  = $(LIB)/memlibt/memlibt
 
 # Source Files
-DRAW   = /client/draw
-CLIENT = /client/client
-SERVER = /server/server
-PAINT  = /client/paint
+CLIENT    = /client/client
+SERVER    = /server/server
+DRAW      = /client/draw
+PAINT     = /client/paint
+NETCLIENT = /client/network/network
+NETSERVER = /server/network/network
+MESSENGER = /client/gui/messenger
+
+# Specify the phony targets
+.PHONY: clean todo runClient runServer
 
 ifeq ($(USINGSCRIPT),true)
 all: mine mine-server
@@ -33,11 +39,11 @@ pre-build:
 	@./color make USINGSCRIPT=true
 
 # Build the Pi-Mine client
-mine: $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o
+mine: $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o $(BIN)$(PAINT).o $(BIN)$(NETCLIENT).o $(BIN)$(MESSENGER).o
 	ld -o $@ $+
 
 # Build the Pi-Mine server
-mine-server: $(NETLIBT).o $(RNDLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(IOLIBT).o $(BIN)$(SERVER).o
+mine-server: $(NETLIBT).o $(RNDLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(IOLIBT).o $(BIN)$(SERVER).o $(BIN)$(NETSERVER).o
 	ld -o $@ $+
 
 # LIBRARIES
@@ -54,15 +60,21 @@ $(SYSLIBT).o: $(SYSLIBT).s
 $(MEMLIBT).o: $(MEMLIBT).s
 	cd $(LIB)/memlibt; make; cd ../..
 $(ERRLIBT).o: $(ERRLIBT).s
-	cd $(LIB)/errlibt; make; cd ../..
+	;
 $(ERRLIBT).s:
 	cd $(LIB)/errlibt; make; cd ../..
 
 # BIN DIRECTORIES
 $(BIN)/server:
-	mkdir -p $(BIN)/server
+	mkdir -p $@
+$(BIN)/server/network:
+	mkdir -p $@
 $(BIN)/client:
-	mkdir -p $(BIN)/client
+	mkdir -p $@
+$(BIN)/client/gui:
+	mkdir -p $@
+$(BIN)/client/network:
+	mkdir -p $@
 
 # SOURCE CODE
 $(BIN)$(DRAW).o: $(SRC)$(DRAW).s $(BIN)/client
@@ -73,6 +85,13 @@ $(BIN)$(CLIENT).o: $(SRC)$(CLIENT).s $(BIN)/client
 	as $(SW) -o $@ $<
 $(BIN)$(SERVER).o: $(SRC)$(SERVER).s $(BIN)/server
 	as $(SW) -o $@ $<
+$(BIN)$(NETCLIENT).o: $(SRC)$(NETCLIENT).s $(BIN)/client/network
+	as $(SW) -o $@ $<
+$(BIN)$(NETSERVER).o: $(SRC)$(NETSERVER).s $(BIN)/server/network
+	as $(SW) -o $@ $<
+$(BIN)$(MESSENGER).o: $(SRC)$(MESSENGER).s $(BIN)/client/gui
+	as $(SW) -o $@ $<
+
 
 # Clean all built and backup files
 ifeq ($(USINGSCRIPT),true)
@@ -96,11 +115,11 @@ endif
 
 # Run the client (mine)
 runClient: mine
-	./mine
+	./$<
 	
 # Run the server (mine-server)
 runServer: mine-server
-	./mine-server
+	./$<
 
 # Lists all of the TODOs left in the source files
 todo:

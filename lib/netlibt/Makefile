@@ -2,6 +2,7 @@
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a -mcpu=cortex-a7
 SYSLIBT = ../syslibt/syslibt
 IOLIBT = ../iolibt/iolibt
+ERRNO = ../errlibt/errno
 
 all: driver.out
 
@@ -14,7 +15,10 @@ $(IOLIBT).o: $(IOLIBT).s
 $(SYSLIBT).o: $(SYSLIBT).s
 	cd ../syslibt; make; cd ../netlibt
 
-netlibt.o: netlibt.s netconst.s
+$(ERRNO).s:
+	cd ../errlibt; make; cd ../netlibt
+
+netlibt.o: netlibt.s netconst.s $(ERRNO).s
 	as $(SW) -o $@ $<
 
 driver.o: driver.s

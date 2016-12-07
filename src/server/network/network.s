@@ -1,5 +1,5 @@
 /* Server.Network.s */
-.include "../../../lib/netlibt/netconst.s"
+.include "lib/netlibt/netconst.s"
 
 .text
 .thumb

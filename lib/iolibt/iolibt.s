@@ -13,9 +13,9 @@
 .set	ISSIZE, 12	//sign + 10 chars + null
 
 .data
-INTS:	//Space for the string of an int (int -> string)
-	.skip	ISSIZE	//Make room for the int's char buffer
 	.asciz	"Ya!" //If this data is changed, we've got a memory leak
+	.skip	ISSIZE	//Make room for the int's char buffer
+INTS:	//Space for the string of an int written backwards (int -> string)
 
 .text
 .syntax	unified
@@ -66,7 +66,7 @@ fprinti:
 	movs	r0, r1
 	bl	itos	//Convert the int into a string
 	movs	r1, r0	//Ready the string for printing
-	pop	{r0}
+	pop	{r0}	//Get the file stream
 	bl	fprints	//Print the string
 	pop	{pc}	//Return
 
@@ -87,7 +87,7 @@ fprints:
 
 	pop	{pc}	//Return
 
-/* void fputi(const int num[r0]) */
+/* void fputi(int fd[r0], const int num[r0]) */
 /* Prints an integer onto the stream and appends a newline */
 /* Data races: No memory is changed */
 .thumb_func
@@ -95,6 +95,7 @@ fprints:
 .type	fputi, %function
 fputi:
 	push	{r0, lr}//Save return point for later
+	movs	r0, r1
 	bl	itos	//Convert the int into a string
 	movs	r1, r0	//Ready the string for printing
 	pop	{r0}	//Get the file stream
@@ -195,9 +196,7 @@ geti:
 .global	itos
 .type	itos, %function
 itos:
-	push	{r0, lr}	//Save return point for later
-	
-	pop	{r0, pc}	//Return
+	b	utos	//Call utos instead (itos is still under construction)
 
 /* int[r2] len(const char* buf[r1]) */
 /* IMPORTANT: This function passes register ONE and returns register TWO! */
@@ -231,7 +230,7 @@ pow:	//X(r0)^N(r1)
 	bx	lr	//Return
 
 //$$$ USE A SYSTEM CALL TO OUTPUT AN INTEGER TO CONSOLE
-/* void printi(const int) */
+/* void printi(const int[r1]) */
 /* Prints an integer onto the console and appends a new line */
 /* Data Races: No memory is changed */
 .thumb_func
@@ -251,7 +250,7 @@ prints:
 	movs	r0, #STDOUT	//Use the standard output stream and
 	b	fprints		//Pretend we called fprints instead
 
-/* void puti(const int num[r0]) */
+/* void puti(const int num[r1]) */
 /* Prints an integer onto the console */
 /* Data races: No memory is changed */
 .thumb_func
@@ -331,37 +330,40 @@ stoi:
 /* Takes an unsigned int and returns a null-terminated char array */
 /* Data Races: Returns static memory which is overwritten on */
 /* the next utos/itos call; Needs to be replaced with a brk call! */
+/* TODO: Allocate memory for string */
 .thumb_func
 .global	utos
 .type	utos, %function
 utos:
-	bx	=.LutosARM
-.arm
-.LutosARM:	
-	push	{r4-r5, lr}		//Save return point for later
-	mov	r4, r0			//preserve arguments over following
-	mov	r5, r1			//function calls
-	mov	r0, r1
+	push	{r4-r5, lr}	//Save return point for later
 
-	//Divide r0 by ten
-	ldr	r2, =DIV10		//Load the magic number for r0 / 10
-	umull	r2, r0, r2, r0		//r2 *= MAGICNUM (high bits is r0 / 10)
+	//Write null to beginning
+	ldr	r3, =INTS	//String pointer
+	movs	r4, #0
+	strb	r4, [r3]	//Write null
+	subs	r3, #1
 
-	sub	r5, r5, r0, LSL #3	//number - 8*quotient
-	sub	r5, r5, r0, LSL #1	// - 2*quotient = remainder
+	movs	r4, #10	
+	movs	r5, #0xff
+	and	r0, r5
+	b	.LutosTestNonZero
+.LutosWhileDigits:
+	// Divide/Modulus (r1, r2)
+	udiv	r1, r0, r4
+	mls	r2, r1, r4, r0
 
-	cmp	r0, #0			//quotient non-zero?
-	movne	r1, r0			//quotient to r1...
-	mov	r0, r4			//buffer pointer unconditionally to r0
-	blne	utos			//conditional recursive call to utos
+	adds	r2, r2, #48  // r2 = r2 + "0"
+	subs	r3, r3, #1
+	strb	r2, [r3]
 
-	add	r5, r5, #'0'		//final digit
-	strb	r5, [r0], #1		//store digit at end of buffer
+	movs	r0, r1
 
-	bx	=.LutosTHUMB
-.thumb_func
-.LutosTHUMB:	
-	pop	{r4-r5, pc}		//Return
+.LutosTestNonZero:
+	cmp	r0, #0
+	bne	.LutosWhileDigits
+	movs	r0, r3
+
+	pop	{r4-r5, pc}	//Return
 	
 .balign	2
 TEXT:

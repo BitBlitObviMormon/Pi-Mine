@@ -1,6 +1,8 @@
 /* Painting Tool */
 
 .text
+.thumb
+.syntax	unified
 
 /****************************************************************
  * PAINT LIBRARY BLOCK STRUCTURE                                *
@@ -21,24 +23,24 @@
 /* Paints one block and writes it to the buffer, incrementing both pointers */
 /* Data Races: The array blocks is read and incremented */
 /*             and the array buffer is written to and incremented */
-.thumb
+.thumb_func
 paintBlock:
-	push	{lr}
+	push	{r4, lr}
 
 	//Store the foreground paint header onto the buffer
 	ldr	r2, =FOREGROUND	//Load the foreground header
-	vldm.32	r2, {s0-s1}	//Load 8 bytes from the header
-	vstm.32	r1, {s0-s1}	//Store those 8 bytes
-	add	r1, r1, #7	//We actually only wanted to store 7 bytes
-	add	r2, r2, #7	//So we need to overwrite the 8th byte
+	ldm	r2, {r3-r4}	//Load 8 bytes from the header
+	stm	r1, {r3-r4}	//Store those 8 bytes
+	adds	r1, r1, #7	//We actually only wanted to store 7 bytes
+	adds	r2, r2, #7	//So we need to overwrite the 8th byte
 	
 	//Grab the foreground paint information
 	ldrb	r2, [r0]	//Load the foreground paint info
-	add	r0, r0, #1	//Increment the pointer by a byte
+	adds	r0, r0, #1	//Increment the pointer by a byte
 	push	{r0, r1}	//Save the passed arguments for later
-	mov	r0, r2		//Use the foreground paint info as an argument
+	movs	r0, r2		//Use the foreground paint info as an argument
 	bl	utos		//Convert the foreground paint info to ascii
-	mov	r2, r0		//Get the resulting string
+	movs	r2, r0		//Get the resulting string
 	pop	{r0, r1}	//Get back the original arguments
 
 	//Store the foreground paint information
@@ -46,24 +48,24 @@ paintBlock:
 	ldrb	r3, [r2]	//Load a byte from the returned string
 	cbz	r3, .LforeSkip	//If we read a null byte then stop
 	strb	r3, [r1]	//Write the byte to the buffer
-	add	r1, r1, #1	//Increment the buffer pointer by a byte
+	adds	r1, r1, #1	//Increment the buffer pointer by a byte
 	b	.LforeLoop	//Loop again
 .LforeSkip:
 
 	//Store the background paint header onto the buffer
 	ldr	r2, =BACKGROUND	//Load the background header
-	vldm.32	r2, {s0-s1}	//Load 8 bytes from the header
-	vstm.32	r1, {s0-s1}	//Store those 8 bytes
-	add	r1, r1, #8	//Increment the pointers by 8 bytes
-	add	r2, r2, #8
+	ldm	r2, {r3-r4}	//Load 8 bytes from the header
+	stm	r1, {r3-r4}	//Store those 8 bytes
+	adds	r1, r1, #8	//Increment the pointers by 8 bytes
+	adds	r2, r2, #8
 
 	//Grab the background paint information
 	ldrb	r2, [r0]	//Load the background paint info
-	add	r0, r0, #1	//Increment the pointer by a byte
+	adds	r0, r0, #1	//Increment the pointer by a byte
 	push	{r0, r1}	//Save the passed arguments for later
-	mov	r0, r2		//Use the background paint info as an argument
+	movs	r0, r2		//Use the background paint info as an argument
 	bl	utos		//Convert the background paint info to ascii
-	mov	r2, r0		//Get the resulting string
+	movs	r2, r0		//Get the resulting string
 	pop	{r0, r1}	//Get back the original arguments
 
 	//Store the background paint information
@@ -71,23 +73,23 @@ paintBlock:
 	ldrb	r3, [r2]	//Load a byte from the returned string
 	cbz	r3, .LbackSkip	//If we read a null byte then stop
 	strb	r3, [r1]	//Write the byte to the buffer
-	add	r1, r1, #1	//Increment the buffer pointer by a byte
+	adds	r1, r1, #1	//Increment the buffer pointer by a byte
 	b	.LbackLoop	//Loop again
 .LbackSkip:
-	mov	r3, #'m'	//Don't forget to append an 'm' at the end
+	movs	r3, #'m'	//Don't forget to append an 'm' at the end
 	strb	r3, [r1]	//Store the 'm'
-	add	r1, r1, #1	//Increment the buffer pointer by a byte
+	adds	r1, r1, #1	//Increment the buffer pointer by a byte
 
 	//Read the block character
 	ldrb	r2, [r0]	//Load the block info
-	add	r0, r0, #1	//Increment the pointer by a byte
+	adds	r0, r0, #1	//Increment the pointer by a byte
 
 	//"Style" the block (Convert it to Unicode)
 	//For now we'll just print it out and hope Unicode chars aren't passed
 	strb	r2, [r1]	//Store the ASCII character
-	add	r1, r1, #1	//Increment the pointer by a byte
+	adds	r1, r1, #1	//Increment the pointer by a byte
 
-	pop	{pc}
+	pop	{r4, pc}
 
 /* void paint(struct block* blocks[r0], char* buffer[r1], int length[r2]) */
 /* Paints a length number of blocks and writes them to the buffer as a string */
@@ -95,17 +97,17 @@ paintBlock:
 /* Unicode characters mixed with escape codes take up a lot of memory! */
 /* Note: The pointers are returned to their normal location (unmodified) */
 /* Data Races: The array blocks is read and the array buffer is written to */
-.thumb
+.thumb_func
 .global	paint
 .type	paint, %function
 paint:
 	push	{r0-r1, r4, lr}	//Save return point and args for later
-	mov	r4, r2		//Put the length in a local variable
+	movs	r4, r2		//Put the length in a local variable
 
 	//While the length is not zero, keep on parsing blocks
 .LpaintLoop:
 	cbz	r4, .LpaintSkip	//If the length is zero, finish
-	sub	r4, r4, #1	//Decrement the length by 1
+	subs	r4, r4, #1	//Decrement the length by 1
 	bl	paintBlock	//Paint the block
 	b	.LpaintLoop	//Move on to the next block
 
