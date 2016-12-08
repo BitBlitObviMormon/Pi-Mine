@@ -49,6 +49,7 @@ paintBlock:
 	cbz	r3, .LforeSkip	//If we read a null byte then stop
 	strb	r3, [r1]	//Write the byte to the buffer
 	adds	r1, r1, #1	//Increment the buffer pointer by a byte
+	adds	r2, r2, #1	//Increment the returned string by a byte
 	b	.LforeLoop	//Loop again
 .LforeSkip:
 
@@ -74,6 +75,7 @@ paintBlock:
 	cbz	r3, .LbackSkip	//If we read a null byte then stop
 	strb	r3, [r1]	//Write the byte to the buffer
 	adds	r1, r1, #1	//Increment the buffer pointer by a byte
+	adds	r2, r2, #1	//Increment the returned string by a byte
 	b	.LbackLoop	//Loop again
 .LbackSkip:
 	movs	r3, #'m'	//Don't forget to append an 'm' at the end
@@ -91,8 +93,8 @@ paintBlock:
 
 	pop	{r4, pc}
 
-/* void paint(struct block* blocks[r0], char* buffer[r1], int length[r2]) */
-/* Paints a length number of blocks and writes them to the buffer as a string */
+/* void paint(struct block* blocks[r0], char* buffer[r1], int numBlocks[r2]) */
+/* Paints numBlocks blocks and writes them to the buffer as a string */
 /* Make sure you have AT LEAST 30 characters of buffer space per block! */
 /* Unicode characters mixed with escape codes take up a lot of memory! */
 /* Note: The pointers are returned to their normal location (unmodified) */
@@ -116,7 +118,10 @@ paint:
 
 .text
 FOREGROUND:	//The string to print the foreground color escape code
-	.ascii	"\e[38;5;"
+	.byte	033
+	.ascii	"[38;5;"
 BACKGROUND:	//The string to print the background color escape code
-	.ascii	"m\e[48;5;"
+	.ascii	"m"
+	.byte	033
+	.ascii	"[48;5;"
 

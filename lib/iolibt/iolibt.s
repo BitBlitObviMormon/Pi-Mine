@@ -208,9 +208,10 @@ itos:
 .type	len, %function
 len:
 	push	{r1, lr}	//Save return point and buffer address
+	movs	r2, #0		//count = 0
 .Lenloop:
-	ldrb	r3, [r1]	//temp = buf[i]
-	adds	r1, #1		//i++
+	ldrb	r3, [r1]	//temp = *buf
+	adds	r1, #1		//buf++
 	cbz	r3, .Lenend	//If character is null, end the loop
 	adds	r2, #1		//count++
 	b	.Lenloop	//Loop back to the beginning

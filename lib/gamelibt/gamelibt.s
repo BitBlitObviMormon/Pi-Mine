@@ -31,16 +31,71 @@
 
 .data
 COLORTEXT:	//The string to print the fore-back-color escape code
-	.ascii	"\e[38;5;"
+	.byte	033
+	.ascii	"[38;5;"
 FOREGROUND:	//Edit characters at mem address to change foreground color
-	.ascii	"???m\e[48;5;"
+	.ascii	"???m"
+	.byte	033
+	.ascii	"[48;5;"
 BACKGROUND:	//Edit characters at mem address to change background color
 	.asciz	"???m"
+CURSORPOS:	//The string to print the set cursor position escape code
+	.byte	033
+	.ascii	"["
+CURSORX:	//Edit characters at mem address to change X position
+	.ascii	"???;"
+CURSORY:	//Edit characters at mem address to change Y position
+	.asciz	"???H"
 TERMIOS:	//This is where the old termios struct will be saved for later
 	.skip	TERMIOSSIZE
 
 .text
 .syntax	unified
+
+/* void write3Digits(int num[r0], char* buf[r1]) */
+/* Writes a number, padding zeros to make it three digits long */
+/* Data Races: Writes to the character array buf */
+.thumb_func
+.type	write3Digits, %function
+write3Digits:
+	push	{r4, r5, lr}	//Save return point for later
+
+	//Save buffer for later
+	movs	r4, r1
+
+	//Convert the number into a string and save it
+	bl	utos
+	movs	r5, r0
+
+	//Get the length of the string
+	movs	r1, r0		//Len gets its number from r1!
+	bl	len		//Returns len in r2!
+	adds	r5, r2		//Shift the string by len-1 bytes
+	subs	r5, #1
+	adds	r4, #2		//Shift the given string by 3 bytes
+	movs	r0, #3		//count = 3
+
+	//Store all of the digits of the number
+.L3DigitsLoop:
+	cbz	r2, .L3DigitZero//If we read enough then begin writing zeros
+	ldrb	r3, [r5]	//Load a byte from the returned string
+	strb	r3, [r4]	//Write the byte to the buffer
+	subs	r4, r4, #1	//Decrement the buffer pointer by a byte
+	subs	r5, r5, #1	//Decrement the returned string by a byte
+	subs	r2, r2, #1	//Decrement len by 1
+	subs	r0, r0, #1	//Decrement count by 1
+	b	.L3DigitsLoop	//Loop again
+	//Write zeros for every digit the number has less than 3
+.L3DigitZero:
+	cbz	r0, .L3DigitsEnd//If we wrote 3 digits then end
+	movs	r3, '0'		//Get the ASCII number 0
+	strb	r3, [r4]	//Write the byte to the buffer
+	subs	r4, r4, #1	//Decrement the buffer pointer by a byte
+	subs	r0, r0, #1	//Decrement count by 1
+	b	.L3DigitZero	//Loop again
+.L3DigitsEnd:
+
+	pop	{r4, r5, pc}	//Return
 
 /* void hideCursor() */
 /* Tells the terminal to hide the cursor */
@@ -72,7 +127,7 @@ loadCursor:
 	ldr	r1, =LOADCURSOR	//Load the escape code from memory
 	b	prints		//Print the escape code onto the console
 
-/* void saveCursor() */
+/* void saveCursor(int x[r0], int y[r1]) */
 /* Tells the terminal to save the cursor location */
 /* Data Races: The terminal *may* save the cursor location */
 .thumb_func
@@ -81,6 +136,44 @@ loadCursor:
 saveCursor:
 	ldr	r1, =SAVECURSOR	//Load the escape code from memory
 	b	prints		//Print the escape code onto the console
+
+/* void homeCursor() */
+/* Sets the cursor's position to home (1,1) */
+/* Data Races: Sets the terminal cursor's position */
+.thumb_func
+.global	homeCursor
+.type	homeCursor, %function
+homeCursor:
+	ldr	r1, =HOMECURSOR	//Load the escape code from memory
+	b	prints		//Print the escape code onto the console
+
+/* void setCursor(int x[r0], int y[r1]) */
+/* Sets the cursor's position to (x,y) */
+/* Data Races: Sets the terminal cursor's position */
+.thumb_func
+.global	setCursor
+.type	setCursor, %function
+setCursor:
+	push	{r4, lr}	//Save return point for later
+
+	//Save cursor (x) position
+	movs	r4, r0
+	movs	r0, r1
+
+	//Write the x number
+	ldr	r1, =CURSORX
+	bl	write3Digits
+
+	//Write the y number
+	movs	r0, r4
+	ldr	r1, =CURSORY
+	bl	write3Digits
+
+	//Print out the resulting string
+	ldr	r1, =CURSORPOS
+	bl	prints
+
+	pop	{r4, pc}	//Return
 
 /* void setColor(char foreground[r0], char background[r1]) */
 /* Sets the foreground and background colors for the next text displayed */
@@ -176,12 +269,20 @@ rawMode:
 .text
 .align	2
 SAVECURSOR:
-	.asciz	"\e[s"
+	.byte	033
+	.asciz	"[s"
 LOADCURSOR:
-	.asciz	"\e[u"
+	.byte	033
+	.asciz	"[u"
 HIDECURSOR:
-	.asciz	"\e[?25l"
+	.byte	033
+	.asciz	"[?25l"
 SHOWCURSOR:
-	.asciz	"\e[?25h"
+	.byte	033
+	.asciz	"[?25h"
+HOMECURSOR:
+	.byte	033
+	.asciz	"[H"
 CLEARFRAME:
-	.asciz	"\e[2J\e[1;1H"
+	.byte	033
+	.asciz	"[2J\e[1;1H"
