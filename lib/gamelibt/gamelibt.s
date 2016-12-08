@@ -30,14 +30,14 @@
 .set	OSPEED, 56
 
 .data
-COLORTEXT:	//The string to print the fore-back-color escape code
+SETCOLOR:	//The string to print the fore-back-color escape code
 	.byte	033
 	.ascii	"[38;5;"
-FOREGROUND:	//Edit characters at mem address to change foreground color
+FORECOLOR:	//Edit characters at mem address to change foreground color
 	.ascii	"???m"
 	.byte	033
 	.ascii	"[48;5;"
-BACKGROUND:	//Edit characters at mem address to change background color
+BACKCOLOR:	//Edit characters at mem address to change background color
 	.asciz	"???m"
 CURSORPOS:	//The string to print the set cursor position escape code
 	.byte	033
@@ -183,13 +183,25 @@ setCursor:
 .global	setColor
 .type	setColor, %function
 setColor:
-	push	{lr}	//Save return point for later
-	// Convert r0 to ascii
-	// Write r0 to foreground color
-	// Convert r1 to ascii
-	// Write r1 to background color
-	// Print the fore-back-color escape code
-	pop	{pc}	//Return
+	push	{r4, lr}	//Save return point for later
+
+	//Save background color
+	movs	r4, r1
+
+	//Write the foreground color
+	ldr	r1, =FORECOLOR
+	bl	write3Digits
+
+	//Write the background color
+	movs	r0, r4
+	ldr	r1, =BACKCOLOR
+	bl	write3Digits
+
+	//Print out the resulting string
+	ldr	r1, =SETCOLOR
+	bl	prints
+
+	pop	{r4, pc}	//Return
 
 /* void clearFrame() */
 /* Clears the screen and sets the position to home */

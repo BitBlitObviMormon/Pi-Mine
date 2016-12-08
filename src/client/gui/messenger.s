@@ -142,7 +142,7 @@ initMessenger:
 	movs	r1, #BRC	//Bottom-Right Corner
 	strb	r1, [r0]
 
-	//Make Left Junction
+	//Generate Left Junction
 	adds	r0, r6, #2	//blocks += 2
 	movs	r2, #3
 	mul	r2, r4, r2	//offset = width * 3
@@ -152,7 +152,7 @@ initMessenger:
 	movs	r1, #LJN	//Left Junction
 	strb	r1, [r0]
 
-	//Make Right Junction
+	//Generate Right Junction
 	subs	r0, r6, #1	//blocks -= 1
 	movs	r2, #3
 	mul	r2, r4, r2	//offset = width * 3
