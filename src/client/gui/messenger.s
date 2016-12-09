@@ -21,6 +21,14 @@
 .set	ERRCLR,  0x9	//Error Color
 
 .data
+WIDTH:	//The width of the console
+	.word	0
+HEIGHT:	//The height of the console
+	.word	0
+LINEX:	//The X location of the cursor
+	.word	0
+LINEY:	//The Y location of the next message
+	.word	0
 CURSOR: //The location of the Messenger's cursor
 	.short	0	//short cursorPos = 0
 	.byte	0	//bool blinkState = false (0=off, 1=on)
@@ -44,6 +52,12 @@ initMessenger:
 	movs	r4, r0		//width
 	movs	r5, r1		//height
 	movs	r6, r2		//blocks
+
+	//Store the width and height of the console as data
+	ldr	r3, =WIDTH
+	str	r0, [r3]
+	ldr	r3, =HEIGHT
+	str	r1, [r3]
 
 	//Get the expected end-buffer address
 	mul	r3, r0, r1	//bufSize = width * height (number of blocks)
@@ -164,14 +178,20 @@ initMessenger:
 
 	pop	{r4-r6, pc}	//Return
 
-/* void updateMessengerCursor(int width[r0], int height[r1], */
-/*			      struct block* blocks[r2]) */
+/* void updateMessengerCursor(struct block* blocks[r0]) */
 /* Call this every cursor tick to make the cursor blink on or off */
 /* Data Races: The data CURSOR is read, the block array blocks is written to */
 .thumb_func
 .global	updateMessengerCursor
 .type	updateMessengerCursor, %function
 updateMessengerCursor:
+	//Load the width and height
+	movs	r2, r0
+	ldr	r0, =WIDTH
+	ldr	r1, =HEIGHT
+	ldr	r0, [r0]
+	ldr	r1, [r1]
+	
 	//Get the cursor's address in memory
 	subs	r1, #1		//height-- (remove a line)
 	mul	r3, r0, r1	//bufSize = width * height (number of blocks)
@@ -239,3 +259,104 @@ generateVerBar:
 	b	.LVerBarLoop	//Loop again
 .LVerBarEnd:
 	bx	lr		//Return
+
+/* void messengerLine(char* line[r0], struct block* blocks[r1], int y[r2]) */
+/* Writes a line onto the messenger - Only accepts non-control ASCII values! */
+/* Data Races: The block array blocks is written to and line is read */
+.thumb_func
+.type	messengerLine, %function
+messengerLine:
+	push	{lr}		//Save return point for later
+
+	//Calculate the writing point
+	ldr	r3, =WIDTH
+	ldr	r3, [r3]
+	mul	r2, r2, r3	//offset = y * width
+	movs	r3, #3
+	mul	r2, r2, r3	//offset = y * width * 3
+	movs	r3, #1
+	subs	r2, r3		//offset = y * width * 3 - 1
+	adds	r1, r2		//blocks += offset
+
+	//Write one line
+.LmessengerLineLoop:
+	//If the next character in the array is null then finish
+	ldrb	r2, [r0]	//temp = *line
+	cbz	r2, .LmessengerLineEnd
+
+	//Write the character into the block array
+	strb	r2, [r1]	//*blocks = temp
+	adds	r0, #1		//line++
+	adds	r1, #3		//blocks += 3
+	b	.LmessengerLineLoop
+.LmessengerLineEnd:
+	pop	{pc}		//Return
+
+/* void messengerMessage(char* message[r0], struct block* blocks[r1],  */
+/*			 int len[r2]) */
+/* Writes a message onto the messenger gui */
+/* Data Races: The string line and block array blocks are written to */
+.thumb_func
+.global	messengerMessage
+.type	messengerMessage, %function
+messengerMessage:
+	push	{r4-r8, lr}	//Save return point for later
+
+	//Get the width
+	ldr	r3, =WIDTH
+	ldr	r3, [r2]
+	subs	r3, #2		//width -= 2
+
+	//Save variables for later
+	ldr	r8, =LINEY
+	movs	r4, r0		//message
+	movs	r5, r1		//blocks
+	adds	r6, r0, r2	//messageEnd
+	movs	r7, r3		//width
+	ldr	r8, [r8]	//lineY
+
+	//offset the message by a bit
+	bl	.LmessengerOffset
+	movs	r1, #' '	//letter = ' ' (Space)
+
+	//Wrap the text by replacing certain spaces with null pointers
+.LmessengerWrap:
+	ldr	r2, [r0]	//tempLetter = *messagePtr
+	cmp	r2, r1		//If tempLetter == letter then
+	beq	.LmessengerWrapEnd //Print one line
+	subs	r0, #1		//messagePtr--
+	b	.LmessengerWrap	//Loop again
+.LmessengerWrapEnd:
+	movs	r2, #0		//tempLetter = 0 (Null)
+	strb	r2, [r0]	//*messagePtr = tempLetter
+
+	//Swap messagePtr with message
+	movs	r2, r4		//temp = message
+	movs	r4, r0		//message = messagePtr
+	movs	r0, r2		//messagePtr = temp
+
+	//Print one line of the message
+	movs	r1, r5		//blocks
+	movs	r2, r8		//lineY
+	bl	messengerLine	//Print the line
+
+	//Calculate offsets
+	adds	r8, #1		//Add one to the line
+	bl	.LmessengerOffset
+
+	//TODO: Need end condition!	
+
+	pop	{r4-r8, pc}	//Return
+
+	//Offset the message by the width if possible
+	//If its not possible then go to the end of the array
+.LmessengerOffset:
+	adds	r0, r4, r3	//messagePtr = message + width
+	cmp	r0, r6		//If messagePtr > messageEnd then
+	bhi	.LmessengerOffsetTop //messagePtr = messageEnd
+	bx	lr		//Return
+.LmessengerOffsetTop:
+	movs	r0, r6		//messagePtr = messageEnd
+	bx	lr		//Return
+	
+
