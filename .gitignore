@@ -12,6 +12,9 @@ mine-server
 \#*\#
 .\#*
 
-# Generated Source Files
+# Generated source files
 errlibt.s
 errno.s
+
+# Pi-Mine log files
+*.log

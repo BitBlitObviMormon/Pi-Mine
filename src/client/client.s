@@ -32,6 +32,18 @@ main:
 	movs	r2, r4		//blockBuffer
 	bl	initMessenger
 
+	//Add a few messages
+	ldr	r1, =PITEXT
+	bl	len
+	ldr	r0, =PITEXT
+	movs	r1, r4
+	bl	messengerMessage
+	ldr	r1, =NAMETEXT
+	bl	len
+	ldr	r0, =NAMETEXT
+	movs	r1, r4
+	bl	messengerMessage
+
 	//Paint the gui into a printable format
 	movs	r0, r4		//blockBuffer
 	movs	r1, r5		//charBuffer
@@ -54,3 +66,9 @@ main:
 	//Exit
 	movs	r0, #2		//Move #13 to r0
 	b	sysExit
+
+.text
+PITEXT:
+	.asciz	"Welcome to Pi-Mine!"
+NAMETEXT:
+	.asciz	"What is your name?"

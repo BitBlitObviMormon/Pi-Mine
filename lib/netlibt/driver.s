@@ -21,7 +21,7 @@ main:
 	//Create a server
 	ldr	r0, =ADDRESS	//Get the pointer of the ip address
 	ldr	r0, [r0]	//Get the ip address
-	movw	r1, #7777	//Host on port 12345
+	movw	r1, #7777	//Host on port 7777
 	movs	r2, #255	//Only 255 bytes of backlog
 	movs	r3, #0		//Don't block in order to wait for clients
 	movs	r5, r0		//Save the ip address

@@ -28,7 +28,7 @@ HEIGHT:	//The height of the console
 LINEX:	//The X location of the cursor
 	.word	0
 LINEY:	//The Y location of the next message
-	.word	0
+	.word	1
 CURSOR: //The location of the Messenger's cursor
 	.short	0	//short cursorPos = 0
 	.byte	0	//bool blinkState = false (0=off, 1=on)
@@ -274,8 +274,7 @@ messengerLine:
 	mul	r2, r2, r3	//offset = y * width
 	movs	r3, #3
 	mul	r2, r2, r3	//offset = y * width * 3
-	movs	r3, #1
-	subs	r2, r3		//offset = y * width * 3 - 1
+	adds	r2, r2, #8	//offset = y * width * 3 + 8
 	adds	r1, r2		//blocks += offset
 
 	//Write one line
@@ -304,8 +303,8 @@ messengerMessage:
 
 	//Get the width
 	ldr	r3, =WIDTH
-	ldr	r3, [r2]
-	subs	r3, #2		//width -= 2
+	ldr	r3, [r3]
+	subs	r3, #4		//width -= 4
 
 	//Save variables for later
 	ldr	r8, =LINEY
@@ -314,6 +313,9 @@ messengerMessage:
 	adds	r6, r0, r2	//messageEnd
 	movs	r7, r3		//width
 	ldr	r8, [r8]	//lineY
+
+	cmp	r2, r7		//If len <= width then print only one line
+	bls	.Lmessenger1Line
 
 	//offset the message by a bit
 	bl	.LmessengerOffset
@@ -359,4 +361,16 @@ messengerMessage:
 	movs	r0, r6		//messagePtr = messageEnd
 	bx	lr		//Return
 	
+.Lmessenger1Line:
+	//Print a line
+	movs	r0, r4		//line
+	movs	r1, r5		//blocks
+	movs	r2, r8		//y
+	bl	messengerLine	//Print a line
 
+	//Increment the y value
+	ldr	r0, =LINEY
+	adds	r8, #1
+	str	r8, [r0]
+
+	pop	{r4-r8, pc}	//Return
