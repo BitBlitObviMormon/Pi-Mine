@@ -1,5 +1,5 @@
 /* CONSTANTS */
-.set	PLRSPACE, 2304	//How much space to allocate for player data
+.set	PLRSPC, 2304	//How much space to allocate for player data
 
 .text
 .arm
@@ -18,7 +18,7 @@ main:
 	bl	startNetServer
 
 	//Allocate space for the players
-	subs	sp, #PLRSPACE
+	subs	sp, #PLRSPC
 	mov	r4, sp
 	movs	r0, r4
 
@@ -32,7 +32,7 @@ main:
 	b	.LmainLoop	//Loop again
 .LoopEnd:
 	//Unallocate space from the players
-	adds	sp, #PLRSPACE
+	adds	sp, #PLRSPC
 
 	movs	r0, #0		//exit(0)
 	b	sysExit
@@ -58,7 +58,7 @@ zeroPlayers:
 	movs	r12, #0
 
 	//Get endpoint
-	adds	lr, r0, #PLRSPACE
+	adds	lr, r0, #PLRSPC
 .LzeroLoop:
 	//Load instructions until we pass the maximum player space mark
 	stmia	r0!, {r1-r12}

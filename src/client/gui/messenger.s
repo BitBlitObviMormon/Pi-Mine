@@ -260,7 +260,8 @@ generateVerBar:
 .LVerBarEnd:
 	bx	lr		//Return
 
-/* void messengerLine(char* line[r0], struct block* blocks[r1], int y[r2]) */
+/* void messengerLine(char* line[r0], struct block* blocks[r1], */
+/*	              int y[r2], char color[r3]) */
 /* Writes a line onto the messenger - Only accepts non-control ASCII values! */
 /* Data Races: The block array blocks is written to and line is read */
 .thumb_func
@@ -292,8 +293,11 @@ messengerLine:
 	pop	{pc}		//Return
 
 /* void messengerMessage(char* message[r0], struct block* blocks[r1],  */
-/*			 int len[r2]) */
+/*			 int len[r2], char* name[r3], int namelen[r4], */
+/*	                 char color[r5]) */
 /* Writes a message onto the messenger gui */
+/* NOTE: Does not follow standard call procedure; registers r4-r5 */
+/*       are passed AND modified. */
 /* Data Races: The string line and block array blocks are written to */
 .thumb_func
 .global	messengerMessage
@@ -301,17 +305,14 @@ messengerLine:
 messengerMessage:
 	push	{r4-r8, lr}	//Save return point for later
 
-	//Get the width
-	ldr	r3, =WIDTH
-	ldr	r3, [r3]
-	subs	r3, #4		//width -= 4
-
 	//Save variables for later
 	ldr	r8, =LINEY
 	movs	r4, r0		//message
 	movs	r5, r1		//blocks
 	adds	r6, r0, r2	//messageEnd
-	movs	r7, r3		//width
+	ldr	r7, =WIDTH	//width
+	ldr	r7, [r7]
+	subs	r7, #4
 	ldr	r8, [r8]	//lineY
 
 	cmp	r2, r7		//If len <= width then print only one line
