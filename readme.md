@@ -5,8 +5,8 @@
 ## Running Pi-Mine
 &emsp; Type `make runClient` in the terminal to build and run the client; type `make runServer` to build and run the server. If the files are already built then you can run `mine` and `mine-server` directly.
 ## Makefile commands
-`make:` builds the client, server, and all of the libraries
-`make clean:` Deletes all built files as well as backup files (emacs leaves a ton of backups around)
-`make todo:` Shows a list of files with the word "todo" in it.
-`make runClient:` Builds and runs the client "mine" and its libraries
+`make:` builds the client, server, and all of the libraries <br>
+`make clean:` Deletes all built files as well as backup files (emacs leaves a ton of backups around) <br>
+`make todo:` Shows a list of files with the word "todo" in it. <br>
+`make runClient:` Builds and runs the client "mine" and its libraries <br>
 `make runServer:` Builds and runs the server "mine-server" and its libraries
