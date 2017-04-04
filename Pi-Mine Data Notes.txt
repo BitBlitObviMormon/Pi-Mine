@@ -14,3 +14,30 @@ I think that the block data should be server-side which then sends it over to th
 The client will then interpret and paint the block data onto the console buffer to draw it.
 The client will send its input data over to the server in the form of commands.
 The server may respond in the form of updating information, sending commands, or returning errors.
+
+BLOCK DATA:
+The block data should be 4 bytes per block: 2 bytes for the block's id and 2 bytes for the damage value.
+This will provide ample room for expansion and decent file size. The damage value will be used for calculating
+weapon damage, alternate blocks, and used as a pointer for items that contain an inventory (such as chests).
+Note: A "pointer" in this instance is a pointer to virtual memory that is handled by the game's memory library.
+      Each virtual address will point to a separate Inventory object (Up to a maximum of 2^16 objects in a level).
+      An address with the value of 0 will not be used and will be treated as a null pointer case.
+
+BLOCK
+2 bytes: id
+2 bytes: damage value, pointer, etc.
+
+INVENTORY POINTER (2 bytes) ======================> POINTER TO INVENTORY'S MEMORY (4 bytes)
+                             Inventory address map
+
+CHUNKS:
+I think the client should have 9 chunks loaded (a chunk being Width x Height blocks), the chunk the player
+is inside as well as all of the adjacent chunks. This will be 17,280 blocks if the screen dimensions are 24x80.
+
+-------+-------+-------
+ CHUNK | CHUNK | CHUNK
+-------+-------+-------
+ CHUNK | PLAYR | CHUNK
+-------+-------+-------
+ CHUNK | CHUNK | CHUNK
+-------+-------+-------
