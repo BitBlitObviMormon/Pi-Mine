@@ -1,0 +1,155 @@
+**********************************************************************
+* BLOCK LIST (D#### represents a damage value of #### in hex)
+**********************************************************************
+* The game will assume all IDs and damage values are valid.
+* This will likely result in a segfault while reading a corrupted file.
+**********************************************************************
+0000 Air
+0001 Admin Stone (Bedrock) - Cannot be mined and is usually used for boundaries only
+0002 Stone
+0003 Cobblestone
+0004 Lava (D1 - D8 give the liquid's height, 8 being full; D0 is an unlimited source block)
+0005 Water (D1 - D8 give the liquid's height, 8 being full; D0 is an unlimited source block)
+0006 Dirt
+0007 Grass
+0008 Wood Log (Sign bit indicates direction - 0 for Up/Down and 1 for Left/Right. See trees for damage IDs)
+0009 Wood Planks (See Trees for damage IDs)
+000a Wood Sapling (See Trees for damage IDs)
+000b Bricks (See bricks for damage values for different brick types)
+000c Obsidian
+000d Clay
+000e Dry Clay
+000f Crafting Table
+0010 Anvil
+0011 Chest (Damage value is the pointer to its inventory)
+0012 Furnace (Damage value is the pointer to its inventory)
+0013 Drying Rack (Damage value is the pointer to its inventory)
+0014 Sand
+0015 Gravel
+0016 Entity (Damage value is pointer to its data)
+0018 Ore (See ores for damage IDs)
+0019 Ore Block (See ores for damage IDs)
+
+TREES
+0000 Oak
+0001 Spruce
+0002 Birch
+0003 Jungle
+
+BRICKS
+0000 Admin Stone (If this ever becomes a thing)
+0001 Stone
+0002 Obsidian
+0003 Clay
+0004 Dry Clay
+0005 Sandstone
+
+ORES
+0000 Coal
+0001 Iron
+0002 Silver
+0003 Gold
+0004 Diamond
+0005 Steel
+
+ENTITY DATA
+Byte 0: Unit type
+  00 Player
+Byte 1: Current Health (If not a creature, may be used for something else)
+Byte 2: Max Health (If not a creature, may be used for something else)
+Byte 3: Defense (If not a creature, may be used for something else)     
+Bytes 4-7: Extra data (Unit specific data, sometimes pointers to more data)
+
+WEAPON ENTITY DATA
+Byte 1 (Current Health): Projectile type
+  00 None
+  01 Immediate - Disappears after tick (Sword, Pickaxe)
+  02 Swinging - Swings downward on tick (Axe)
+  03 Lunging - Moves forward or backward on the next tick (Spear)
+  04 Flying - Progresses forward on tick, affected by gravity if gravity timer is reduced to zero (Arrow, Flail, Fishing Rod)
+Byte 2 (Max Health): Damage
+Byte 3 (Defense): Direction (See direction map below)
+  -4 | 1 | 2
+  ---+---+---  The opposite direction is always the negative of the current direction. Zero is going nowhere.
+  -3 | 0 | 3   If between -1 and 1, subtract 1 to move the direction downwards and add 1 to move it upwards
+  ---+---+---  For all other numbers, add 1 to move the direction downwards and subtract 1 to move it upwards
+  -2 |-1 | 4
+Byte 4 (Extra Data): Enchantment ID (See enchantments)
+Byte 5 (Extra Data): Enchantment Level (See enchantments)
+Bytes 6-7 (Extra Data): Not implemented
+
+HOOK ONLY
+Bytes 6-7: Pointer to entity being dragged
+
+**********************************************************************
+* ITEM LIST
+**********************************************************************
+* Item ID values have the sign bit flipped. This is to ensure that
+* items will not be treated like blocks when loaded from a save file.
+**********************************************************************
+8000 Stick
+0001 Ingot (See ores for damage IDs)
+8002 Pickaxe (Damage value contains a pointer to the weapon's data) - Like sword, but light and hits an angle and adjacent angles
+8003 Axe (Damage value contains a pointer to the weapon's data) - Like sword, but slow and hits an angle and adjacent angles
+8004 Fishing Rod (Damage value contains a pointer to the weapon's data) - Thrown at angle and can drag enemies
+8005 Sword (Damage value contains a pointer to the weapon's data) - Can target any adjacent enemy
+8006 Spear (Damage value contains a pointer to the weapon's data) - Like sword, but slow and has double range
+8007 Bow (Damage value contains a pointer to the weapon's data) - Frail, slow, uses ammo, and has long range
+8008 Flail (Damage value contains a pointer to the weapon's data) - Thrown at angle and hits enemies on an arc
+8009 Shield (Damage value contains a pointer to the weapon's data) - Blocks enemy damage while depleting shield health
+800a Helmet (Damage value contains a pointer to the armor's data)
+800b Chestplate (Damage value contains a pointer to the armor's data)
+800c Leggings (Damage value contains a pointer to the armor's data)
+800d 
+800e `
+800f 
+
+WEAPON ITEM DATA
+Byte 0: Damage
+Byte 1: Current durability (0 is broken)
+Byte 2: Max durability (0 never breaks)
+Byte 3: Enchantments
+Bytes 4-19: Null-terminated name (15 chars without '\0')
+
+***********
+* WEAPONS *
+***********
+Many weapons are different, and as such, behave differently.
+The sword is the most basic, average speed, average damage and can hit any adjacent enemy
+   |   |
+---+---+---
+   | P | #
+---+---+---
+   |   |
+
+The axe and pickaxe both swing at an angle and do damage to an enemy plus two extra enemies on its swinging path
+   | # | #
+---+---+---
+   | P | #
+---+---+---
+   |   |
+
+The spear can aim at any angle just like the sword, but it has a range of two blocks
+   |   |
+---+---+---
+   | P | # | #
+---+---+---
+   |   |
+
+The bow uses ammo and is more frail than most weapons. Its shots continue moving until they hit a block or enemy.
+After a shot moves about 5 blocks it'll be affected by gravity and fall
+   |   |
+---+---+---
+   | P | ->  ->  ->  ->  #
+---+---+---
+   |   |
+
+The flail and fishing rod are perhaps the most clunky weapons to use. They are affected by gravity and are best thrown at an arc.
+The flail continues down the path attacking enemies until it hits a block.
+The fishing rod hits the first enemy and entangles them. An entangled enemy can be dragged around
+causing it to inflict minor damage on itself and to other monsters until it breaks free from the hook.
+   |   | # | # |
+---+---+---+---+---
+   | P |   |   | #
+---+---+---+---+---
+   |   |   |   | #
