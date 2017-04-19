@@ -21,8 +21,8 @@
 .set	SOCK_PACKET,	10
 
 /* IOCTL CALLS */
-.set	SIOCGIFNAME,	0x8910	//Get ip name
-.set	SIOCGIFADDR,	0x8915	//Get ip address
+.set	SIOCGIFNAME,	0x8910	// Get ip name
+.set	SIOCGIFADDR,	0x8915	// Get ip address
 
 /* MESSAGE CONSTANTS */
 .set	MSG_OOB,	0x0001
@@ -38,6 +38,6 @@
 .set	MSG_NOSIGNAL,	0x4000
 
 /* SHUTDOWN CONSTANTS */
-.set	SHUT_RD,	0	//Shutdown output
-.set	SHUT_WR,	1	//Shutdown input
-.set	SHUT_RDWR,	2	//Shutdown all
+.set	SHUT_RD,	0	// Shutdown output
+.set	SHUT_WR,	1	// Shutdown input
+.set	SHUT_RDWR,	2	// Shutdown all

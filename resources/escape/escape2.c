@@ -1,4 +1,4 @@
-//Escape Codes C
+// Escape Codes C
 #include <stdio.h>
 
 /***********************************************************
@@ -17,7 +17,7 @@ void codes() {
 }
 
 int main() {
-  //Run all of the color codes
+  // Run all of the color codes
   codes();
 
   return 0;

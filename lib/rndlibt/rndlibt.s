@@ -12,15 +12,15 @@
 .data
 .balign	2	
 RNDPTR:
-	.word	0x00		//The file pointer
+	.word	0x00		// The file pointer
 ENTROPYSIZE:
-	.word	ENTROPY_T	//The amount of space the entropic array holds
+	.word	ENTROPY_T	// The amount of space the entropic array holds
 ENTROPY:
-	.skip	ENTROPY_T	//Space in which to store entropy
+	.skip	ENTROPY_T	// Space in which to store entropy
 ENTROPYPTR:
-	.word	ENTROPY		//The pointer to the entropic array
-ENTROPYLCK:		//If this is 1, then the entropic array is being used
-	.word	0x00	//This is meant to prevent data races when threaded
+	.word	ENTROPY		// The pointer to the entropic array
+ENTROPYLCK:		// If this is 1, then the entropic array is being used
+	.word	0x00	// This is meant to prevent data races when threaded
 
 .text
 .thumb
@@ -33,22 +33,22 @@ ENTROPYLCK:		//If this is 1, then the entropic array is being used
 /* Example: randFloat(3) returns three floats */
 /* Data Races: Uses lock and unlock */
 randFloat:
-	push	{r0, lr}	//Save return point for later
-	bl	checkPtr	//Make sure the entropy pointer is valid
-	bl	lock		//Lock the entropic array
+	push	{r0, lr}	// Save return point for later
+	bl	checkPtr	// Make sure the entropy pointer is valid
+	bl	lock		// Lock the entropic array
 
-	ldr	r2, =ENTROPYPTR	//Load the entropy pointer
-	ldr	r3, [r2]	//Dereference the pointer
+	ldr	r2, =ENTROPYPTR	// Load the entropy pointer
+	ldr	r3, [r2]	// Dereference the pointer
 
-	//Jump to the code that loads the desired number of floats
+	// Jump to the code that loads the desired number of floats
 	ldr	r1, =.LrfJUMP
-	ldr	r0, [sp]//Peek at the top of the stack
-	adds	r0, r0	//Double r0 (2 bytes per register)
-	adds	r1, r0	//then add r1
-	bx	r1	//Jump to somewhere on the jump table
+	ldr	r0, [sp]// Peek at the top of the stack
+	adds	r0, r0	// Double r0 (2 bytes per register)
+	adds	r1, r0	// then add r1
+	bx	r1	// Jump to somewhere on the jump table
 	
-//A jump table for the switch-case block
-.LrfJUMP:	nop	//We don't expect the user to pass in 0 as an argument
+// A jump table for the switch-case block
+.LrfJUMP:	nop	// We don't expect the user to pass in 0 as an argument
 	b	.Lrf0
 	b	.Lrf1
 	b	.Lrf2
@@ -82,107 +82,107 @@ randFloat:
 	b	.Lrf30
 	b	.Lrf31
 .Lrf0:
-	vldr.32	s0, [r3]	//Load the register
-	adds	r3, #4		//Increment the pointer
-	b	.LrfCON	//Exit the switch
+	vldr.32	s0, [r3]	// Load the register
+	adds	r3, #4		// Increment the pointer
+	b	.LrfCON	// Exit the switch
 .Lrf1:
-	vldmia.32	r3!, {s0-s1}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s1}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf2:
-	vldmia.32	r3!, {s0-s2}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s2}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf3:
-	vldmia.32	r3!, {s0-s3}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s3}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf4:
-	vldmia.32	r3!, {s0-s4}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s4}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf5:
-	vldmia.32	r3!, {s0-s5}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s5}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf6:
-	vldmia.32	r3!, {s0-s6}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s6}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf7:
-	vldmia.32	r3!, {s0-s7}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s7}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf8:
-	vldmia.32	r3!, {s0-s8}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s8}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf9:
-	vldmia.32	r3!, {s0-s9}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s9}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf10:
-	vldmia.32	r3!, {s0-s10}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s10}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf11:
-	vldmia.32	r3!, {s0-s11}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s11}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf12:
-	vldmia.32	r3!, {s0-s12}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s12}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf13:
-	vldmia.32	r3!, {s0-s13}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s13}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf14:
-	vldmia.32	r3!, {s0-s14}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s14}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf15:
-	vldmia.32	r3!, {s0-s15}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s15}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf16:
-	vldmia.32	r3!, {s0-s16}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s16}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf17:
-	vldmia.32	r3!, {s0-s17}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s17}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf18:
-	vldmia.32	r3!, {s0-s18}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s18}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf19:
-	vldmia.32	r3!, {s0-s19}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s19}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf20:
-	vldmia.32	r3!, {s0-s20}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s20}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf21:
-	vldmia.32	r3!, {s0-s21}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s21}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf22:
-	vldmia.32	r3!, {s0-s22}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s22}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf23:
-	vldmia.32	r3!, {s0-s23}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s23}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf24:
-	vldmia.32	r3!, {s0-s24}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s24}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf25:
-	vldmia.32	r3!, {s0-s25}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s25}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf26:
-	vldmia.32	r3!, {s0-s26}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s26}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf27:
-	vldmia.32	r3!, {s0-s27}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s27}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf28:
-	vldmia.32	r3!, {s0-s28}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s28}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf29:
-	vldmia.32	r3!, {s0-s29}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s29}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf30:
-	vldmia.32	r3!, {s0-s30}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s30}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .Lrf31:
-	vldmia.32	r3!, {s0-s31}	//Load the registers and increment
-	b	.LrfCON	//Exit the switch
+	vldmia.32	r3!, {s0-s31}	// Load the registers and increment
+	b	.LrfCON	// Exit the switch
 .LrfCON:
-	str	r3, [r2]	//Store the pointer
-	pop	{r0}		//Get the number of variables
+	str	r3, [r2]	// Store the pointer
+	pop	{r0}		// Get the number of variables
 
-	//Convert the random values to floats
+	// Convert the random values to floats
 	vcvt.f32.u32	s0, s0
 	subs	r0, #1
 	beq	.LrfDIV
@@ -276,15 +276,15 @@ randFloat:
 	vcvt.f32.u32	s30, s30
 	subs	r0, #1
 	beq	.LrfDIV
-	//Special case for s31 (Not enough room)
+	// Special case for s31 (Not enough room)
 	vcvt.f32.u32	s31, s31
 	vpush.32	{s31}	
 .LrfDIV:
-	//Load the max 32-bit value as a float
-	ldr	r3, =MAX32	//Get the location of the max 32-bit value
-	vldr.f32	s31, [r3]	//Load the max 32-bit value into the vfp
+	// Load the max 32-bit value as a float
+	ldr	r3, =MAX32	// Get the location of the max 32-bit value
+	vldr.f32	s31, [r3]	// Load the max 32-bit value into the vfp
 
-	//Divide each float by the max value
+	// Divide each float by the max value
 	vdiv.f32	s0, s0, s31
 	subs	r0, #1
 	beq	.LrfEND
@@ -378,18 +378,18 @@ randFloat:
 	vdiv.f32	s30, s30, s31
 	subs	r0, #1
 	beq	.LrfEND
-	//Special case for s31 (Stored the actual 32nd value earlier)
-	vpop.f32	{s31}	//Recover the old value
-	vpush.32	{s30}	//Save s30 for later (we're using it now)
-	vldr.f32	s30, [r3]	//Load the max 32-bit value again
-	vdiv.f32	s31, s31, s30	//s31 / MAX32
-	vpop.f32	{s30}	//Retrieve s30
+	// Special case for s31 (Stored the actual 32nd value earlier)
+	vpop.f32	{s31}	// Recover the old value
+	vpush.32	{s30}	// Save s30 for later (we're using it now)
+	vldr.f32	s30, [r3]	// Load the max 32-bit value again
+	vdiv.f32	s31, s31, s30	// s31 / MAX32
+	vpop.f32	{s30}	// Retrieve s30
 	subs	r0, #1
 	beq	.LrfEND
 
 .LrfEND:
-	bl	unlock	//Unlock the entropic array
-	pop	{pc}	//Return
+	bl	unlock	// Unlock the entropic array
+	pop	{pc}	// Return
 
 /* void openRnd() */
 /* Opens /dev/urandom for reading */
@@ -398,23 +398,23 @@ randFloat:
 .global	openRnd
 .type	openRnd, %function
 openRnd:
-	push	{r4, lr}	//Save return point for later
+	push	{r4, lr}	// Save return point for later
 
-	//If there is already a value written to the file handle, skip it
+	// If there is already a value written to the file handle, skip it
 	ldr	r4, =RNDPTR
 	ldr	r0, [r4]
 	cbnz	r0, .LopenDONE
 
-	//Open /dev/urandom
-	ldr	r0, =RANDOM	//The filename
-	movs	r1, #O_RDONLY	//Only reading privileges
-	movs	r2, #0		//Not creating a file, so no mode_t
-	bl	sysOpen		//Open the file
+	// Open /dev/urandom
+	ldr	r0, =RANDOM	// The filename
+	movs	r1, #O_RDONLY	// Only reading privileges
+	movs	r2, #0		// Not creating a file, so no mode_t
+	bl	sysOpen		// Open the file
 
-	//Store the pointer in memory so that we don't lose it
+	// Store the pointer in memory so that we don't lose it
 	str	r0, [r4]
 .LopenDONE:
-	pop	{r4, pc}	//Return
+	pop	{r4, pc}	// Return
 
 /* void closeRnd() */
 /* Closes /dev/urandom */
@@ -423,21 +423,21 @@ openRnd:
 .global	closeRnd
 .type	closeRnd, %function
 closeRnd:
-	push	{r4, lr}	//Save return point for later
+	push	{r4, lr}	// Save return point for later
 
-	//If there is already no value written to the file handle, skip it
+	// If there is already no value written to the file handle, skip it
 	ldr	r4, =RNDPTR
 	ldr	r0, [r4]
 	cbz	r4, .LcloseDONE
 
-	//Close /dev/urandom
-	bl	sysClose	//Close the file
+	// Close /dev/urandom
+	bl	sysClose	// Close the file
 
-	//Clear the pointer from memory so that we don't use it again
+	// Clear the pointer from memory so that we don't use it again
 	movs	r0, #0
 	str	r0, [r4]
 .LcloseDONE:
-	pop	{r4, pc}	//Return
+	pop	{r4, pc}	// Return
 
 /* void randomArray(void* memory[r1], size_t size[r2]) */
 /* Fills the given array with entropic data */
@@ -446,11 +446,11 @@ closeRnd:
 .global	randomArray
 .type	randomArray, %function
 randomArray:
-	push	{lr}		//Save return point for later
-	ldr	r0, =RNDPTR	//The file pointer to /dev/urandom
+	push	{lr}		// Save return point for later
+	ldr	r0, =RNDPTR	// The file pointer to /dev/urandom
 	ldr	r0, [r0]
-	bl	sysRead		//Read entropic data from the file
-	pop	{pc}		//Return
+	bl	sysRead		// Read entropic data from the file
+	pop	{pc}		// Return
 
 /* void seedRnd() */
 /* Fills the entropy array with entropic data */
@@ -459,26 +459,26 @@ randomArray:
 .global	seedRnd
 .type	seedRnd, %function
 seedRnd:
-	push	{lr}		//Save return point for later
+	push	{lr}		// Save return point for later
 
-	//Lock the entropic array
+	// Lock the entropic array
 	bl	lock
 
-	//Refill the entropic array with random data
-	ldr	r1, =ENTROPY	//Load the entropic array
+	// Refill the entropic array with random data
+	ldr	r1, =ENTROPY	// Load the entropic array
 	movs	r3, r1
-	ldr	r2, =ENTROPYSIZE//Set the read size to 256
+	ldr	r2, =ENTROPYSIZE// Set the read size to 256
 	ldr	r2, [r2]
-	bl	randomArray	//Fill the entropic array with random data
+	bl	randomArray	// Fill the entropic array with random data
 
-	//Reset the entropy pointer
+	// Reset the entropy pointer
 	ldr	r0, =ENTROPYPTR
 	str	r3, [r0]
 
-	//Unlock the entropic array
+	// Unlock the entropic array
 	bl	unlock
 
-	pop	{pc}	//Return
+	pop	{pc}	// Return
 
 /* void checkPtr() */
 /* Checks if the entropy pointer is valid and */
@@ -486,18 +486,18 @@ seedRnd:
 .align	2
 .thumb
 checkPtr:
-	push	{lr}	//Save the return point for later
+	push	{lr}	// Save the return point for later
 
-	//Check if the entropy pointer is valid
-	ldr	r0, =ENTROPYPTR	//&entropyPTR
-	ldr	r1, [r0]	//entropyPTR
+	// Check if the entropy pointer is valid
+	ldr	r0, =ENTROPYPTR	// &entropyPTR
+	ldr	r1, [r0]	// entropyPTR
 	
-	//If the pointer is greater or equal to the reference then reseed
+	// If the pointer is greater or equal to the reference then reseed
 	cmp	r1, r0
 	blo	.LcheckSKIPSEED
 	bl	seedRnd
 .LcheckSKIPSEED:
-	pop	{pc}	//Return
+	pop	{pc}	// Return
 
 /* char[r0] randByte() */
 /* Generates a random byte */
@@ -506,19 +506,19 @@ checkPtr:
 .global	randByte
 .type	randByte, %function
 randByte:
-	push	{lr}		//Save return point for later
-	bl	checkPtr	//Make sure the entropy pointer is valid
-	bl	lock		//Lock the entropic array
+	push	{lr}		// Save return point for later
+	bl	checkPtr	// Make sure the entropy pointer is valid
+	bl	lock		// Lock the entropic array
 
-	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
-	ldr	r2, [r1]	//Dereference the pointer
-	ldrb	r0, [r2]	//Dereference again and
-	adds	r2, #1		//Move the pointer
-	str	r2, [r1]	//Store the updated address
-	push	{r0}		//Store the answer
+	ldr	r1, =ENTROPYPTR	// Load the entropy pointer
+	ldr	r2, [r1]	// Dereference the pointer
+	ldrb	r0, [r2]	// Dereference again and
+	adds	r2, #1		// Move the pointer
+	str	r2, [r1]	// Store the updated address
+	push	{r0}		// Store the answer
 
-	bl	unlock		//Unlock the entropic array
-	pop	{r0, pc}	//Return
+	bl	unlock		// Unlock the entropic array
+	pop	{r0, pc}	// Return
 
 /* short[r0] randShort() */
 /* Generates a random short */
@@ -527,19 +527,19 @@ randByte:
 .global	randShort
 .type	randShort, %function
 randShort:
-	push	{lr}		//Save return point for later
-	bl	checkPtr	//Make sure the entropy pointer is valid
-	bl	lock		//Lock the entropic array
+	push	{lr}		// Save return point for later
+	bl	checkPtr	// Make sure the entropy pointer is valid
+	bl	lock		// Lock the entropic array
 
-	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
-	ldr	r2, [r1]	//Dereference the pointer
-	ldrh	r0, [r2]	//Dereference again and
-	adds	r2, #2		//Move the pointer
-	str	r2, [r1]	//Store the updated address
-	push	{r0}		//Store the answer
+	ldr	r1, =ENTROPYPTR	// Load the entropy pointer
+	ldr	r2, [r1]	// Dereference the pointer
+	ldrh	r0, [r2]	// Dereference again and
+	adds	r2, #2		// Move the pointer
+	str	r2, [r1]	// Store the updated address
+	push	{r0}		// Store the answer
 
-	bl	unlock		//Unlock the entropic array
-	pop	{r0, pc}	//Return
+	bl	unlock		// Unlock the entropic array
+	pop	{r0, pc}	// Return
 
 /* int[r0] randInt() */
 /* Generates a random int */
@@ -548,19 +548,19 @@ randShort:
 .global	randInt
 .type	randInt, %function
 randInt:
-	push	{lr}		//Save return point for later
-	bl	checkPtr	//Make sure the entropy pointer is valid
-	bl	lock		//Lock the entropic array
+	push	{lr}		// Save return point for later
+	bl	checkPtr	// Make sure the entropy pointer is valid
+	bl	lock		// Lock the entropic array
 
-	ldr	r1, =ENTROPYPTR	//Load the entropy pointer
-	ldr	r2, [r1]	//Dereference the pointer
-	ldr	r0, [r2]	//Dereference again and
-	adds	r2, #4		//Move the pointer
-	str	r2, [r1]	//Store the updated address
-	push	{r0}		//Store the answer
+	ldr	r1, =ENTROPYPTR	// Load the entropy pointer
+	ldr	r2, [r1]	// Dereference the pointer
+	ldr	r0, [r2]	// Dereference again and
+	adds	r2, #4		// Move the pointer
+	str	r2, [r1]	// Store the updated address
+	push	{r0}		// Store the answer
 
-	bl	unlock		//Unlock the entropic array
-	pop	{r0, pc}	//Return
+	bl	unlock		// Unlock the entropic array
+	pop	{r0, pc}	// Return
 
 /* long[r0-r1] randLong() */
 /* Generates a random long */
@@ -569,19 +569,19 @@ randInt:
 .global	randLong
 .type	randLong, %function
 randLong:
-	push	{lr}		//Save return point for later
-	bl	checkPtr	//Make sure the entropy pointer is valid
-	bl	lock		//Lock the entropic array
+	push	{lr}		// Save return point for later
+	bl	checkPtr	// Make sure the entropy pointer is valid
+	bl	lock		// Lock the entropic array
 
-	ldr	r2, =ENTROPYPTR	//Load the entropy pointer
-	ldr	r3, [r2]	//Dereference the pointer
-	ldrd	r0, [r3]	//Dereference again and
-	adds	r3, #8		//Move the pointer
-	str	r3, [r2]	//Store the updated address
-	push	{r0, r1}	//Store the answer
+	ldr	r2, =ENTROPYPTR	// Load the entropy pointer
+	ldr	r3, [r2]	// Dereference the pointer
+	ldrd	r0, [r3]	// Dereference again and
+	adds	r3, #8		// Move the pointer
+	str	r3, [r2]	// Store the updated address
+	push	{r0, r1}	// Store the answer
 
-	bl	unlock		//Unlock the entropic array
-	pop	{r0, r1, pc}	//Return
+	bl	unlock		// Unlock the entropic array
+	pop	{r0, r1, pc}	// Return
 
 /* void lock() */
 /* Waits for the entropic array to unlock before locking it again */
@@ -589,17 +589,17 @@ randLong:
 .balign 2
 .thumb
 lock:
-	//If the entropic array is locked then wait until it's unlocked
+	// If the entropic array is locked then wait until it's unlocked
 	ldr	r1, =ENTROPYLCK
 	ldr	r0, [r1]
 	cbz	r0, .LockDONE
 	b	lock
 .LockDONE:
-	//Lock the entropic array
+	// Lock the entropic array
 	movs	r0, #1
 	str	r0, [r1]
 	
-	bx	lr	//Return
+	bx	lr	// Return
 
 /* void unlock() */
 /* Unlocks the entropic array: must be called after a lock */
@@ -607,11 +607,11 @@ lock:
 .balign	2
 .thumb
 unlock:
-	//Unlock the entropic array
+	// Unlock the entropic array
 	ldr	r1, =ENTROPYLCK
 	movs	r0, #0
 	str	r0, [r1]
-	bx	lr	//Return
+	bx	lr	// Return
 
 .text
 .balign 2

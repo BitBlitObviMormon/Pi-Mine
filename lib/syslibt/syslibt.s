@@ -12,8 +12,8 @@
 .global	sysExit
 .type	sysExit, %function
 sysExit:
-	movs	r7, #EXIT	//Exit with
-	svc	#0		//	whatever is in r0
+	movs	r7, #EXIT	// Exit with
+	svc	#0		// 	whatever is in r0
 
 /* ssize_t[r0] sysRead(uint fd[r0], char* buf[r1], size_t count[r2]) */
 /* Uses the system call to read from a buffer */
@@ -22,10 +22,10 @@ sysExit:
 .global	sysRead
 .type	sysRead, %function
 sysRead:
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #READ	//Prepare to invoke read system call
-	svc	#0		//Invoke read system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #READ	// Prepare to invoke read system call
+	svc	#0		// Invoke read system call
+	pop	{r7, pc}	// Return
 	
 /* ssize_t[r0] sysWrite(uint fd[r0], const char* buf[r1], size_t count[r2]) */
 /* Uses the system call to write to a buffer */
@@ -34,10 +34,10 @@ sysRead:
 .global	sysWrite
 .type	sysWrite, %function
 sysWrite:
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #WRITE	//Prepare to invoke write system call
-	svc	#0		//Invoke write system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #WRITE	// Prepare to invoke write system call
+	svc	#0		// Invoke write system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysOpen(const char* pathname[r0], int flags[r1], mode_t mode[r2]) */
 /* Uses the system call to open a file and get its file handle */
@@ -46,10 +46,10 @@ sysWrite:
 .global	sysOpen
 .type	sysOpen, %function
 sysOpen:	
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #OPEN	//Prepare to invoke open system call
-	svc	#0		//Invoke open system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #OPEN	// Prepare to invoke open system call
+	svc	#0		// Invoke open system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysClose(int fd[r0]) */
 /* Uses the system call to close a file */
@@ -58,10 +58,10 @@ sysOpen:
 .global	sysClose
 .type	sysClose, %function
 sysClose:
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #CLOSE	//Prepare to invoke close system call
-	svc	#0		//Invoke close system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #CLOSE	// Prepare to invoke close system call
+	svc	#0		// Invoke close system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysBrk(int br[r0]) */
 /* Uses the system call to allocate more memory */
@@ -70,10 +70,10 @@ sysClose:
 .global	sysBrk
 .type	sysBrk, %function
 sysBrk:
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #BRK	//Prepare to invoke read system call
-	svc	#0		//Invoke read system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #BRK	// Prepare to invoke read system call
+	svc	#0		// Invoke read system call
+	pop	{r7, pc}	// Return
 
 /* void*[r0] sysMMap2(void* start[r0], int length[r1], int prot[r2], */
 /*                    int flags[r3], int fd[r4], int pageoffset[r5]) */
@@ -83,10 +83,10 @@ sysBrk:
 .global	sysMMap2
 .type	sysMMap2, %function
 sysMMap2:
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #MMAP2	//Prepare to invoke mmap2 system call
-	svc	#0		//Invoke mmap2 system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #MMAP2	// Prepare to invoke mmap2 system call
+	svc	#0		// Invoke mmap2 system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysIoctl(int d[r0], int request[r1], ... args[r2-??]) */
 /* Uses the system call to perform specific I/O Control functions */
@@ -95,10 +95,10 @@ sysMMap2:
 .global	sysIoctl
 .type	sysIoctl, %function
 sysIoctl:
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #IOCTL	//Prepare to invoke read system call
-	svc	#0		//Invoke read system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #IOCTL	// Prepare to invoke read system call
+	svc	#0		// Invoke read system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysSocket(int domain[r0], int type[r1], int protocol[r2]) */
 /* Uses the system call to create a socket */
@@ -107,10 +107,10 @@ sysIoctl:
 .global	sysSocket
 .type	sysSocket, %function
 sysSocket:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #SOCKET	//Prepare to invoke socket system call
-	svc	#0		//Invoke socket system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #SOCKET	// Prepare to invoke socket system call
+	svc	#0		// Invoke socket system call
+	pop	{r7, pc}	// Return
 	
 /* int[r0] sysBind(int sockfd[r0], struct sockaddr* my_addr[r1],
 /*                 socklen_t addrlen[r2]) */
@@ -120,10 +120,10 @@ sysSocket:
 .global	sysBind
 .type	sysBind, %function
 sysBind:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #BIND	//Prepare to invoke bind system call
-	svc	#0		//Invoke bind system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #BIND	// Prepare to invoke bind system call
+	svc	#0		// Invoke bind system call
+	pop	{r7, pc}	// Return
 	
 /* int[r0] sysConnect(int sockfd[r0], const struct sockaddr* serv_addr[r1],
 /*                    socklen_t addrlen[r2]) */
@@ -133,10 +133,10 @@ sysBind:
 .global	sysConnect
 .type	sysConnect, %function
 sysConnect:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #CONNECT	//Prepare to invoke connect system call
-	svc	#0		//Invoke connect system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #CONNECT	// Prepare to invoke connect system call
+	svc	#0		// Invoke connect system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysListen(int s[r0], int backlog[r1]) */
 /* Uses the system call to make a bound socket "listen" for new connections */
@@ -145,10 +145,10 @@ sysConnect:
 .global	sysListen
 .type	sysListen, %function
 sysListen:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #LISTEN	//Prepare to invoke listen system call
-	svc	#0		//Invoke listen system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #LISTEN	// Prepare to invoke listen system call
+	svc	#0		// Invoke listen system call
+	pop	{r7, pc}	// Return
 	
 /* int[r0] sysAccept(int s[r0], struct sockaddr* addr[r1],
 /*                   socklen_t addrlen[r2]) */
@@ -158,10 +158,10 @@ sysListen:
 .global	sysAccept
 .type	sysAccept, %function
 sysAccept:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #ACCEPT	//Prepare to invoke accept system call
-	svc	#0		//Invoke accept system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #ACCEPT	// Prepare to invoke accept system call
+	svc	#0		// Invoke accept system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysSend(int s[r0], const void* msg[r1], int length[r2], */
 /*                 int flags[r3]) */
@@ -173,10 +173,10 @@ sysAccept:
 .global	sysSend
 .type	sysSend, %function
 sysSend:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #SEND	//Prepare to invoke send system call
-	svc	#0		//Invoke send system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #SEND	// Prepare to invoke send system call
+	svc	#0		// Invoke send system call
+	pop	{r7, pc}	// Return
 	
 /* int[r0] sysRecv(int s[r0], const void* msg[r1], int length[r2], */
 /*                 int flags[r3]) */
@@ -188,10 +188,10 @@ sysSend:
 .global	sysRecv
 .type	sysRecv, %function
 sysRecv:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #RECV	//Prepare to invoke recieve system call
-	svc	#0		//Invoke recieve system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #RECV	// Prepare to invoke recieve system call
+	svc	#0		// Invoke recieve system call
+	pop	{r7, pc}	// Return
 
 
 /* int[r0] sysShutdown(int sockfd[r0], int how[r1]) */
@@ -204,10 +204,10 @@ sysRecv:
 .global	sysShutdown
 .type	sysShutdown, %function
 sysShutdown:
-	push	{r7, lr}	//Save return point for later
-	movw	r7, #SHUTDOWN	//Prepare to invoke shutdown system call
-	svc	#0		//Invoke shutdown system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movw	r7, #SHUTDOWN	// Prepare to invoke shutdown system call
+	svc	#0		// Invoke shutdown system call
+	pop	{r7, pc}	// Return
 
 /* int[r0] sysSelect(int n[r0], fd_set* readfds[r1], fd_set* writefds[r2],
 /*                   fd_set* exceptfds[r3], struct timeval* timeout[r4]) */
@@ -218,7 +218,7 @@ sysShutdown:
 .global	sysSelect
 .type	sysSelect, %function
 sysSelect:
-	push	{r7, lr}	//Save return point for later
-	movs	r7, #SELECT	//Prepare to invoke select system call
-	svc	#0		//Invoke select system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #SELECT	// Prepare to invoke select system call
+	svc	#0		// Invoke select system call
+	pop	{r7, pc}	// Return

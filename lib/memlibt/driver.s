@@ -8,12 +8,12 @@ heap_end:
 .arm
 .global _start
 _start:
-	//Ask where the heap is
+	// Ask where the heap is
 	ldr	r0, =heap
 	mov	r0, #0
 	bl	sysBrk
 
-	//Store the heap location in memory
+	// Store the heap location in memory
 	ldr	r4, =heap
 	ldr	r5, =heap_end
 	str	r0, [r4]

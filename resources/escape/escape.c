@@ -1,4 +1,4 @@
-//Escape Codes C
+// Escape Codes C
 #include <stdio.h>
 
 /**********************************************************
@@ -20,15 +20,15 @@ void codes() {
   printf("\n");
   
   for (char i = 0; i < 9; i++) {
-    //I'm going to ignore 3 and 6, they don't do anything for either terminal
+    // I'm going to ignore 3 and 6, they don't do anything for either terminal
     if (i != 3 && i != 6) {
       for (char x = 0; x < 8; x++) {
 	for (char y = 0; y < 8; y++) {
-	  //Write a block and its escape sequences
+	  // Write a block and its escape sequences
 	  printf("\e[0m\e[%dm\e[3%dm\e[4%dm %d%d%d ", i, x, y, i, x, y);
 	}
       
-	//Start a new line for each background color (without formatting)
+	// Start a new line for each background color (without formatting)
 	printf("\e[0m\e[37m\e[40m\n");
       }
     }
@@ -38,7 +38,7 @@ void codes() {
 }
 
 int main() {
-  //Run all of the color codes
+  // Run all of the color codes
   codes();
 
   return 0;

@@ -9,19 +9,19 @@
 .global	draw
 .type	draw, %function
 draw:
-	push	{r1, lr}	//Save return point for later
+	push	{r1, lr}	// Save return point for later
 
-	//Save the cursor
+	// Save the cursor
 	bl	saveCursor
 
-	//Set the cursor to home
+	// Set the cursor to home
 	bl	homeCursor
 
-	//Get buffer and print it
+	// Get buffer and print it
 	pop	{r1}
 	bl	prints
 
-	//Load the cursor
+	// Load the cursor
 	bl	loadCursor
 
-	pop	{pc}		//Return
+	pop	{pc}		// Return

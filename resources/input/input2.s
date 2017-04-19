@@ -36,11 +36,11 @@
 savedState:
 	/* Save enough space to backup the terminal's settings */
 	/* (Replace with brk system call to allow several saved states) */
-	.skip	TERMIOS	//sizeof(termios)
+	.skip	TERMIOS	// sizeof(termios)
 newState:
 	/* Save enough space to change the terminal's settings */
 	/* (Replace with brk system call to allow several saved states) */
-	.skip	TERMIOS	//sizeof(termios)
+	.skip	TERMIOS	// sizeof(termios)
 	
 .text
 .arm
@@ -63,20 +63,20 @@ main:
 .global	setConsoleFlags
 .type	setConsoleFlags, %function
 setConsoleFlags:
-	push	{r7, lr}	//Save return point for later
-	mov	r0, #STDIN	//stdin
-	ldr	r2, =newState	//Write to the new state
-	mov	r7, #IOCTL	//Ioctl
-	ldr	r1, =TCGETS	//	TCGETS (0x5401)
-	svc	#0		//		system call
-	mov	r0, r2		//copyFrom = newState
-	ldr	r1, =savedState //copyTo = savedState
-	bl	copyConsole	//Backs up the console flags to memory
+	push	{r7, lr}	// Save return point for later
+	mov	r0, #STDIN	// stdin
+	ldr	r2, =newState	// Write to the new state
+	mov	r7, #IOCTL	// Ioctl
+	ldr	r1, =TCGETS	// 	TCGETS (0x5401)
+	svc	#0		// 		system call
+	mov	r0, r2		// copyFrom = newState
+	ldr	r1, =savedState // copyTo = savedState
+	bl	copyConsole	// Backs up the console flags to memory
 
-	//Write the new console
+	// Write the new console
 	
 	
-	pop	{r7, pc}	//Return
+	pop	{r7, pc}	// Return
 
 /* void copyConsole(termios* copyFrom[r0], termios* copyTo[r1]) */
 /* Copies the console copyFrom to copyTo */	
@@ -84,17 +84,17 @@ setConsoleFlags:
 .global	copyConsole
 .type	copyConsole, %function
 copyConsole:
-	push	{r4-r6}	//Backup these registers
+	push	{r4-r6}	// Backup these registers
 
-	//Copy 60 bytes of data from copyFrom to copyTo
-	ldmia	r0!, {r2-r6}	//Copy bytes 01-20
+	// Copy 60 bytes of data from copyFrom to copyTo
+	ldmia	r0!, {r2-r6}	// Copy bytes 01-20
 	stmia	r1!, {r2-r6}
-	ldmia	r0!, {r2-r6}	//Copy bytes 21-40
+	ldmia	r0!, {r2-r6}	// Copy bytes 21-40
 	stmia	r1!, {r2-r6}
-	ldmia	r0!, {r2-r6}	//Copy bytes 41-60
+	ldmia	r0!, {r2-r6}	// Copy bytes 41-60
 	stmia	r1!, {r2-r6}
 	
-	pop	{r4-r6}	//Return these registers to normal
+	pop	{r4-r6}	// Return these registers to normal
 	bx	lr
 
 /* void resetConsoleFlags(termios* savedState[r0]) */
@@ -103,13 +103,13 @@ copyConsole:
 .global	resetConsoleFlags
 .type	resetConsoleFlags, %function
 resetConsoleFlags:
-	push	{r7, lr}	//Save return point for later
-	mov	r0, #STDIN	//stdin
-	ldr	r2, =savedState	//Apply the old state
-	mov	r7, #IOCTL	//Ioctl
-	ldr	r1, =TCSETS	//	TCSETS (0x5402)
-	svc	#0		//		system call
-	pop	{r7, pc}	//Return
+	push	{r7, lr}	// Save return point for later
+	mov	r0, #STDIN	// stdin
+	ldr	r2, =savedState	// Apply the old state
+	mov	r7, #IOCTL	// Ioctl
+	ldr	r1, =TCSETS	// 	TCSETS (0x5402)
+	svc	#0		// 		system call
+	pop	{r7, pc}	// Return
 
 /* void read(uint fd, char* buf, size_t count) */
 /* Uses the system call to read from a buffer */
@@ -117,9 +117,9 @@ resetConsoleFlags:
 .global	sysRead
 .type	sysRead, %function
 sysRead:
-	mov	r7, $READ	//Prepare to invoke syscall read
-	svc	#0		//Invoke system call read
-	bx	lr		//Return
+	mov	r7, $READ	// Prepare to invoke syscall read
+	svc	#0		// Invoke system call read
+	bx	lr		// Return
 	
 /* void write(uint fd, const char* buf, size_t count) */
 /* Uses the system call to write to a buffer */
@@ -127,6 +127,6 @@ sysRead:
 .global	sysWrite
 .type	sysWrite, %function
 sysWrite:
-	mov	r7, $WRITE	//Prepare to invoke syscall write
-	svc	#0		//Invoke system call write
-	bx	lr		//Return
+	mov	r7, $WRITE	// Prepare to invoke syscall write
+	svc	#0		// Invoke system call write
+	bx	lr		// Return

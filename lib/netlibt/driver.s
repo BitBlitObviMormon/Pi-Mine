@@ -1,224 +1,224 @@
 /* This driver depends on the input/output library */
 .data
 BUF:
-	.skip	64	//Enough data to hold a string buffer
+	.skip	64	// Enough data to hold a string buffer
 
 .text
 .syntax	unified
 .arm
 .global _start
 _start:
-	blx	main	//Call the thumb function main
+	blx	main	// Call the thumb function main
 
 /* int main() */
 .thumb_func
 .global main
 main:
-	//Create a socket
+	// Create a socket
 	bl	createSocket
-	movs	r4, r0		//Save the client's socket
+	movs	r4, r0		// Save the client's socket
 
-	//Create a server
-	ldr	r0, =ADDRESS	//Get the pointer of the ip address
-	ldr	r0, [r0]	//Get the ip address
-	movw	r1, #7777	//Host on port 7777
-	movs	r2, #255	//Only 255 bytes of backlog
-	movs	r3, #0		//Don't block in order to wait for clients
-	movs	r5, r0		//Save the ip address
-	movs	r6, r1		//Save the port
-	bl	createServer	//Create the server socket
-	movs	r7, r0		//Save the server's socket
+	// Create a server
+	ldr	r0, =ADDRESS	// Get the pointer of the ip address
+	ldr	r0, [r0]	// Get the ip address
+	movw	r1, #7777	// Host on port 7777
+	movs	r2, #255	// Only 255 bytes of backlog
+	movs	r3, #0		// Don't block in order to wait for clients
+	movs	r5, r0		// Save the ip address
+	movs	r6, r1		// Save the port
+	bl	createServer	// Create the server socket
+	movs	r7, r0		// Save the server's socket
 
-	//Connect the client to the server
-	movs	r0, r4		//Get the client's socket
-	movs	r1, r5		//Get the ip address
-	movs	r2, r6		//Get the port
-	bl	connect		//Connect the client to the server
+	// Connect the client to the server
+	movs	r0, r4		// Get the client's socket
+	movs	r1, r5		// Get the ip address
+	movs	r2, r6		// Get the port
+	bl	connect		// Connect the client to the server
 
-//	b	sysExit
+// 	b	sysExit
 
-	//Tell the server to accept the client
-	movs	r0, r7		//Get the server's socket
-	bl	acceptClient	//Accept the client's connection
-	movs	r8, r0		//Store the client's socket (server-side)
+	// Tell the server to accept the client
+	movs	r0, r7		// Get the server's socket
+	bl	acceptClient	// Accept the client's connection
+	movs	r8, r0		// Store the client's socket (server-side)
 
-	//Make the client say hello to the server
+	// Make the client say hello to the server
 	bl	sendClient
 	
-	//Make the server say hello to the client
+	// Make the server say hello to the client
 	bl	sendServer
 
-	//Have the server recieve the client's message
+	// Have the server recieve the client's message
 	bl	recvServer
 
-	//Have the client recieve the server's message
+	// Have the client recieve the server's message
 	bl	recvClient
 
-	//Close the sockets
-	movs	r0, r4		//Close the client
+	// Close the sockets
+	movs	r0, r4		// Close the client
 	bl	closeSocket
-	movs	r0, r7		//Close the server
+	movs	r0, r7		// Close the server
 	bl	closeSocket
 	
-	movs	r0, #13		//Move #13 to r0
+	movs	r0, #13		// Move #13 to r0
 	b	sysExit
 
 /* void clientMsg(char* message[r0], bool serverSays[r1]) */
 /* Makes the client say something */
 .thumb_func
 clientMsg:
-	push	{r0, lr}	//Save return point and message
-	push	{r1}		//Save the bool
+	push	{r0, lr}	// Save return point and message
+	push	{r1}		// Save the bool
 
-	//Print "[CLIENT] "
+	// Print "[CLIENT] "
 	ldr	r1, =CLIENT
 	bl	prints
 
-	//If the message is coming from the server, print "Server said: "
-	pop	{r0}		//Get the bool
+	// If the message is coming from the server, print "Server said: "
+	pop	{r0}		// Get the bool
 	cbz	r0, .LclientMsgNotServer
 
-	//Print "Server said: "
-	ldr	r1, =CLIENTRECV	//"Server said: "
-	bl	prints		//Print "Server said: "
+	// Print "Server said: "
+	ldr	r1, =CLIENTRECV	// "Server said: "
+	bl	prints		// Print "Server said: "
 .LclientMsgNotServer:
-	//Print the message and append a newline
+	// Print the message and append a newline
 	pop	{r1}
 	bl	puts
 
-	pop	{pc}		//Return
+	pop	{pc}		// Return
 
 /* void serverMsg(char* message[r0]) */
 /* Makes the server say something */
 .thumb_func
 serverMsg:
-	push	{r0, lr}	//Save return point and message
-	push	{r1}		//Save the bool
+	push	{r0, lr}	// Save return point and message
+	push	{r1}		// Save the bool
 
-	//Print "[SERVER] "
+	// Print "[SERVER] "
 	ldr	r1, =SERVER
 	bl	prints
 
-	//If the message is coming from the server, print "Client said: "
-	pop	{r0}		//Get the bool
+	// If the message is coming from the server, print "Client said: "
+	pop	{r0}		// Get the bool
 	cbz	r0, .LserverMsgNotClient
 
-	//Print "Client said: "
-	ldr	r1, =SERVERRECV	//"Client said: "
-	bl	prints		//Print "Client said: "
+	// Print "Client said: "
+	ldr	r1, =SERVERRECV	// "Client said: "
+	bl	prints		// Print "Client said: "
 .LserverMsgNotClient:
-	//Print the message and append a newline
+	// Print the message and append a newline
 	pop	{r1}
 	bl	puts
 
-	pop	{pc}		//Return
+	pop	{pc}		// Return
 
 /* void sendClient() */
 /* Makes the client greet the server via message */
 .thumb_func
 sendClient:
-	push	{lr}		//Save return point
+	push	{lr}		// Save return point
 
-	//Say the client is going to send a message
+	// Say the client is going to send a message
 	ldr	r0, =CLIENTHELLO
 	movs	r1, #0
 	bl	clientMsg
 
-	//Send the message
-	movs	r0, r4		//Get the client's socket
-	ldr	r1, =CLIENTSEND	//Prepare to send a packet over
-	bl	sendMessage	//Send the packet
+	// Send the message
+	movs	r0, r4		// Get the client's socket
+	ldr	r1, =CLIENTSEND	// Prepare to send a packet over
+	bl	sendMessage	// Send the packet
 
-	//If we sent the data then return happily
+	// If we sent the data then return happily
 	cbnz	r0, .LsendClientEnd
 
-	//If we sent zero bytes then something must be wrong
+	// If we sent zero bytes then something must be wrong
 	ldr	r0, =CLIENTFAIL
 	movs	r1, #0
 	bl	clientMsg
 .LsendClientEnd:
-	pop	{pc}		//Return
+	pop	{pc}		// Return
 
 /* void sendServer() */
 /* Makes the server greet the client via message */
 .thumb_func
 sendServer:
-	push	{lr}		//Save return point
+	push	{lr}		// Save return point
 
-	//Say the server is going to send a message
+	// Say the server is going to send a message
 	ldr	r0, =SERVERHELLO
 	movs	r1, #0
 	bl	serverMsg
 
-	//Send the message
-	movs	r0, r8		//Get the client's socket (server-side)
-	ldr	r1, =SERVERSEND	//Prepare to send a packet over
-	bl	sendMessage	//Send the packet
+	// Send the message
+	movs	r0, r8		// Get the client's socket (server-side)
+	ldr	r1, =SERVERSEND	// Prepare to send a packet over
+	bl	sendMessage	// Send the packet
 
-	//If we sent the data then return happily
+	// If we sent the data then return happily
 	cbnz	r0, .LsendServerEnd
 
-	//If we sent zero bytes then something must be wrong
+	// If we sent zero bytes then something must be wrong
 	ldr	r0, =SERVERFAIL
 	movs	r1, #0
 	bl	serverMsg
 .LsendServerEnd:
-	pop	{pc}		//Return
+	pop	{pc}		// Return
 
 
 /* void recvServer() */
 /* Makes the server receive the client's message */
 recvServer:
-	push	{lr}		//Save return point for later
+	push	{lr}		// Save return point for later
 
-	//Receive the client's message
-	movs	r0, r8		//Get the client's socket (server-side)
-	ldr	r1, =BUF	//Prepare to receive data
-	movs	r2, #64		//Prepare to receive 64 bytes of data
-	bl	receiveBuffer	//Receive the data
+	// Receive the client's message
+	movs	r0, r8		// Get the client's socket (server-side)
+	ldr	r1, =BUF	// Prepare to receive data
+	movs	r2, #64		// Prepare to receive 64 bytes of data
+	bl	receiveBuffer	// Receive the data
 
-	//If we received zero bytes of data from the client, complain
+	// If we received zero bytes of data from the client, complain
 	cbnz	r0, .LrecvServerSend
 	ldr	r0, =SERVERNORECV
 	movs	r1, #0
-	bl	serverMsg	//Print the message
-	pop	{pc}		//Return
+	bl	serverMsg	// Print the message
+	pop	{pc}		// Return
 
 .LrecvServerSend:
-	//If we received some data then print it out
-	ldr	r0, =BUF	//Get the received data
-	movs	r1, #1		//Tell serverMsg we got it from the client
-	bl	serverMsg	//Print the message
-	pop	{pc}		//Return
+	// If we received some data then print it out
+	ldr	r0, =BUF	// Get the received data
+	movs	r1, #1		// Tell serverMsg we got it from the client
+	bl	serverMsg	// Print the message
+	pop	{pc}		// Return
 
 /* void recvClient() */
 /* Makes the client receive the server's message */
 recvClient:
-	push	{lr}		//Save return point for later
+	push	{lr}		// Save return point for later
 
-	//Receive the server's message
-	movs	r0, r4		//Get the client's socket
-	ldr	r1, =BUF	//Prepare to receive data
-	movs	r2, #64		//Prepare to receive 64 bytes of data
-	bl	receiveBuffer	//Receive the data
+	// Receive the server's message
+	movs	r0, r4		// Get the client's socket
+	ldr	r1, =BUF	// Prepare to receive data
+	movs	r2, #64		// Prepare to receive 64 bytes of data
+	bl	receiveBuffer	// Receive the data
 
-	//If we received zero bytes of data from the server, complain
+	// If we received zero bytes of data from the server, complain
 	cbnz	r0, .LrecvClientSend
 	ldr	r0, =CLIENTNORECV
 	movs	r1, #0
-	bl	clientMsg	//Print the message
-	pop	{pc}		//Return
+	bl	clientMsg	// Print the message
+	pop	{pc}		// Return
 
 .LrecvClientSend:
-	//If we received some data then print it out
-	ldr	r0, =BUF	//Get the received data
-	movs	r1, #1		//Tell clientMsg we got it from the server
-	bl	clientMsg	//Print the message
-	pop	{pc}		//Return
+	// If we received some data then print it out
+	ldr	r0, =BUF	// Get the received data
+	movs	r1, #1		// Tell clientMsg we got it from the server
+	bl	clientMsg	// Print the message
+	pop	{pc}		// Return
 	
 .text
 ADDRESS:
-	.word	0x00000000	//The address 0x00.0x00.0x00.0x00
+	.word	0x00000000	// The address 0x00.0x00.0x00.0x00
 CLIENT:
 	.asciz	"[CLIENT] "
 SERVER:

@@ -1,5 +1,5 @@
 /* System Call Constants */
-// SYSCALLS (In octal)
+//  SYSCALLS (In octal)
 .set	EXIT,	  0001
 .set	RESTART,  0002
 .set	READ,	  0003

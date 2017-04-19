@@ -3,14 +3,14 @@
 
 /* CONSTANTS */
 .set	PORT,      7777
-.set	BACKLOG,   2048 //How much data each socket can read
+.set	BACKLOG,   2048 // How much data each socket can read
 .set	BLOCK,        0
-.set	SOCKSPACE, 1024 //How much space to allocate for sockets
+.set	SOCKSPACE, 1024 // How much space to allocate for sockets
 
 .data
-SERVER:	//The place to store the server's socket
+SERVER:	// The place to store the server's socket
 	.word	0
-ADDRESS://The place to store the server's ip address
+ADDRESS:// The place to store the server's ip address
 	.word	0
 
 /*
@@ -33,17 +33,17 @@ struct player
 .global	startNetServer
 .type	startNetServer, %function
 startNetServer:
-	push	{lr}		//Save return point for later
+	push	{lr}		// Save return point for later
 
-	//Create a server
-	ldr	r0, =ADDRESS	//Ip address
-	movw	r1, #PORT	//Port
-	movw	r2, #BACKLOG	//Maximum backlog
-	movs	r3, #BLOCK	//Allow blocking?
+	// Create a server
+	ldr	r0, =ADDRESS	// Ip address
+	movw	r1, #PORT	// Port
+	movw	r2, #BACKLOG	// Maximum backlog
+	movs	r3, #BLOCK	// Allow blocking?
 	ldr	r0, [r0]
 	bl	createServer
 
-	pop	{pc}		//Return
+	pop	{pc}		// Return
 
 /* void serverTick(struct player* players[r0]) */
 /* Advances the server by one tick */
@@ -52,5 +52,5 @@ startNetServer:
 .global	serverTick
 .type	serverTick, %function
 serverTick:
-	push	{lr}		//Save return point for later
-	pop	{pc}		//Return
+	push	{lr}		// Save return point for later
+	pop	{pc}		// Return

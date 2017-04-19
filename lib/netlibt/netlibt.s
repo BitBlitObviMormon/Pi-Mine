@@ -2,7 +2,7 @@
 /* Depends on System and Input/Output Libraries */
 
 /* CONSTANTS */
-.set	ADDRLEN, 16	//The length of the address
+.set	ADDRLEN, 16	// The length of the address
 
 /* Include network constants and error values */
 .include "netconst.s"
@@ -11,31 +11,31 @@
 .data
 .balign	4
 STRUCT:
-	// IFREQ [PF_INET]
-	// char*   ifr_name
-	// short   family
-	// short   port       (REVERSE BYTE ORDER!) 0x0102 -> 0x0201
-	// int     ip_address (REVERSE BYTE ORDER!) 0x01020304 -> 0x04030201
-	// char[8] (padding)
-	//
-	// CLIENT
-	// char*    name       //The client's name
-	// int      ip_address //The client's ip address
-	// char[12] (padding)  //Miscellaneous data to go with the client
-	.skip	20	//20 bytes space for ifreq, sockaddr, or client structs
+	//  IFREQ [PF_INET]
+	//  char*   ifr_name
+	//  short   family
+	//  short   port       (REVERSE BYTE ORDER!) 0x0102 -> 0x0201
+	//  int     ip_address (REVERSE BYTE ORDER!) 0x01020304 -> 0x04030201
+	//  char[8] (padding)
+	// 
+	//  CLIENT
+	//  char*    name       // The client's name
+	//  int      ip_address // The client's ip address
+	//  char[12] (padding)  // Miscellaneous data to go with the client
+	.skip	20	// 20 bytes space for ifreq, sockaddr, or client structs
 .balign	4
 TIMEVAL:
-	// TIMEVAL [select()]
-	// int tv_sec  (seconds)
-	// int tv_usec (microseconds)
-	//
-	// TIMESPEC [pselect()]
-	// int tv_sec  (seconds)
-	// int tv_nsec (nanoseconds)
-	.skip	8	//8 bytes of space for timeval or timespec
+	//  TIMEVAL [select()]
+	//  int tv_sec  (seconds)
+	//  int tv_usec (microseconds)
+	// 
+	//  TIMESPEC [pselect()]
+	//  int tv_sec  (seconds)
+	//  int tv_nsec (nanoseconds)
+	.skip	8	// 8 bytes of space for timeval or timespec
 .balign	4
 POLL:
-	.skip	40	//Space to hold the selection poll
+	.skip	40	// Space to hold the selection poll
 ADDRLENMEM:
 	.word	ADDRLEN
 
@@ -50,11 +50,11 @@ ADDRLENMEM:
 .global	createSocket
 .type	createSocket, %function
 createSocket:
-	//Create a socket
-	movs	r0, #PF_INET	//Use IPv4 domain
-	movs	r1, #SOCK_STREAM//Use standard socket stream
-	movs	r2, #0		//Use the recommended protocol
-	b	sysSocket	//Call socket system call
+	// Create a socket
+	movs	r0, #PF_INET	// Use IPv4 domain
+	movs	r1, #SOCK_STREAM// Use standard socket stream
+	movs	r2, #0		// Use the recommended protocol
+	b	sysSocket	// Call socket system call
 
 /* sockfd[r0] createServer(sockfd ip [r0], short port[r1], int backlog[r2]) */
 /* Creates an IPv4 socket on the local host and binds it to a local address */
@@ -68,64 +68,64 @@ createSocket:
 .global	createServer
 .type	createServer, %function
 createServer:
-	push	{r4, r5, r6, r7, lr}	//Save variables and return point
+	push	{r4, r5, r6, r7, lr}	// Save variables and return point
 
-	//Save the arguments into variables
-	movs	r4, r0		//r4 = ip
-	movs	r5, r1		//r5 = port
-	movs	r6, r2		//r6 = backlog
-	movs	r7, r3		//r7 = block
-				//r8 = socket
+	// Save the arguments into variables
+	movs	r4, r0		// r4 = ip
+	movs	r5, r1		// r5 = port
+	movs	r6, r2		// r6 = backlog
+	movs	r7, r3		// r7 = block
+				// r8 = socket
 
-	//Reverse the byte order of the ip and port (because memory structure)
-	rev	r4, r4		//Reverse ip's byte order
-	revsh	r5, r5		//Reverse port's byte order
+	// Reverse the byte order of the ip and port (because memory structure)
+	rev	r4, r4		// Reverse ip's byte order
+	revsh	r5, r5		// Reverse port's byte order
 
-	//Create a socket to work with
-	movs	r0, #PF_INET	//Use IPv4 domain
-	movs	r1, #SOCK_STREAM//Use standard socket stream
-	movs	r2, #0		//Use the recommended protocol
-	bl	sysSocket	//Call the socket system call
-	movs	r8, r0		//Save the socket for later
+	// Create a socket to work with
+	movs	r0, #PF_INET	// Use IPv4 domain
+	movs	r1, #SOCK_STREAM// Use standard socket stream
+	movs	r2, #0		// Use the recommended protocol
+	bl	sysSocket	// Call the socket system call
+	movs	r8, r0		// Save the socket for later
 
-//	//Get the local host's ip name
-//	movs	r0, r8		//Get the socket
-//	movw	r1, #SIOCGIFNAME//Prepare to use SIOCGIFNAME Ioctl call
-//	ldr	r2, =STRUCT	//Prepare space for the ifreq struct
-//	bl	sysIoctl	//Call the Ioctl system call
-//
-//	//Get the local host's ip address
-//	movs	r0, r8		//Get the socket
-//	movw	r1, #SIOCGIFADDR//Prepare to use SIOCGIFADDR Ioctl call
-//	ldr	r2, =STRUCT	//Prepare space for the ifreq struct
-//	bl	sysIoctl	//Call the Ioctl system call
+// 	// Get the local host's ip name
+// 	movs	r0, r8		// Get the socket
+// 	movw	r1, #SIOCGIFNAME// Prepare to use SIOCGIFNAME Ioctl call
+// 	ldr	r2, =STRUCT	// Prepare space for the ifreq struct
+// 	bl	sysIoctl	// Call the Ioctl system call
+// 
+// 	// Get the local host's ip address
+// 	movs	r0, r8		// Get the socket
+// 	movw	r1, #SIOCGIFADDR// Prepare to use SIOCGIFADDR Ioctl call
+// 	ldr	r2, =STRUCT	// Prepare space for the ifreq struct
+// 	bl	sysIoctl	// Call the Ioctl system call
 
-	//Set the network's family to PF_INET
-	ldr	r0, =STRUCT+4	//Load the family part of the struct
-	movs	r1, #PF_INET	//Prepare to write PF_INET to family
-	strh	r1, [r0]	//Write PF_INET to family 
+	// Set the network's family to PF_INET
+	ldr	r0, =STRUCT+4	// Load the family part of the struct
+	movs	r1, #PF_INET	// Prepare to write PF_INET to family
+	strh	r1, [r0]	// Write PF_INET to family 
 
-	//Set the network's port
-	adds	r0, r0, #2	//Load the port part of the struct
-	strh	r5, [r0]	//Store the port number in the struct
+	// Set the network's port
+	adds	r0, r0, #2	// Load the port part of the struct
+	strh	r5, [r0]	// Store the port number in the struct
 
-	//Set the network's ip address
-	adds	r0, r0, #2	//Load the address part of the struct
-	str	r4, [r0]	//Write the ip address
+	// Set the network's ip address
+	adds	r0, r0, #2	// Load the address part of the struct
+	str	r4, [r0]	// Write the ip address
 
-	//Bind the server to the returned address and the given port
-	movs	r0, r8		//Get the socket
-	ldr	r1, =STRUCT+4	//Get the sockaddr part of the struct
-	movs	r2, #ADDRLEN	//Give the length of the address
-	bl	sysBind		//Call the Bind system call
+	// Bind the server to the returned address and the given port
+	movs	r0, r8		// Get the socket
+	ldr	r1, =STRUCT+4	// Get the sockaddr part of the struct
+	movs	r2, #ADDRLEN	// Give the length of the address
+	bl	sysBind		// Call the Bind system call
 
-	//Tell the server to listen for incoming connections
-	movs	r0, r8		//Get the socket
-	movs	r1, r6		//Get the backlog
-	bl	sysListen	//Call the Listen system call
+	// Tell the server to listen for incoming connections
+	movs	r0, r8		// Get the socket
+	movs	r1, r6		// Get the backlog
+	bl	sysListen	// Call the Listen system call
 
-	movs	r0, r8			//Return the socket file descriptor
-	pop	{r4, r5, r6, r7, pc}	//Return
+	movs	r0, r8			// Return the socket file descriptor
+	pop	{r4, r5, r6, r7, pc}	// Return
 
 /* sockfd[r0] connect(sockfd socket[r0], int ip[r1], short port[r2]) */
 /* Connects the socket to the given address and port. */
@@ -135,35 +135,35 @@ createServer:
 .global	connect
 .type	connect, %function
 connect:
-	push	{r4, lr}	//Save return point for later
+	push	{r4, lr}	// Save return point for later
 
-	//Save the socket for later
+	// Save the socket for later
 	movs	r4, r0
 
-	//Reverse the byte order of the ip and port (because memory structure)
-	rev	r1, r1		//Reverse ip's byte order
-	revsh	r2, r2		//Reverse port's byte order
+	// Reverse the byte order of the ip and port (because memory structure)
+	rev	r1, r1		// Reverse ip's byte order
+	revsh	r2, r2		// Reverse port's byte order
 
-	//Set the network's family to PF_INET
-	ldr	r0, =STRUCT+4	//Load the family part of the struct
-	movs	r3, #PF_INET	//Prepare to write PF_INET to family
-	strh	r3, [r0]	//Write PF_INET to family 
+	// Set the network's family to PF_INET
+	ldr	r0, =STRUCT+4	// Load the family part of the struct
+	movs	r3, #PF_INET	// Prepare to write PF_INET to family
+	strh	r3, [r0]	// Write PF_INET to family 
 
-	//Set the network's port
-	adds	r0, r0, #2	//Load the port part of the struct
-	strh	r2, [r0]	//Store the port number in the struct
+	// Set the network's port
+	adds	r0, r0, #2	// Load the port part of the struct
+	strh	r2, [r0]	// Store the port number in the struct
 
-	//Set the network's ip address
-	adds	r0, r0, #2	//Load the address part of the struct
-	str	r1, [r0]	//Write the ip address
+	// Set the network's ip address
+	adds	r0, r0, #2	// Load the address part of the struct
+	str	r1, [r0]	// Write the ip address
 
-	//Use the connect system call
-	movs	r0, r4		//Get the socket
-	ldr	r1, =STRUCT+4	//Get the sockaddr part of the struct
-	movs	r2, #ADDRLEN	//Give the length of the address
-	bl	sysConnect	//Use the connect system call
+	// Use the connect system call
+	movs	r0, r4		// Get the socket
+	ldr	r1, =STRUCT+4	// Get the sockaddr part of the struct
+	movs	r2, #ADDRLEN	// Give the length of the address
+	bl	sysConnect	// Use the connect system call
 
-	pop	{r4, pc}	//Return
+	pop	{r4, pc}	// Return
 
 /* sockaddr* [r0] createAddress() */
 /* Allocates memory for and returns the pointer to an address */
@@ -186,14 +186,14 @@ createAddress:
 .global	acceptClient
 .type	acceptClient, %function
 acceptClient:
-	ldr	r1, =STRUCT	//Get the address
-	ldr	r2, =ADDRLENMEM	//Give the length of the address
-	push	{lr}		//Save return point for later
+	ldr	r1, =STRUCT	// Get the address
+	ldr	r2, =ADDRLENMEM	// Give the length of the address
+	push	{lr}		// Save return point for later
 
-	bl	sysAccept	//Use the accept system call
-	ldr	r1, =STRUCT	//Return the address
+	bl	sysAccept	// Use the accept system call
+	ldr	r1, =STRUCT	// Return the address
 
-	pop	{pc}		//Return
+	pop	{pc}		// Return
 
 /* int[r0] closeSocket(sockfd socket[r0]) */
 /* Closes the given socket and returns zero if successful */
@@ -233,42 +233,42 @@ shutdownSocket:
 .global	waitForClient
 .type	waitForClient, %function
 waitForClient:
-	push	{r4, r5, r6, lr}//Save return point for later
+	push	{r4, r5, r6, lr}// Save return point for later
 
-	//Save the arguments for later use
-	movs	r5, r0		//Server socket
-	movs	r6, r1		//timeout (in microseconds)
+	// Save the arguments for later use
+	movs	r5, r0		// Server socket
+	movs	r6, r1		// timeout (in microseconds)
 
-	//If the value is not negative then set up a timeout
+	// If the value is not negative then set up a timeout
 	bpl	.LTimeout
-	movs	r4, #0		//Otherwise, make no timeout
-	b	.LSkipTimeout	//Skip the timeout setup
+	movs	r4, #0		// Otherwise, make no timeout
+	b	.LSkipTimeout	// Skip the timeout setup
 .LTimeout:
-	ldr	r4, =TIMEVAL	//Get the timeval struct
-	movs	r1, #0		//Prepare to...
-	str	r1, [r4]	//Store 0 into the seconds area
-	adds	r0, r4, #4	//Increment to the microseconds
-	str	r6, [r0]	//Write the microseconds
+	ldr	r4, =TIMEVAL	// Get the timeval struct
+	movs	r1, #0		// Prepare to...
+	str	r1, [r4]	// Store 0 into the seconds area
+	adds	r0, r4, #4	// Increment to the microseconds
+	str	r6, [r0]	// Write the microseconds
 .LSkipTimeout:
-	ldr	r1, =POLL	//Set up the poll
-	str	r5, [r1]	//Store the server's socket in the poll
-	movs	r2, #0		//Don't watch for writing in the server
-	movs	r3, #0		//Don't watch for exceptions in the server
-	movs	r0, #1		//Watch for only 1 element (the server)
-	bl	sysSelect	//Use the select system call
+	ldr	r1, =POLL	// Set up the poll
+	str	r5, [r1]	// Store the server's socket in the poll
+	movs	r2, #0		// Don't watch for writing in the server
+	movs	r3, #0		// Don't watch for exceptions in the server
+	movs	r0, #1		// Watch for only 1 element (the server)
+	bl	sysSelect	// Use the select system call
 
-	movs	r1, #0		//Set the socket address to null for now
-	adds	r0, r0, #0	//Test the return value
-	beq	.LWaitSetZero	//If it's zero then return EAGAIN
-	bmi	.LWaitReturn	//If it's an error then return it
+	movs	r1, #0		// Set the socket address to null for now
+	adds	r0, r0, #0	// Test the return value
+	beq	.LWaitSetZero	// If it's zero then return EAGAIN
+	bmi	.LWaitReturn	// If it's an error then return it
 
-	//Accept the incoming connection
-	bl	acceptClient	//Get the client
-	b	.LWaitReturn	//Return the client and its address
+	// Accept the incoming connection
+	bl	acceptClient	// Get the client
+	b	.LWaitReturn	// Return the client and its address
 .LWaitSetZero:
-	movs	r0, #-EAGAIN	//Return EAGAIN
+	movs	r0, #-EAGAIN	// Return EAGAIN
 .LWaitReturn:
-	pop	{r4, r5, r6, pc}//Return
+	pop	{r4, r5, r6, pc}// Return
 	
 /* int sendBuffer(int sockfd[r0], char* buf[r1], int len[r2]) */
 /* Sends the buffer to the socket sockfd and returns the number of bytes sent */
@@ -277,8 +277,8 @@ waitForClient:
 .global	sendBuffer
 .type	sendBuffer, %function
 sendBuffer:
-	//Use the send syscall
-	movs	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
+	// Use the send syscall
+	movs	r3, #MSG_NOSIGNAL // Don't create an exception if the pipe broke
 	b	sysSend
 
 /* int receiveBuffer(int sockfd[r0], char* buf[r1], int len[r2]) */
@@ -288,8 +288,8 @@ sendBuffer:
 .global	receiveBuffer
 .type	receiveBuffer, %function
 receiveBuffer:
-	//Use the receive syscall
-	movs	r3, #MSG_NOSIGNAL //Don't create an exception if the pipe broke
+	// Use the receive syscall
+	movs	r3, #MSG_NOSIGNAL // Don't create an exception if the pipe broke
 	b	sysRecv
 
 /* int sendMessage(int sockfd[r0], char* buf[r1]) */
@@ -299,11 +299,11 @@ receiveBuffer:
 .global	sendMessage
 .type	sendMessage, %function
 sendMessage:
-	push	{lr}		//Save return point for later
+	push	{lr}		// Save return point for later
 
-	//Use the send syscall
-	bl	len		//Determine the length of the array
-	movs	r3, #0		//No flags for now
+	// Use the send syscall
+	bl	len		// Determine the length of the array
+	movs	r3, #0		// No flags for now
 	bl	sysSend
 
-	pop	{pc}		//Return
+	pop	{pc}		// Return

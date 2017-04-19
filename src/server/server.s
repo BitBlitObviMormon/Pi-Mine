@@ -1,11 +1,11 @@
 /* CONSTANTS */
-.set	PLRSPC, 2304	//How much space to allocate for player data
+.set	PLRSPC, 2304	// How much space to allocate for player data
 
 .text
 .arm
 .global _start
 _start:
-	blx	main	//Call the thumb function main
+	blx	main	// Call the thumb function main
 
 .thumb
 .syntax	unified
@@ -14,27 +14,27 @@ _start:
 .thumb_func
 .global main
 main:
-	//Create a server
+	// Create a server
 	bl	startNetServer
 
-	//Allocate space for the players
+	// Allocate space for the players
 	subs	sp, #PLRSPC
 	mov	r4, sp
 	movs	r0, r4
 
-	//Zero out the player space
+	// Zero out the player space
 	bl	zeroPlayers
 .LmainLoop:
-	//Do one server tick
+	// Do one server tick
 	movs	r0, r4
 	bl	serverTick
-	cbnz	r0, .LoopEnd	//If the server tick returns zero then
-	b	.LmainLoop	//Loop again
+	cbnz	r0, .LoopEnd	// If the server tick returns zero then
+	b	.LmainLoop	// Loop again
 .LoopEnd:
-	//Unallocate space from the players
+	// Unallocate space from the players
 	adds	sp, #PLRSPC
 
-	movs	r0, #0		//exit(0)
+	movs	r0, #0		// exit(0)
 	b	sysExit
 
 /* void zeroPlayers(struct player* players[r0]) */
@@ -43,7 +43,7 @@ main:
 zeroPlayers:
 	push	{r4-r12, lr}
 
-	//Zero out registers
+	// Zero out registers
 	movs	r1, #0
 	movs	r2, #0
 	movs	r3, #0
@@ -57,10 +57,10 @@ zeroPlayers:
 	movs	r11, #0
 	movs	r12, #0
 
-	//Get endpoint
+	// Get endpoint
 	adds	lr, r0, #PLRSPC
 .LzeroLoop:
-	//Load instructions until we pass the maximum player space mark
+	// Load instructions until we pass the maximum player space mark
 	stmia	r0!, {r1-r12}
 	cmp	r0, lr
 	blo	.LzeroLoop

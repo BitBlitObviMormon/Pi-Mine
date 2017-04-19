@@ -1,5 +1,5 @@
 /* Input/Output Constants */
-// I/O CONSTANTS
+//  I/O CONSTANTS
 .set	STDIN,  0
 .set	STDOUT, 1
 .set	STDERR, 2

@@ -1,8 +1,8 @@
-// FILE STREAMS
+//  FILE STREAMS
 .set STDIN,  0
 .set STDOUT, 1
 
-// SYSCALLS (In octal)
+//  SYSCALLS (In octal)
 .set	EXIT,	 0001
 .set	READ,	 0003
 .set	WRITE,	 0004
@@ -13,18 +13,18 @@
 .arm
 .global _start
 _start:
-	blx	main	//Call the thumb function main
+	blx	main	// Call the thumb function main
 
 	.thumb
 	.syntax	unified
 
-//int main()
+// int main()
 .thumb_func
 .global main
 main:
 	bl	rawMode
 
-	subs	sp, sp, #4 // Allocate input space
+	subs	sp, sp, #4 //  Allocate input space
 .Lwhile_loop:
 	movs	r7, #READ
 	movs	r0, #STDIN
@@ -32,7 +32,7 @@ main:
 	movs	r2, #1
 	svc	#0
 
-	// If nothing was read, don't bother writing
+	//  If nothing was read, don't bother writing
 	cmp	r0, #0
 	beq	.Lskip_print
 

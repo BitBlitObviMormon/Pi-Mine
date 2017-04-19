@@ -32,5 +32,4 @@ int main() {
 	printf("c_ospeed: %i\n", (unsigned int)&a.c_ospeed - (unsigned int)&a);
 
 	return 0;
-
 }

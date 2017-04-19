@@ -1,4 +1,4 @@
-//Escape Codes C
+// Escape Codes C
 #include <stdio.h>
 
 /**************************************
@@ -12,7 +12,7 @@ void ascii() {
 }
 
 int main() {
-  //Print all of the ascii characters
+  // Print all of the ascii characters
   ascii();
 
   return 0;
