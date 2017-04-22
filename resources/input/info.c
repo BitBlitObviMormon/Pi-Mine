@@ -1,3 +1,7 @@
+#define _GNU_SOURCE
+#include <features.h>
+#include <sched.h>
+
 #include <stdio.h>
 #include <unistd.h>
 #include <termios.h>
@@ -5,6 +9,7 @@
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/stat.h>
+#include <sys/mman.h>
 #include <fcntl.h>
 
 int main() {
@@ -73,7 +78,7 @@ int main() {
 	printf("SIOCGIFADDR = %i\n", SIOCGIFADDR);
 	printf("SIOCGIDNAME = %i\n", SIOCGIFNAME);
 
-	printf("\ntermios Memory Layout\n");
+	printf("\nTermios Memory Layout\n");
 	printf("c_iflag  : %i\n", (unsigned int)&a.c_iflag - (unsigned int)&a);
 	printf("c_oflag  : %i\n", (unsigned int)&a.c_oflag - (unsigned int)&a);
 	printf("c_cflag  : %i\n", (unsigned int)&a.c_cflag - (unsigned int)&a);
@@ -81,6 +86,31 @@ int main() {
 	printf("c_cc     : %i\n", (unsigned int)&a.c_cc - (unsigned int)&a);
 	printf("c_ispeed : %i\n", (unsigned int)&a.c_ispeed - (unsigned int)&a);
 	printf("c_ospeed : %i\n", (unsigned int)&a.c_ospeed - (unsigned int)&a);
+
+	printf("\nClone Thread Flags\n");
+	printf("CLONE_THREAD  : 0x%x\n", CLONE_THREAD);
+	printf("CLONE_VM      : 0x%x\n", CLONE_VM);
+	printf("CLONE_PARENT  : 0x%x\n", CLONE_PARENT);
+	printf("CLONE_SIGHAND : 0x%x\n", CLONE_SIGHAND);
+	printf("CLONE_FS      : 0x%x\n", CLONE_FS);
+	printf("CLONE_FILES   : 0x%x\n", CLONE_FILES);
+	printf("CLONE_IO      : 0x%x\n", CLONE_IO);
+
+	printf("\nMemory Map Flags\n");
+	printf("PROT_EXEC  : 0x%x\n", PROT_EXEC);
+	printf("PROT_READ  : 0x%x\n", PROT_READ);
+	printf("PROT_WRITE : 0x%x\n", PROT_WRITE);
+	printf("PROT_NONE  : 0x%x\n", PROT_NONE);
+	printf("PROT_EXEC  : 0x%x\n", PROT_EXEC);
+	printf("MAP_FIXED      : 0x%x\n", MAP_FIXED);
+	printf("MAP_SHARED     : 0x%x\n", MAP_SHARED);
+	printf("MAP_PRIVATE    : 0x%x\n", MAP_PRIVATE);
+	printf("MAP_EXECUTABLE : 0x%x\n", MAP_EXECUTABLE);
+	printf("MAP_DENYWRITE  : 0x%x\n", MAP_DENYWRITE);
+	printf("MAP_NORESERVE  : 0x%x\n", MAP_NORESERVE);
+	printf("MAP_LOCKED     : 0x%x\n", MAP_LOCKED);
+	printf("MAP_GROWSDOWN  : 0x%x\n", MAP_GROWSDOWN);
+	printf("MAP_ANONYMOUS  : 0x%x\n", MAP_ANONYMOUS);
 
 	return 0;
 }

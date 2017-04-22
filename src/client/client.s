@@ -69,6 +69,6 @@ main:
 
 .text
 PITEXT:
-	.asciz	"Welcome to Pi-Mine!"
+	.asciz	"Welcome to the Pi-Mine Messenger!"
 NAMETEXT:
 	.asciz	"What is your name?"
