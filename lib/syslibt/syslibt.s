@@ -71,9 +71,91 @@ sysClose:
 .type	sysBrk, %function
 sysBrk:
 	push	{r7, lr}	// Save return point for later
-	movs	r7, #BRK	// Prepare to invoke read system call
-	svc	#0		// Invoke read system call
+	movs	r7, #BRK	// Prepare to invoke break system call
+	svc	#0		// Invoke break system call
 	pop	{r7, pc}	// Return
+
+/* int[r0] sysIoctl(int d[r0], int request[r1], ... args[r2-??]) */
+/* Uses the system call to perform specific I/O Control functions */
+/* Data Races: Look up the specific ioctl call you're using */
+.thumb_func
+.global	sysIoctl
+.type	sysIoctl, %function
+sysIoctl:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #IOCTL	// Prepare to invoke ioctl system call
+	svc	#0		// Invoke ioctl system call
+	pop	{r7, pc}	// Return
+
+/* int[r0] sysSelect(int n[r0], fd_set* readfds[r1], fd_set* writefds[r2],
+/*                   fd_set* exceptfds[r3], struct timeval* timeout[r4]) */
+/* Uses the select system call to wait for a bunch of files to change status */
+/* Data Races: The filehandle structs readfds, writefds, and exceptfds
+               are read from, and the time value struct timeout is read from */
+.thumb_func
+.global	sysSelect
+.type	sysSelect, %function
+sysSelect:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #SELECT	// Prepare to invoke select system call
+	svc	#0		// Invoke select system call
+	pop	{r7, pc}	// Return
+
+/* int[r0] sysMunMap(void* memPtr[r0], int length[r1]) */
+/* Frees length bytes of memory starting at memPtr. */
+/* Data Races: The given memory is freed and becomes invalid for use */
+.thumb_func
+.global	sysMunMap
+.type	sysMunMap, %function
+sysMunMap:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #MUNMAP	// Prepare to invoke munmap sytem call
+	svc	#0		// Invoke munmap system call
+	pop	{r7, pc}	// Return
+
+/* pid_t[r0] sysWait4(pid_t[r0] upid, int* stat_addr[r1], */
+/*                    int options[r2], struct rusage* ru) */
+/* Uses the system call to make the calling thread join the given thread */
+/* Data Races: The calling thread waits until the given thread closes */
+.thumb_func
+.global	sysWait4
+.type	sysWait4, %function
+sysWait4:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #WAIT4	// Prepare to invoke wait4 system call
+	svc	#0		// Invoke wait4 system call
+	pop	{r7, pc}	// Return
+
+/* int[r0] sysClone(int flags[r0], void* stackPtr[r1], */
+/*                  int* parent_tidPtr[r2], int tls_val[r3], */
+/*                  int* child_ptr[r4]) */
+/* Uses the system call to fork a new process or thread */
+/* Data Races:	The passed stackPtr will be used as the stack for the new   */
+/*		thread. It is the user's responsibility to not overflow,    */
+/*		tamper with, or delete the stack until the thread closes.   */
+.thumb_func
+.global	sysClone
+.type	sysClone, %function
+sysClone:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #SELECT	// Prepare to invoke clone system call
+	svc	#0		// Invoke clone system call
+	pop	{r7, pc}	// Return
+
+/* int[r0] sysNanoSleep(struct timespec* req[r0], struct timespec* rem[r1]) */
+/* Uses the system call to sleep the calling thread for the given amount of */
+/* seconds and nanoseconds in req. The amount of time to sleep is read in req */
+/* and the remaining time is stored in rem. */
+/* Data Races: req is read and rem is written to. */
+.thumb_func
+.global	sysNanoSleep
+.type	sysNanoSleep, %function
+sysNanoSleep:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #SELECT	// Prepare to invoke nanosleep system call
+	svc	#0		// Invoke nanosleep system call
+	pop	{r7, pc}	// Return
+	
 
 /* void*[r0] sysMMap2(void* start[r0], int length[r1], int prot[r2], */
 /*                    int flags[r3], int fd[r4], int pageoffset[r5]) */
@@ -86,18 +168,6 @@ sysMMap2:
 	push	{r7, lr}	// Save return point for later
 	movs	r7, #MMAP2	// Prepare to invoke mmap2 system call
 	svc	#0		// Invoke mmap2 system call
-	pop	{r7, pc}	// Return
-
-/* int[r0] sysIoctl(int d[r0], int request[r1], ... args[r2-??]) */
-/* Uses the system call to perform specific I/O Control functions */
-/* Data Races: Look up the specific ioctl call you're using */
-.thumb_func
-.global	sysIoctl
-.type	sysIoctl, %function
-sysIoctl:
-	push	{r7, lr}	// Save return point for later
-	movs	r7, #IOCTL	// Prepare to invoke read system call
-	svc	#0		// Invoke read system call
 	pop	{r7, pc}	// Return
 
 /* int[r0] sysSocket(int domain[r0], int type[r1], int protocol[r2]) */
@@ -209,16 +279,3 @@ sysShutdown:
 	svc	#0		// Invoke shutdown system call
 	pop	{r7, pc}	// Return
 
-/* int[r0] sysSelect(int n[r0], fd_set* readfds[r1], fd_set* writefds[r2],
-/*                   fd_set* exceptfds[r3], struct timeval* timeout[r4]) */
-/* Uses the select system call to wait for a bunch of files to change status */
-/* Data Races: The filehandle structs readfds, writefds, and exceptfds
-               are read from, and the time value struct timeout is read from */
-.thumb_func
-.global	sysSelect
-.type	sysSelect, %function
-sysSelect:
-	push	{r7, lr}	// Save return point for later
-	movs	r7, #SELECT	// Prepare to invoke select system call
-	svc	#0		// Invoke select system call
-	pop	{r7, pc}	// Return
