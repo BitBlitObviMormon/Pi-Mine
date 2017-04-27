@@ -63,6 +63,18 @@ sysClose:
 	svc	#0		// Invoke close system call
 	pop	{r7, pc}	// Return
 
+/* int[r0] sysGetPID() */
+/* Uses the system call to get the current processes' id */
+/* Data Races: getPID does not access memory */
+.thumb_func
+.global	sysGetPID
+.type	sysGetPID, %function
+sysGetPID:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #GETPID	// Prepare to invoke getPID system call
+	svc	#0		// Invoke getPID system call
+	pop	{r7, pc}	// Return
+
 /* int[r0] sysBrk(int br[r0]) */
 /* Uses the system call to allocate more memory */
 /* Data Races: No memory is accessed */
@@ -138,21 +150,21 @@ sysWait4:
 .type	sysClone, %function
 sysClone:
 	push	{r7, lr}	// Save return point for later
-	movs	r7, #SELECT	// Prepare to invoke clone system call
+	movs	r7, #CLONE	// Prepare to invoke clone system call
 	svc	#0		// Invoke clone system call
 	pop	{r7, pc}	// Return
 
-/* int[r0] sysNanoSleep(struct timespec* req[r0], struct timespec* rem[r1]) */
+/* int[r0] sysNanosleep(struct timespec* req[r0], struct timespec* rem[r1]) */
 /* Uses the system call to sleep the calling thread for the given amount of */
 /* seconds and nanoseconds in req. The amount of time to sleep is read in req */
 /* and the remaining time is stored in rem. */
 /* Data Races: req is read and rem is written to. */
 .thumb_func
-.global	sysNanoSleep
-.type	sysNanoSleep, %function
-sysNanoSleep:
+.global	sysNanosleep
+.type	sysNanosleep, %function
+sysNanosleep:
 	push	{r7, lr}	// Save return point for later
-	movs	r7, #SELECT	// Prepare to invoke nanosleep system call
+	movs	r7, #NANOSLEEP	// Prepare to invoke nanosleep system call
 	svc	#0		// Invoke nanosleep system call
 	pop	{r7, pc}	// Return
 	

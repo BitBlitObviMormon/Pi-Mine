@@ -10,6 +10,7 @@
 #include <sys/socket.h>
 #include <sys/stat.h>
 #include <sys/mman.h>
+#include <sys/wait.h>
 #include <fcntl.h>
 
 int main() {
@@ -112,5 +113,12 @@ int main() {
 	printf("MAP_GROWSDOWN  : 0x%x\n", MAP_GROWSDOWN);
 	printf("MAP_ANONYMOUS  : 0x%x\n", MAP_ANONYMOUS);
 
-	return 0;
+	printf("\nWait4 Flags\n");
+	printf("WNOHANG   : 0x%x\n", WNOHANG);
+	printf("WUNTRACED : 0x%x\n", WUNTRACED);
+	printf("P_PID  : 0x%x\n", P_PID);
+	printf("P_PGID : 0x%x\n", P_PGID);
+	printf("P_ALL  : 0x%x\n", P_ALL);
+
+        return 0;
 }

@@ -14,3 +14,7 @@
 .set	MAP_PRIVATE,	0x2	// Not shared between processes
 .set	MAP_ANONYMOUS,	0x20	// Not mapped to a file (memory only)
 .set	MAP_GROWSDOWN,	0x100	// For stacks (like this one)
+
+// WAIT4 FLAGS
+.set	WNOHANG,	0x1	// Don't wait if process is dead or invalid
+.set	WUNTRACED,	0x2	// Don't wait for processes that are stopped
