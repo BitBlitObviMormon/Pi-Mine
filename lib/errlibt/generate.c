@@ -291,7 +291,7 @@ int main()
 
   // Write the header
   fprintf(file, "/* Error Library (Thumb) */\n/* Depends on Input/Output Library and System Library */\n\n/* FILE STREAMS */\n.set\tSTDOUT, 1\n");
-  fprintf(hfile, "/* Error Constants */\n\n/* ERROR VALUES */\n");
+  fprintf(hfile, "/* ERRNO CONSTANTS */\n");
   
   // Make the macros
   for (int i = 0; i <= 133; i++)
@@ -309,42 +309,66 @@ int main()
   fprintf(file, "\n.text\n.thumb\n.syntax\tunified\n\n");
 
   // Write the code
-  fprintf(file, "/* void fprinterr(int fd[r0], int errno[r1]) */\n");
-  fprintf(file, "/* Writes the symbolic message of the error number errno to the stream fd */\n");
+  fprintf(file, "/* char*[r0] getErr(int errno[r1]) */\n");
+  fprintf(file, "/* Returns the pointer to the errno's null-terminated string */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
   fprintf(file, ".thumb_func\n");
-  fprintf(file, ".global\tfprinterr\n");
-  fprintf(file, ".type\tfprinterr, %%function\n");
-  fprintf(file, "fprinterr:\n");
+  fprintf(file, ".global\tgetErr\n");
+  fprintf(file, ".type\tgetErr, %%function\n");
+  fprintf(file, "getErr:\n");
   fprintf(file, "\tpush\t{r1, lr}\t// Save return point\n");
   fprintf(file, "\tbl\tmakePositive\t// Make the number positive\n");
   fprintf(file, "\tmovs\tr2, #4\n");
   fprintf(file, "\tmul\tr1, r1, r2\t// Multiply the number by 4 (for addresses)\n");
   fprintf(file, "\tldr\tr2, =ERRNO\t// Load the address\n");
   fprintf(file, "\tadds\tr2, r2, r1\t// Add the offset to the address\n");
-  fprintf(file, "\tldr\tr2, [r2]\t\t// Load the string from that address\n");
-  fprintf(file, "\tmovs\tr1, r2\n");
-  fprintf(file, "\tbl\tfprints\t\t// Print the error string\n");
-  fprintf(file, "\tpop\t{r1, pc}\t// Return\n");
-  fprintf(file, "\n");
-  fprintf(file, "/* void fprinterrdetails(int fd[r0], int errno[r1]) */\n");
-  fprintf(file, "/* Writes a detailed description of the error number errno to the stream fd */\n");
+  fprintf(file, "\tldr\tr0, [r2]\t// Load the string from that address\n");
+  fprintf(file, "\tpop\t{r1, pc}\t// Return\n\n");
+
+  fprintf(file, "/* char*[r0] getErrDetails(int errno[r1]) */\n");
+  fprintf(file, "/* Returns the pointer to the errno's null-terminated description */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
   fprintf(file, ".thumb_func\n");
-  fprintf(file, ".global\tfprinterrdetails\n");
-  fprintf(file, ".type\tfprinterrdetails, %%function\n");
-  fprintf(file, "fprinterrdetails:\n");
+  fprintf(file, ".global\tgetErrDetails\n");
+  fprintf(file, ".type\tgetErrDetails, %%function\n");
+  fprintf(file, "getErrDetails:\n");
   fprintf(file, "\tpush\t{r1, lr}\t// Save return point\n");
   fprintf(file, "\tbl\tmakePositive\t// Make the number positive\n");
   fprintf(file, "\tmovs\tr2, #4\n");
   fprintf(file, "\tmul\tr1, r1, r2\t// Multiply the number by 4 (for addresses)\n");
   fprintf(file, "\tldr\tr2, =ERRNODET\t// Load the address\n");
   fprintf(file, "\tadds\tr2, r2, r1\t// Add the offset to the address\n");
-  fprintf(file, "\tldr\tr2, [r2]\t\t// Load the string from that address\n");
-  fprintf(file, "\tmovs\tr1, r2\n");
+  fprintf(file, "\tldr\tr0, [r2]\t// Load the string from that address\n");
+  fprintf(file, "\tpop\t{r1, pc}\t// Return\n\n");
+
+  fprintf(file, "/* void fprintErr(int fd[r0], int errno[r1]) */\n");
+  fprintf(file, "/* Writes the symbolic message of the error number errno to the stream fd */\n");
+  fprintf(file, "/* Data Races: Only static memory is accessed */\n");
+  fprintf(file, ".thumb_func\n");
+  fprintf(file, ".global\tfprintErr\n");
+  fprintf(file, ".type\tfprintErr, %%function\n");
+  fprintf(file, "fprintErr:\n");
+  fprintf(file, "\tpush\t{r0, r1, lr}\t// Save return point\n");
+  fprintf(file, "\tbl\tgetErr\t\t// Get the error string\n");
+  fprintf(file, "\tmovs\tr1, r0\n");
+  fprintf(file, "\tpop\t{r0}\n");
   fprintf(file, "\tbl\tfprints\t\t// Print the error string\n");
-  fprintf(file, "\tpop\t{r1, pc}\t// Return\n");
-  fprintf(file, "\n");
+  fprintf(file, "\tpop\t{r1, pc}\t// Return\n\n");
+
+  fprintf(file, "/* void fprintErrDetails(int fd[r0], int errno[r1]) */\n");
+  fprintf(file, "/* Writes a detailed description of the error number errno to the stream fd */\n");
+  fprintf(file, "/* Data Races: Only static memory is accessed */\n");
+  fprintf(file, ".thumb_func\n");
+  fprintf(file, ".global\tfprintErrDetails\n");
+  fprintf(file, ".type\tfprintErrDetails, %%function\n");
+  fprintf(file, "fprintErrDetails:\n");
+  fprintf(file, "\tpush\t{r0, r1, lr}\t// Save return point\n");
+  fprintf(file, "\tbl\tgetErrDetails\t// Get the error description\n");
+  fprintf(file, "\tmovs\tr1, r0\n");
+  fprintf(file, "\tpop\t{r0}\n");
+  fprintf(file, "\tbl\tfprints\t\t// Print the error description\n");
+  fprintf(file, "\tpop\t{r1, pc}\t// Return\n\n");
+
   fprintf(file, "/* int [r1] makePositive(int num[r1]) */\n");
   fprintf(file, "/* If the number is negative then it will become positive */\n");
   fprintf(file, "/* Data Races: No memory is accessed */\n");
@@ -354,27 +378,27 @@ int main()
   fprintf(file, "\tbpl\t.LskipPositive\n");
   fprintf(file, "\tneg\tr1, r1\t// Negate the number\n");
   fprintf(file, ".LskipPositive:\n");
-  fprintf(file, "\tbx\tlr\t// Return\n");
-  fprintf(file, "\n");
-  fprintf(file, "/* void printerr(int errno[r1]) */\n");
+  fprintf(file, "\tbx\tlr\t// Return\n\n");
+
+  fprintf(file, "/* void printErr(int errno[r1]) */\n");
   fprintf(file, "/* Prints the symbolic message of the error number errno to the console */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
   fprintf(file, ".thumb_func\n");
-  fprintf(file, ".global\tprinterr\n");
-  fprintf(file, ".type\tprinterr, %%function\n");
-  fprintf(file, "printerr:\n");
+  fprintf(file, ".global\tprintErr\n");
+  fprintf(file, ".type\tprintErr, %%function\n");
+  fprintf(file, "printErr:\n");
   fprintf(file, "\tmovs\tr0, #STDOUT\n");
-  fprintf(file, "\tb\tfprinterr\n");
-  fprintf(file, "\n");
-  fprintf(file, "/* void printerrdetails(int fd[r0], int errno[r1]) */\n");
+  fprintf(file, "\tb\tfprintErr\n\n");
+
+  fprintf(file, "/* void printErrDetails(int fd[r0], int errno[r1]) */\n");
   fprintf(file, "/* Prints a detailed description of the error number errno to the console */\n");
   fprintf(file, "/* Data Races: Only static memory is accessed */\n");
   fprintf(file, ".thumb_func\n");
-  fprintf(file, ".global\tprinterrdetails\n");
-  fprintf(file, ".type\tprinterrdetails, %%function\n");
-  fprintf(file, "printerrdetails:\n");
+  fprintf(file, ".global\tprintErrDetails\n");
+  fprintf(file, ".type\tprintErrDetails, %%function\n");
+  fprintf(file, "printErrDetails:\n");
   fprintf(file, "\tmovs\tr0, #STDOUT\n");
-  fprintf(file, "\tb\tfprinterrdetails\n");
+  fprintf(file, "\tb\tfprintErrDetails\n");
 
   // Make the data header
   fprintf(file, "\n.data\n");

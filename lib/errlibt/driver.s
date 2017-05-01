@@ -13,11 +13,11 @@ main:
 	neg	r5, r5
 .Loop:
 	mov	r1, r4
-	bl	printerr	//  Print the error string
+	bl	printErr	//  Print the error string
 	ldr	r1, =COLON	//  Load the colon string
 	bl	prints		//  Print a colon
 	mov	r1, r4
-	bl	printerrdetails	//  Print the error details
+	bl	printErrDetails	//  Print the error details
 	ldr	r1, =NEWLINE	//  Load the newline string
 	bl	prints		//  Print a newline
 	sub	r4, r4, #1	//  Decrement the error code
