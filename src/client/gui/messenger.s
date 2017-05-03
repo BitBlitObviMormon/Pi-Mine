@@ -20,18 +20,20 @@
 .set	EMPHCLR, 0xB	// Emphasis Color
 .set	ERRCLR,  0x9	// Error Color
 
-.data
+.bss
 WIDTH:	// The width of the console
 	.word	0
 HEIGHT:	// The height of the console
 	.word	0
-LINEX:	// The X location of the cursor
-	.word	0
-LINEY:	// The Y location of the next message
-	.word	1
 CURSOR: // The location of the Messenger's cursor
 	.short	0	// short cursorPos = 0
 	.byte	0	// bool blinkState = false (0=off, 1=on)
+LINEX:	// The X location of the cursor
+	.word	0
+
+.data
+LINEY:	// The Y location of the next message
+	.word	1
 
 .text
 .thumb
@@ -375,3 +377,23 @@ messengerMessage:
 	str	r8, [r0]
 
 	pop	{r4-r8, pc}	// Return
+
+/* char*[r0] messengerInput() */
+/* Accepts input from the messenger gui */
+.thumb_func
+.global	messengerInput
+.type	messengerInput, %function
+messengerInput:
+	push	{lr}	// Save return point for later
+
+	// Move the cursor to (3, HEIGHT-1)
+	movs	r0, #3
+	ldr	r1, =HEIGHT
+	ldr	r1, [r1]
+	subs	r1, #1
+	bl	setCursor
+
+	// Allocate memory for storing input
+	
+
+	pop	{pc}	// Return

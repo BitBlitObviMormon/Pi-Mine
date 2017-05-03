@@ -1,4 +1,4 @@
-.data
+.bss
 DISBYTES:
 	.skip	128	// A value to store 32 random ints in
 

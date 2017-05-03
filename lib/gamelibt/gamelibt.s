@@ -46,6 +46,8 @@ CURSORX:	// Edit characters at mem address to change X position
 	.ascii	"???;"
 CURSORY:	// Edit characters at mem address to change Y position
 	.asciz	"???H"
+
+.bss
 TERMIOS:	// This is where the old termios struct will be saved for later
 	.skip	TERMIOSSIZE
 
@@ -255,7 +257,7 @@ rawMode:
 	stm r1!, {r2-r7}
 	ldm r0!, {r2-r4} //  Copy 12 bytes
 	stm r1!, {r2-r4}
-// 	vldmia.32 r0!, {s0-s14}	// Copy 60 bytes
+//	vldmia.32 r0!, {s0-s14}	// Copy 60 bytes
 // 	vstmia.32 r1!, {s0-s14}
 
 	// Now we need to modify the struct on the stack

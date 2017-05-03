@@ -1,4 +1,4 @@
-.data
+.bss
 heap:
 	.word	0
 heap_end:

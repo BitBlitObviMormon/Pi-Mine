@@ -10,10 +10,10 @@ driver.out: driver.o memlibt.o $(SYSLIBT).o
 $(SYSLIBT).o: $(SYSLIBT).s
 	cd ../syslibt; make; cd ../memlibt
 
-memlibt.o: memlibt.s
+memlibt.o: memlibt.s memconst.s
 	as $(SW) -o $@ $<
 
-driver.o: driver.s
+driver.o: driver.s memconst.s
 	as $(SW) -o $@ $<
 
 clean:

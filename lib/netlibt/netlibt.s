@@ -8,7 +8,7 @@
 .include "netconst.s"
 .include "../errlibt/errno.s"
 
-.data
+.bss
 .balign	4
 STRUCT:
 	//  IFREQ [PF_INET]
@@ -36,8 +36,6 @@ TIMEVAL:
 .balign	4
 POLL:
 	.skip	40	// Space to hold the selection poll
-ADDRLENMEM:
-	.word	ADDRLEN
 
 .text
 .thumb
@@ -187,7 +185,7 @@ createAddress:
 .type	acceptClient, %function
 acceptClient:
 	ldr	r1, =STRUCT	// Get the address
-	ldr	r2, =ADDRLENMEM	// Give the length of the address
+	movs	r2, #ADDRLEN	// Give the length of the address
 	push	{lr}		// Save return point for later
 
 	bl	sysAccept	// Use the accept system call

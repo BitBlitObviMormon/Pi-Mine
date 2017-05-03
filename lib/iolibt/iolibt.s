@@ -13,14 +13,13 @@
 .set	ISSIZE, 12	// sign + 10 chars + null
 
 .data
-	.asciz	"Ya!" // If this data is changed, we've got a memory leak
+	.asciz	"Ya!"
 	.skip	ISSIZE	// Make room for the int's char buffer
 INTS:	// Space for the string of an int written backwards (int -> string)
 
 .text
 .syntax	unified
 
-// $$$ USE A SYSTEM CALL TO GET INPUT FROM THE CONSOLE
 /* void fgets(int fd[r0], char* buf[r1], int length[r2]) */
 /* Grabs a string from the stream fd and null-terminates it */
 /* Data Races: fgets writes to the character array buf */
@@ -54,7 +53,6 @@ fgeti:
 	movs	r0, r2
 	pop	{pc}	// Return
 
-// $$$ USE A SYSTEM CALL TO OUTPUT AN INTEGER TO CONSOLE
 /* void fprinti(int fd[r0], const int num[r1]) */
 /* Prints an integer onto the stream */
 /* Data Races: No memory is changed */
@@ -102,10 +100,6 @@ fputi:
 	bl	fputs	// Print the string
 	pop	{pc}	// Return
 
-// $$$ CREATE A FOR LOOP USING THUMB2 INSTRUCTIONS
-// $$$ TRAVERSE AN ARRAY	
-// $$$ USE A SYSTEM CALL TO OUTPUT DATA TO THE CONSOLE
-// $$$ USE A SYSTEM CALL TO OUTPUT TEXT TO THE CONSOLE	
 /* void fputs(int fd[r0], char* buf[r1]) */
 /* Prints a string onto the stream and appends a newline */
 /* Data Races: The character array buf is read from */
@@ -164,8 +158,7 @@ fwrite:
 	// TODO: CREATING A FILE SO I NEED TO IMPLEMENT A MODE_T
 	movs	r2, #0		// Not creating a file, so no mode_t
 	b	sysOpen		// Open the file
-	
-// $$$ USE A SYSTEM CALL TO GET INPUT FROM THE CONSOLE
+
 /* void gets(char* buf[r1], int length[r2]) */
 /* Grabs a string from the console */
 /* Data Races: gets writes to the character array buf */
@@ -230,7 +223,6 @@ pow:	// X(r0)^N(r1)
 .Lpowend:	
 	bx	lr	// Return
 
-// $$$ USE A SYSTEM CALL TO OUTPUT AN INTEGER TO CONSOLE
 /* void printi(const int[r1]) */
 /* Prints an integer onto the console and appends a new line */
 /* Data Races: No memory is changed */
@@ -261,10 +253,6 @@ puti:
 	movs	r0, #STDOUT	// Use the standard output stream and
 	b	fputi		// Pretend we called fputi instead
 
-// $$$ CREATE A FOR LOOP USING THUMB2 INSTRUCTIONS
-// $$$ TRAVERSE AN ARRAY	
-// $$$ USE A SYSTEM CALL TO OUTPUT DATA TO THE CONSOLE
-// $$$ USE A SYSTEM CALL TO OUTPUT TEXT TO THE CONSOLE	
 /* void puts(char* buf[r1]) */
 /* Prints a string onto the console and appends a newline */
 /* Data Races: The character array is read from */

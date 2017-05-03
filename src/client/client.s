@@ -54,11 +54,9 @@ main:
 	movs	r1, r5
 	bl	prints
 
-	// Move the cursor to (3, HEIGHT-1)
-	movs	r0, #3
-	movs	r1, #HEIGHT-1
-	bl	setCursor
-	
+	// Get input from the messenger
+	bl	messengerInput
+
 	// Unallocate all of the buffers
 	adds	sp, #BUFLEN
 	adds	sp, #BLOCKLEN

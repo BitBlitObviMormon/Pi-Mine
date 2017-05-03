@@ -1,12 +1,10 @@
 /* Threading Library (Thumb) */
-/* Depends on System Call Library */
+/* Depends on System Call and Memory Libraries */
 
 .include "threadconst.s"	// Include thread flags and info
 
 // FLAGS
 .set	CLONE_FLAGS,	(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_PARENT | CLONE_THREAD | CLONE_IO)
-.set	PROT_FLAGS,	(PROT_READ | PROT_WRITE)
-.set	MAP_FLAGS,	(MAP_SHARED | MAP_ANONYMOUS)
 .set	WAIT_FLAGS,	0 //(WNOHANG | WUNTRACED)
 
 // OTHER CONSTANTS
@@ -14,9 +12,9 @@
 .set	STRLEN,	   12	  // How many characters to print
 .set	STACKSIZE, 0x4000 // The size of the child thread's stack (16KB)
 
-.data
 .text
 .thumb
+.syntax	unified
 .align 2
 
 
@@ -30,13 +28,8 @@
 createThread:
 	push	{r0-r1, r4-r5, r7, lr}	// Save variables for later
 
-	// Allocate 16K of memory using MMAP2
-	mov	r0, #0		// Address (just a hint)
-	mov	r2, #PROT_FLAGS	// Read and write file protocol
-	movw	r3, #MAP_FLAGS	// Use the specified MMAP flags
-	mov	r4, #0		// File handle (No file)
-	mov	r5, #0		// Offset
-	bl	sysMMap2
+	// Use our own malloc to allocate memory
+	bl	malloc
 
 	// Prepare the thread's stack (see below as to why)
 	// Note that the thread's stack will start
@@ -90,8 +83,8 @@ join:
 nanosleep:
 	// Store the variables on the stack for reading / writing
 	push	{r0, r1, lr}
-	movs	r0, sp	// Keep the stack pointer for writing memory
-	movs	r1, sp	// Keep the stack pointer for reading memory
+	mov	r0, sp	// Keep the stack pointer for writing memory
+	mov	r1, sp	// Keep the stack pointer for reading memory
 
 	// Make a nanosleep system call
 	bl	sysNanosleep

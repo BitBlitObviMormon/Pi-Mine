@@ -88,6 +88,7 @@ paintBlock:
 
 	// "Style" the block (Convert it to Unicode)
 	// For now we'll just print it out and hope Unicode chars aren't passed
+	// TODO: Implement Unicode characters
 	strb	r2, [r1]	// Store the ASCII character
 	adds	r1, r1, #1	// Increment the pointer by a byte
 

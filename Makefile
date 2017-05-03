@@ -40,11 +40,11 @@ pre-build:
 	@./color make USINGSCRIPT=true
 
 # Build the Pi-Mine client
-mine: $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(THREADLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o $(BIN)$(PAINT).o $(BIN)$(NETCLIENT).o $(BIN)$(MESSENGER).o
+mine: $(MEMLIBT).o $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(THREADLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o $(BIN)$(PAINT).o $(BIN)$(NETCLIENT).o $(BIN)$(MESSENGER).o
 	ld -o $@ $+
 
 # Build the Pi-Mine server
-mine-server: $(NETLIBT).o $(RNDLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(IOLIBT).o $(THREADLIBT).o $(BIN)$(SERVER).o $(BIN)$(NETSERVER).o
+mine-server: $(MEMLIBT).o $(NETLIBT).o $(RNDLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(IOLIBT).o $(THREADLIBT).o $(BIN)$(SERVER).o $(BIN)$(NETSERVER).o
 	ld -o $@ $+
 
 # LIBRARIES

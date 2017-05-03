@@ -7,7 +7,7 @@
 .set	BLOCK,        0
 .set	SOCKSPACE, 1024 // How much space to allocate for sockets
 
-.data
+.bss
 SERVER:	// The place to store the server's socket
 	.word	0
 ADDRESS:// The place to store the server's ip address

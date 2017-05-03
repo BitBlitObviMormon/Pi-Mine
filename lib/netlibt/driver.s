@@ -1,5 +1,5 @@
 /* This driver depends on the input/output library */
-.data
+.bss
 BUF:
 	.skip	64	// Enough data to hold a string buffer
 

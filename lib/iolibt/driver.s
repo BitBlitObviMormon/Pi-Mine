@@ -1,4 +1,3 @@
-// $$$ WRITE A SIMPLE PROGRAM USING ONLY THUMB2 INSTRUCTIONS
 .text
 .arm
 .global _start
@@ -13,8 +12,6 @@ main:
 	mov	r0, #13		// Move #13 to r0
 	b	sysExit
 
-// $$$ CREATE AN IF/ELSE STATEMENT USING THUMB2 INSTRUCTIONS
-// $$$ CREATE A WHILE LOOP USING THUMB2 INSTRUCTIONS
 /* void printNums() */
 /* Prints the numbers 1-9 onto the screen */
 .thumb

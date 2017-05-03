@@ -11,16 +11,18 @@
 
 .data
 .balign	2	
-RNDPTR:
-	.word	0x00		// The file pointer
 ENTROPYSIZE:
 	.word	ENTROPY_T	// The amount of space the entropic array holds
-ENTROPY:
-	.skip	ENTROPY_T	// Space in which to store entropy
 ENTROPYPTR:
 	.word	ENTROPY		// The pointer to the entropic array
+
+.bss
+RNDPTR:
+	.word	0x00		// The file pointer
 ENTROPYLCK:		// If this is 1, then the entropic array is being used
 	.word	0x00	// This is meant to prevent data races when threaded
+ENTROPY:
+	.skip	ENTROPY_T	// Space in which to store entropy
 
 .text
 .thumb
