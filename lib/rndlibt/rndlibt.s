@@ -1,5 +1,8 @@
 /* Random Library (Thumb) */
-/* Depends on System Library */
+/* Depends on System and Macro Libraries */
+
+.include "../macrolib/macrolib.inc"
+
 /* SIZES */
 .set	MODE_T, 4
 .set	ENTROPY_T, 256
@@ -39,11 +42,11 @@ randFloat:
 	bl	checkPtr	// Make sure the entropy pointer is valid
 	bl	lock		// Lock the entropic array
 
-	ldr	r2, =ENTROPYPTR	// Load the entropy pointer
+	mov32	r2, ENTROPYPTR	// Load the entropy pointer
 	ldr	r3, [r2]	// Dereference the pointer
 
 	// Jump to the code that loads the desired number of floats
-	ldr	r1, =.LrfJUMP
+	mov32	r1, .LrfJUMP
 	ldr	r0, [sp]// Peek at the top of the stack
 	adds	r0, r0	// Double r0 (2 bytes per register)
 	adds	r1, r0	// then add r1
@@ -283,7 +286,7 @@ randFloat:
 	vpush.32	{s31}	
 .LrfDIV:
 	// Load the max 32-bit value as a float
-	ldr	r3, =MAX32	// Get the location of the max 32-bit value
+	mov32	r3, MAX32	// Get the location of the max 32-bit value
 	vldr.f32	s31, [r3]	// Load the max 32-bit value into the vfp
 
 	// Divide each float by the max value
@@ -403,12 +406,12 @@ openRnd:
 	push	{r4, lr}	// Save return point for later
 
 	// If there is already a value written to the file handle, skip it
-	ldr	r4, =RNDPTR
+	mov32	r4, RNDPTR
 	ldr	r0, [r4]
 	cbnz	r0, .LopenDONE
 
 	// Open /dev/urandom
-	ldr	r0, =RANDOM	// The filename
+	mov32	r0, RANDOM	// The filename
 	movs	r1, #O_RDONLY	// Only reading privileges
 	movs	r2, #0		// Not creating a file, so no mode_t
 	bl	sysOpen		// Open the file
@@ -428,7 +431,7 @@ closeRnd:
 	push	{r4, lr}	// Save return point for later
 
 	// If there is already no value written to the file handle, skip it
-	ldr	r4, =RNDPTR
+	mov32	r4, RNDPTR
 	ldr	r0, [r4]
 	cbz	r4, .LcloseDONE
 
@@ -449,7 +452,7 @@ closeRnd:
 .type	randomArray, %function
 randomArray:
 	push	{lr}		// Save return point for later
-	ldr	r0, =RNDPTR	// The file pointer to /dev/urandom
+	mov32	r0, RNDPTR	// The file pointer to /dev/urandom
 	ldr	r0, [r0]
 	bl	sysRead		// Read entropic data from the file
 	pop	{pc}		// Return
@@ -467,14 +470,14 @@ seedRnd:
 	bl	lock
 
 	// Refill the entropic array with random data
-	ldr	r1, =ENTROPY	// Load the entropic array
+	mov32	r1, ENTROPY	// Load the entropic array
 	movs	r3, r1
-	ldr	r2, =ENTROPYSIZE// Set the read size to 256
+	mov32	r2, ENTROPYSIZE// Set the read size to 256
 	ldr	r2, [r2]
 	bl	randomArray	// Fill the entropic array with random data
 
 	// Reset the entropy pointer
-	ldr	r0, =ENTROPYPTR
+	mov32	r0, ENTROPYPTR
 	str	r3, [r0]
 
 	// Unlock the entropic array
@@ -491,7 +494,7 @@ checkPtr:
 	push	{lr}	// Save the return point for later
 
 	// Check if the entropy pointer is valid
-	ldr	r0, =ENTROPYPTR	// &entropyPTR
+	mov32	r0, ENTROPYPTR	// &entropyPTR
 	ldr	r1, [r0]	// entropyPTR
 	
 	// If the pointer is greater or equal to the reference then reseed
@@ -512,7 +515,7 @@ randByte:
 	bl	checkPtr	// Make sure the entropy pointer is valid
 	bl	lock		// Lock the entropic array
 
-	ldr	r1, =ENTROPYPTR	// Load the entropy pointer
+	mov32	r1, ENTROPYPTR	// Load the entropy pointer
 	ldr	r2, [r1]	// Dereference the pointer
 	ldrb	r0, [r2]	// Dereference again and
 	adds	r2, #1		// Move the pointer
@@ -533,7 +536,7 @@ randShort:
 	bl	checkPtr	// Make sure the entropy pointer is valid
 	bl	lock		// Lock the entropic array
 
-	ldr	r1, =ENTROPYPTR	// Load the entropy pointer
+	mov32	r1, ENTROPYPTR	// Load the entropy pointer
 	ldr	r2, [r1]	// Dereference the pointer
 	ldrh	r0, [r2]	// Dereference again and
 	adds	r2, #2		// Move the pointer
@@ -554,7 +557,7 @@ randInt:
 	bl	checkPtr	// Make sure the entropy pointer is valid
 	bl	lock		// Lock the entropic array
 
-	ldr	r1, =ENTROPYPTR	// Load the entropy pointer
+	mov32	r1, ENTROPYPTR	// Load the entropy pointer
 	ldr	r2, [r1]	// Dereference the pointer
 	ldr	r0, [r2]	// Dereference again and
 	adds	r2, #4		// Move the pointer
@@ -575,7 +578,7 @@ randLong:
 	bl	checkPtr	// Make sure the entropy pointer is valid
 	bl	lock		// Lock the entropic array
 
-	ldr	r2, =ENTROPYPTR	// Load the entropy pointer
+	mov32	r2, ENTROPYPTR	// Load the entropy pointer
 	ldr	r3, [r2]	// Dereference the pointer
 	ldrd	r0, [r3]	// Dereference again and
 	adds	r3, #8		// Move the pointer
@@ -592,7 +595,7 @@ randLong:
 .thumb
 lock:
 	// If the entropic array is locked then wait until it's unlocked
-	ldr	r1, =ENTROPYLCK
+	mov32	r1, ENTROPYLCK
 	ldr	r0, [r1]
 	cbz	r0, .LockDONE
 	b	lock
@@ -610,7 +613,7 @@ lock:
 .thumb
 unlock:
 	// Unlock the entropic array
-	ldr	r1, =ENTROPYLCK
+	mov32	r1, ENTROPYLCK
 	movs	r0, #0
 	str	r0, [r1]
 	bx	lr	// Return

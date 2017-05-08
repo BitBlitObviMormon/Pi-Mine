@@ -1,5 +1,7 @@
 /* Painting Tool */
 
+.include "lib/macrolib/macrolib.inc"
+
 .text
 .thumb
 .syntax	unified
@@ -28,7 +30,7 @@ paintBlock:
 	push	{r4, lr}
 
 	// Store the foreground paint header onto the buffer
-	ldr	r2, =FOREGROUND	// Load the foreground header
+	mov32	r2, FOREGROUND	// Load the foreground header
 	ldm	r2, {r3-r4}	// Load 8 bytes from the header
 	stm	r1, {r3-r4}	// Store those 8 bytes
 	adds	r1, r1, #7	// We actually only wanted to store 7 bytes
@@ -54,7 +56,7 @@ paintBlock:
 .LforeSkip:
 
 	// Store the background paint header onto the buffer
-	ldr	r2, =BACKGROUND	// Load the background header
+	mov32	r2, BACKGROUND	// Load the background header
 	ldm	r2, {r3-r4}	// Load 8 bytes from the header
 	stm	r1, {r3-r4}	// Store those 8 bytes
 	adds	r1, r1, #8	// Increment the pointers by 8 bytes

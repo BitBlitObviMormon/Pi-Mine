@@ -2,6 +2,7 @@
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a -mcpu=cortex-a7
 SYSLIBT = ../syslibt/syslibt
 IOLIBT = ../iolibt/iolibt
+MACROLIB = ../macrolib/macrolib
 
 all: driver.out
 
@@ -17,7 +18,7 @@ $(IOLIBT).o: $(IOLIBT).s
 errlibt.o: errlibt.s
 	as $(SW) -o $@ $<
 
-driver.o: driver.s errno.inc
+driver.o: driver.s errno.inc $(MACROLIB).inc
 	as $(SW) -o $@ $<
 
 errlibt.s: generate.out
@@ -28,7 +29,7 @@ errno.inc: errlibt.s ;
 generate.out: generate.o
 	gcc -o $@ $+
 
-generate.o: generate.c
+generate.o: generate.c $(MACROLIB).inc
 	gcc -c -std=c99 -Os $<
 
 clean:

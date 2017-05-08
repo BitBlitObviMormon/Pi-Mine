@@ -1,3 +1,6 @@
+/* Input/Output (Thumb) Library Driver */
+/* Depends on System and Macro Libraries */
+
 .text
 .arm
 .global _start

@@ -1,3 +1,8 @@
+/* Memory Library (Thumb) Driver */
+/* Depends on System and Macro Libraries */
+
+.include "../macrolib/macrolib.inc"
+
 .bss
 heap:
 	.word	0
@@ -9,13 +14,13 @@ heap_end:
 .global _start
 _start:
 	// Ask where the heap is
-	ldr	r0, =heap
+	mov32	r0, heap
 	mov	r0, #0
 	bl	sysBrk
 
 	// Store the heap location in memory
-	ldr	r4, =heap
-	ldr	r5, =heap_end
+	mov32	r4, heap
+	mov32	r5, heap_end
 	str	r0, [r4]
 	str	r0, [r5]
 
@@ -30,7 +35,7 @@ _start:
 	bl	sysBrk
 
 	mov	r5, r0
-	ldr	r1, =heap_end
+	mov32	r1, heap_end
 	str	r0, [r1]
 .Lskip_alloc:
 	add	r6, r6, #1

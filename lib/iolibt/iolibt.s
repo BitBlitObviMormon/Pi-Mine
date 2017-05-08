@@ -1,6 +1,7 @@
 /* Input/Output Library (Thumb) */
-/* Depends on System Library */
+/* Depends on System and Macro Libraries */
 
+.include "../macrolib/macrolib.inc"	// For mov32
 .include "ioconst.inc"	//  INCLUDE I/O STREAM INFO
 
 //  ASCII CONSTANTS
@@ -46,7 +47,7 @@ fgets:
 .type	fgeti, %function
 fgeti:
 	push	{lr}	// Save the return point for later
-	ldr	r1, =INTS
+	mov32	r1, INTS
 	movs	r2, #ISSIZE
 	bl	fgets	// Get a string from the console
 	bl	stoi	// String -> Int
@@ -110,7 +111,7 @@ fputs:
 	push	{r0, lr}// Store return point for later
 	bl	fprints
 	pop	{r0}	// Get the file stream
-	ldr	r1, =ENDLINE
+	mov32	r1, ENDLINE
 	bl	fprints
 	pop	{pc}	// Return
 
@@ -327,7 +328,7 @@ utos:
 	push	{r4-r5, lr}	// Save return point for later
 
 	// Write null to beginning
-	ldr	r3, =INTS	// String pointer
+	mov32	r3, INTS	// String pointer
 	movs	r4, #0
 	strb	r4, [r3]	// Write null
 	subs	r3, #1

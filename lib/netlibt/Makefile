@@ -3,6 +3,7 @@ SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a -mcpu=cortex-a7
 SYSLIBT = ../syslibt/syslibt
 IOLIBT = ../iolibt/iolibt
 ERRNO = ../errlibt/errno
+MACROLIB = ../macrolib/macrolib
 
 all: driver.out
 
@@ -18,10 +19,10 @@ $(SYSLIBT).o: $(SYSLIBT).s
 $(ERRNO).inc:
 	cd ../errlibt; make; cd ../netlibt
 
-netlibt.o: netlibt.s netconst.inc $(ERRNO).inc
+netlibt.o: netlibt.s netconst.inc $(ERRNO).inc $(MACROLIB).inc
 	as $(SW) -o $@ $<
 
-driver.o: driver.s
+driver.o: driver.s $(MACROLIB).inc
 	as $(SW) -o $@ $<
 
 clean:

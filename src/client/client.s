@@ -1,9 +1,12 @@
+/* Client.s */
 /* CONSTANTS */
 .set	WIDTH,    80
 .set	HEIGHT,   24
 .set	BLOCKS,   HEIGHT * WIDTH
 .set	BLOCKLEN, BLOCKS * 3
 .set	BUFLEN,   BLOCKS * 30
+
+.include "lib/macrolib/macrolib.inc"
 
 .text
 .arm
@@ -33,14 +36,14 @@ main:
 	bl	initMessenger
 
 	// Add a few messages
-	ldr	r1, =PITEXT
+	mov32	r1, PITEXT
 	bl	len
-	ldr	r0, =PITEXT
+	mov32	r0, PITEXT
 	movs	r1, r4
 	bl	messengerMessage
-	ldr	r1, =NAMETEXT
+	mov32	r1, NAMETEXT
 	bl	len
-	ldr	r0, =NAMETEXT
+	mov32	r0, NAMETEXT
 	movs	r1, r4
 	bl	messengerMessage
 

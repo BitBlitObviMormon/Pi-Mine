@@ -1,3 +1,7 @@
+/* Draw.s */
+
+.include "lib/macrolib/macrolib.inc"
+
 .text
 .thumb
 .syntax	unified

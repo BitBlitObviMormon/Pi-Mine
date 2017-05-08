@@ -1,5 +1,6 @@
 /* Server.Network.s */
 .include "lib/netlibt/netconst.inc"
+.include "lib/macrolib/macrolib.inc"
 
 /* CONSTANTS */
 .set	PORT,      7777
@@ -36,7 +37,7 @@ startNetServer:
 	push	{lr}		// Save return point for later
 
 	// Create a server
-	ldr	r0, =ADDRESS	// Ip address
+	mov32	r0, ADDRESS	// Ip address
 	movw	r1, #PORT	// Port
 	movw	r2, #BACKLOG	// Maximum backlog
 	movs	r3, #BLOCK	// Allow blocking?

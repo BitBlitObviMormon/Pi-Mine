@@ -16,6 +16,7 @@ ERRLIBT    = $(LIB)/errlibt/errlibt
 ERRNO      = $(LIB)/errlibt/errno
 MEMLIBT    = $(LIB)/memlibt/memlibt
 THREADLIBT = $(LIB)/threadlibt/threadlibt
+MACROLIB   = $(LIB)/macrolib/macrolib
 
 # Source Files
 CLIENT    = /client/client
@@ -73,19 +74,19 @@ $(BIN):
 	mkdir -p $(BIN)/client/gui
 
 # SOURCE CODE
-$(BIN)$(DRAW).o: $(SRC)$(DRAW).s $(BIN)
+$(BIN)$(DRAW).o: $(SRC)$(DRAW).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
-$(BIN)$(PAINT).o: $(SRC)$(PAINT).s $(BIN)
+$(BIN)$(PAINT).o: $(SRC)$(PAINT).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
-$(BIN)$(CLIENT).o: $(SRC)$(CLIENT).s $(BIN)
+$(BIN)$(CLIENT).o: $(SRC)$(CLIENT).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
-$(BIN)$(SERVER).o: $(SRC)$(SERVER).s $(BIN)
+$(BIN)$(SERVER).o: $(SRC)$(SERVER).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
-$(BIN)$(NETCLIENT).o: $(SRC)$(NETCLIENT).s $(BIN)
+$(BIN)$(NETCLIENT).o: $(SRC)$(NETCLIENT).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
-$(BIN)$(NETSERVER).o: $(SRC)$(NETSERVER).s $(BIN)
+$(BIN)$(NETSERVER).o: $(SRC)$(NETSERVER).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
-$(BIN)$(MESSENGER).o: $(SRC)$(MESSENGER).s $(BIN)
+$(BIN)$(MESSENGER).o: $(SRC)$(MESSENGER).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
 
 # Clean all built and backup files

@@ -1,7 +1,10 @@
-/* This driver depends on the input/output library */
+/* This driver depends on the Macro and Input/Output libraries */
+
+.include "../macrolib/macrolib.inc"	// For mov32
+
 .bss
 BUF:
-	.skip	64	// Enough data to hold a string buffer
+	.skip	256	// Enough data to hold a string buffer
 
 .text
 .syntax	unified
@@ -19,7 +22,7 @@ main:
 	movs	r4, r0		// Save the client's socket
 
 	// Create a server
-	ldr	r0, =ADDRESS	// Get the pointer of the ip address
+	mov32	r0, ADDRESS	// Get the pointer of the ip address
 	ldr	r0, [r0]	// Get the ip address
 	movw	r1, #7777	// Host on port 7777
 	movs	r2, #255	// Only 255 bytes of backlog
@@ -71,7 +74,7 @@ clientMsg:
 	push	{r1}		// Save the bool
 
 	// Print "[CLIENT] "
-	ldr	r1, =CLIENT
+	mov32	r1, CLIENT
 	bl	prints
 
 	// If the message is coming from the server, print "Server said: "
@@ -79,7 +82,7 @@ clientMsg:
 	cbz	r0, .LclientMsgNotServer
 
 	// Print "Server said: "
-	ldr	r1, =CLIENTRECV	// "Server said: "
+	mov32	r1, CLIENTRECV	// "Server said: "
 	bl	prints		// Print "Server said: "
 .LclientMsgNotServer:
 	// Print the message and append a newline
@@ -96,7 +99,7 @@ serverMsg:
 	push	{r1}		// Save the bool
 
 	// Print "[SERVER] "
-	ldr	r1, =SERVER
+	mov32	r1, SERVER
 	bl	prints
 
 	// If the message is coming from the server, print "Client said: "
@@ -104,7 +107,7 @@ serverMsg:
 	cbz	r0, .LserverMsgNotClient
 
 	// Print "Client said: "
-	ldr	r1, =SERVERRECV	// "Client said: "
+	mov32	r1, SERVERRECV	// "Client said: "
 	bl	prints		// Print "Client said: "
 .LserverMsgNotClient:
 	// Print the message and append a newline
@@ -120,20 +123,20 @@ sendClient:
 	push	{lr}		// Save return point
 
 	// Say the client is going to send a message
-	ldr	r0, =CLIENTHELLO
+	mov32	r0, CLIENTHELLO
 	movs	r1, #0
 	bl	clientMsg
 
 	// Send the message
 	movs	r0, r4		// Get the client's socket
-	ldr	r1, =CLIENTSEND	// Prepare to send a packet over
+	mov32	r1, CLIENTSEND	// Prepare to send a packet over
 	bl	sendMessage	// Send the packet
 
 	// If we sent the data then return happily
 	cbnz	r0, .LsendClientEnd
 
 	// If we sent zero bytes then something must be wrong
-	ldr	r0, =CLIENTFAIL
+	mov32	r0, CLIENTFAIL
 	movs	r1, #0
 	bl	clientMsg
 .LsendClientEnd:
@@ -146,20 +149,20 @@ sendServer:
 	push	{lr}		// Save return point
 
 	// Say the server is going to send a message
-	ldr	r0, =SERVERHELLO
+	mov32	r0, SERVERHELLO
 	movs	r1, #0
 	bl	serverMsg
 
 	// Send the message
 	movs	r0, r8		// Get the client's socket (server-side)
-	ldr	r1, =SERVERSEND	// Prepare to send a packet over
+	mov32	r1, SERVERSEND	// Prepare to send a packet over
 	bl	sendMessage	// Send the packet
 
 	// If we sent the data then return happily
 	cbnz	r0, .LsendServerEnd
 
 	// If we sent zero bytes then something must be wrong
-	ldr	r0, =SERVERFAIL
+	mov32	r0, SERVERFAIL
 	movs	r1, #0
 	bl	serverMsg
 .LsendServerEnd:
@@ -173,20 +176,20 @@ recvServer:
 
 	// Receive the client's message
 	movs	r0, r8		// Get the client's socket (server-side)
-	ldr	r1, =BUF	// Prepare to receive data
+	mov32	r1, BUF		// Prepare to receive data
 	movs	r2, #64		// Prepare to receive 64 bytes of data
 	bl	receiveBuffer	// Receive the data
 
 	// If we received zero bytes of data from the client, complain
 	cbnz	r0, .LrecvServerSend
-	ldr	r0, =SERVERNORECV
+	mov32	r0, SERVERNORECV
 	movs	r1, #0
 	bl	serverMsg	// Print the message
 	pop	{pc}		// Return
 
 .LrecvServerSend:
 	// If we received some data then print it out
-	ldr	r0, =BUF	// Get the received data
+	mov32	r0, BUF		// Get the received data
 	movs	r1, #1		// Tell serverMsg we got it from the client
 	bl	serverMsg	// Print the message
 	pop	{pc}		// Return
@@ -198,20 +201,20 @@ recvClient:
 
 	// Receive the server's message
 	movs	r0, r4		// Get the client's socket
-	ldr	r1, =BUF	// Prepare to receive data
+	mov32	r1, BUF		// Prepare to receive data
 	movs	r2, #64		// Prepare to receive 64 bytes of data
 	bl	receiveBuffer	// Receive the data
 
 	// If we received zero bytes of data from the server, complain
 	cbnz	r0, .LrecvClientSend
-	ldr	r0, =CLIENTNORECV
+	mov32	r0, CLIENTNORECV
 	movs	r1, #0
 	bl	clientMsg	// Print the message
 	pop	{pc}		// Return
 
 .LrecvClientSend:
 	// If we received some data then print it out
-	ldr	r0, =BUF	// Get the received data
+	mov32	r0, BUF		// Get the received data
 	movs	r1, #1		// Tell clientMsg we got it from the server
 	bl	clientMsg	// Print the message
 	pop	{pc}		// Return

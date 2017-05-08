@@ -1,7 +1,8 @@
 /* Game Input Library (Thumb) */
-/* Depends on Input/Output Library and System Library */
+/* Depends on Input/Output, Macro, and System Libraries */
 
-.include "../iolibt/ioconst.inc" //  INCLUDE FILE STREAM INFO
+.include "../iolibt/ioconst.inc"	// File Stream Info
+.include "../macrolib/macrolib.inc"	// For mov32
 
 //  FUNCTION CONSTANTS
 .set	TCGETS, 0x5401
@@ -106,7 +107,7 @@ write3Digits:
 .global	hideCursor
 .type	hideCursor, %function
 hideCursor:
-	ldr	r1, =HIDECURSOR	// Load the escape code from memory
+	mov32	r1, HIDECURSOR	// Load the escape code from memory
 	b	prints		// Print the escape code onto the console
 
 /* void showCursor() */
@@ -116,7 +117,7 @@ hideCursor:
 .global	showCursor
 .type	showCursor, %function
 showCursor:
-	ldr	r1, =SHOWCURSOR	// Load the escape code from memory
+	mov32	r1, SHOWCURSOR	// Load the escape code from memory
 	b	prints		// Print the escape code onto the console
 
 /* void loadCursor() */
@@ -126,7 +127,7 @@ showCursor:
 .global	loadCursor
 .type	loadCursor, %function
 loadCursor:
-	ldr	r1, =LOADCURSOR	// Load the escape code from memory
+	mov32	r1, LOADCURSOR	// Load the escape code from memory
 	b	prints		// Print the escape code onto the console
 
 /* void saveCursor(int x[r0], int y[r1]) */
@@ -136,7 +137,7 @@ loadCursor:
 .global	saveCursor
 .type	saveCursor, %function
 saveCursor:
-	ldr	r1, =SAVECURSOR	// Load the escape code from memory
+	mov32	r1, SAVECURSOR	// Load the escape code from memory
 	b	prints		// Print the escape code onto the console
 
 /* void homeCursor() */
@@ -146,7 +147,7 @@ saveCursor:
 .global	homeCursor
 .type	homeCursor, %function
 homeCursor:
-	ldr	r1, =HOMECURSOR	// Load the escape code from memory
+	mov32	r1, HOMECURSOR	// Load the escape code from memory
 	b	prints		// Print the escape code onto the console
 
 /* void setCursor(int x[r0], int y[r1]) */
@@ -163,16 +164,16 @@ setCursor:
 	movs	r0, r1
 
 	// Write the x number
-	ldr	r1, =CURSORX
+	mov32	r1, CURSORX
 	bl	write3Digits
 
 	// Write the y number
 	movs	r0, r4
-	ldr	r1, =CURSORY
+	mov32	r1, CURSORY
 	bl	write3Digits
 
 	// Print out the resulting string
-	ldr	r1, =CURSORPOS
+	mov32	r1, CURSORPOS
 	bl	prints
 
 	pop	{r4, pc}	// Return
@@ -191,16 +192,16 @@ setColor:
 	movs	r4, r1
 
 	// Write the foreground color
-	ldr	r1, =FORECOLOR
+	mov32	r1, FORECOLOR
 	bl	write3Digits
 
 	// Write the background color
 	movs	r0, r4
-	ldr	r1, =BACKCOLOR
+	mov32	r1, BACKCOLOR
 	bl	write3Digits
 
 	// Print out the resulting string
-	ldr	r1, =SETCOLOR
+	mov32	r1, SETCOLOR
 	bl	prints
 
 	pop	{r4, pc}	// Return
@@ -213,7 +214,7 @@ setColor:
 .global	clearFrame
 .type	clearFrame, %function
 clearFrame:
-	ldr	r1, =CLEARFRAME	// Load the escape code from memory
+	mov32	r1, CLEARFRAME	// Load the escape code from memory
 	b	prints		// Print the escape code onto the console
 
 /* void restoreTerminal() */
@@ -227,7 +228,7 @@ clearFrame:
 restoreTerminal:
 	movs	r0, #STDIN	// Use the standard input stream
 	movw	r1, #TCSETS	// Tell the terminal to apply terminal settings
-	ldr	r2, =TERMIOS	// Tell the terminal to apply the backup settings
+	mov32	r2, TERMIOS	// Tell the terminal to apply the backup settings
 	b	sysIoctl	// Use the I/O Control system call
 
 /* void rawMode() */
@@ -245,12 +246,12 @@ rawMode:
 
 	movs	r0, #STDIN	// Use the standard input stream
 	movw	r1, #TCGETS	// Tell the terminal to get terminal settings
-	ldr	r2, =TERMIOS	// Tell it to write the settings onto the backup
+	mov32	r2, TERMIOS	// Tell it to write the settings onto the backup
 	bl	sysIoctl	// Use the I/O Control system call
 
 	// Copy the global struct to local stack for modification
 	mov	r1, sp		// Get the address of the stack
-	ldr	r0, =TERMIOS	// Get the address of the global struct
+	mov32	r0, TERMIOS	// Get the address of the global struct
 	ldm r0!, {r2-r7} //  Copy 24 bytes
 	stm r1!, {r2-r7}
 	ldm r0!, {r2-r7} //  Copy 24 bytes

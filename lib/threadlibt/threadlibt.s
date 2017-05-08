@@ -1,7 +1,8 @@
 /* Threading Library (Thumb) */
-/* Depends on System Call and Memory Libraries */
+/* Depends on System, Macro, and Memory Libraries */
 
 .include "threadconst.inc"	// Include thread flags and info
+.include "../macrolib/macrolib.inc"	// For mov32
 
 // FLAGS
 .set	CLONE_FLAGS,	(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_PARENT | CLONE_THREAD | CLONE_IO)
@@ -44,8 +45,7 @@ createThread:
 	sub	r1, #4		// Return sp to its normal position
 
 	// Prepare to create a new thread by passing the arguments for clone()
-	movw	r0, #:lower16:CLONE_FLAGS
-	movt	r0, #:upper16:CLONE_FLAGS
+	mov32	r0, CLONE_FLAGS
 	mov	r2, #0		// Parent process id
 	mov	r3, #0		// Child process id
 	mov	r4, #0		// Not sure what this does, it's ignored.

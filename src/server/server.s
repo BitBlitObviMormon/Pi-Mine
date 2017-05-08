@@ -1,6 +1,8 @@
 /* CONSTANTS */
 .set	PLRSPC, 2304	// How much space to allocate for player data
 
+.include "lib/macrolib/macrolib.inc"
+
 .text
 .arm
 .global _start

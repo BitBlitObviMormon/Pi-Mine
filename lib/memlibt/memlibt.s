@@ -1,7 +1,8 @@
 /* Memory Library (Thumb) */
-/* Depends on System Library */
+/* Depends on System and Macro Libraries */
 
 .include "memconst.inc"
+.include "../macrolib/macrolib.inc"	// For mov32
 
 .set	PROT_ANON_FLAGS, (PROT_READ | PROT_WRITE)
 .set	MAP_ANON_FLAGS,	 (MAP_SHARED | MAP_ANONYMOUS)

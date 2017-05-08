@@ -1,6 +1,8 @@
 /* Threading Library (Thumb) Driver */
+/* Depends on Macro, Memory, and System Libraries */
 
 .include "threadconst.inc"	// Include thread flags and info
+.include "../macrolib/macrolib.inc"	// For mov32
 
 // FLAGS
 .set	CLONE_FLAGS,	(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_PARENT | CLONE_THREAD | CLONE_IO)
@@ -42,7 +44,7 @@ main:
 .thumb
 .syntax	unified
 	//  Create a new thread
-	ldr	r0, =thread_main
+	mov32	r0, thread_main
 	movw	r1, #STACKSIZE
 	bl	createThread
 	push	{r0}	// Save its process id for later
@@ -81,21 +83,20 @@ print1:
 	push	{lr}
 
 	// Increment the shared data and then store it in the private data
-	ldr	r0, =SHAREDDATA
-	ldr	r2, =DATA1
+	mov32	r0, SHAREDDATA
+	mov32	r2, DATA1
 	ldrb	r3, [r0]	// Read value from address SHAREDDATA
 	add	r3, #1		// Add 1 to it
 	strb	r3, [r0]	// Store it in SHAREDDATA
 	strb	r3, [r2]	// Store it in DATA1
 
 	// Print the shared data
-	ldr	r1, =TEXT1
+	mov32	r1, TEXT1
 	bl	print
 
 	// Sleep for a while (We'll assume we aren't interrupted in the middle)
 	mov	r0, #0
-	movw	r1, #:lower16:DELAY1	// ~0.25 seconds
-	movt	r1, #:upper16:DELAY1
+	mov32	r1, DELAY1	// ~0.25 seconds
 	bl	nanosleep
 
 	pop	{pc}
@@ -107,19 +108,18 @@ print2:
 	push	{lr}
 
 	// Load the shared data and then store it in the private data
-	ldr	r0, =SHAREDDATA
-	ldr	r2, =DATA2
+	mov32	r0, SHAREDDATA
+	mov32	r2, DATA2
 	ldrb	r3, [r0]	// Read value from address SHAREDDATA
 	strb	r3, [r2]	// Store it in DATA2
 
 	// Print the shared data
-	ldr	r1, =TEXT2
+	mov32	r1, TEXT2
 	bl	print
 
 	// Sleep for a while (We'll assume we aren't interrupted in the middle)
 	mov	r0, #0
-	movw	r1, #:lower16:DELAY2	// ~0.2 seconds
-	movt	r1, #:upper16:DELAY2
+	mov32	r1, DELAY2	// ~0.2 seconds
 	bl	nanosleep
 
 	pop	{pc}

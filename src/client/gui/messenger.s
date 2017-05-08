@@ -20,6 +20,8 @@
 .set	EMPHCLR, 0xB	// Emphasis Color
 .set	ERRCLR,  0x9	// Error Color
 
+.include "lib/macrolib/macrolib.inc"
+
 .bss
 WIDTH:	// The width of the console
 	.word	0
@@ -56,9 +58,9 @@ initMessenger:
 	movs	r6, r2		// blocks
 
 	// Store the width and height of the console as data
-	ldr	r3, =WIDTH
+	mov32	r3, WIDTH
 	str	r0, [r3]
-	ldr	r3, =HEIGHT
+	mov32	r3, HEIGHT
 	str	r1, [r3]
 
 	// Get the expected end-buffer address
@@ -189,8 +191,8 @@ initMessenger:
 updateMessengerCursor:
 	// Load the width and height
 	movs	r2, r0
-	ldr	r0, =WIDTH
-	ldr	r1, =HEIGHT
+	mov32	r0, WIDTH
+	mov32	r1, HEIGHT
 	ldr	r0, [r0]
 	ldr	r1, [r1]
 	
@@ -200,11 +202,13 @@ updateMessengerCursor:
 	movs	r0, #3
 	mul	r3, r0, r3	// bufSize = width * height * 3 (size of buf)
 	adds	r3, r2, r3	// bufEnd = buf + bufSize
-	ldrh	r0, =CURSOR	// Get cusorPos
+	mov32	r0, CURSOR	// Get cusorPos
+	ldrh	r0, [r0]
 	adds	r3, r3, r0	// bufEnd += cursorPos
 	adds	r3, #2		// bufEnd += 2
 	
-	ldrb	r1, =CURSOR+2	// Get the cursor's blink state
+	mov32	r1, CURSOR+2	// Get the cursor's blink state
+	ldrb	r1, [r1]
 
 	// If blinkState Then Goto BlinkOn Else Goto BlinkOff
 	cmp	r1, #0
@@ -272,7 +276,7 @@ messengerLine:
 	push	{lr}		// Save return point for later
 
 	// Calculate the writing point
-	ldr	r3, =WIDTH
+	mov32	r3, WIDTH
 	ldr	r3, [r3]
 	mul	r2, r2, r3	// offset = y * width
 	movs	r3, #3
@@ -308,11 +312,11 @@ messengerMessage:
 	push	{r4-r8, lr}	// Save return point for later
 
 	// Save variables for later
-	ldr	r8, =LINEY
+	mov32	r8, LINEY
 	movs	r4, r0		// message
 	movs	r5, r1		// blocks
 	adds	r6, r0, r2	// messageEnd
-	ldr	r7, =WIDTH	// width
+	mov32	r7, WIDTH	// width
 	ldr	r7, [r7]
 	subs	r7, #4
 	ldr	r8, [r8]	// lineY
@@ -372,7 +376,7 @@ messengerMessage:
 	bl	messengerLine	// Print a line
 
 	// Increment the y value
-	ldr	r0, =LINEY
+	mov32	r0, LINEY
 	adds	r8, #1
 	str	r8, [r0]
 
@@ -388,7 +392,7 @@ messengerInput:
 
 	// Move the cursor to (3, HEIGHT-1)
 	movs	r0, #3
-	ldr	r1, =HEIGHT
+	mov32	r1, HEIGHT
 	ldr	r1, [r1]
 	subs	r1, #1
 	bl	setCursor

@@ -1,12 +1,13 @@
 /* Network Library (Thumb) */
-/* Depends on System and Input/Output Libraries */
+/* Depends on System, Macro, and Input/Output Libraries */
 
 /* CONSTANTS */
 .set	ADDRLEN, 16	// The length of the address
 
-/* Include network constants and error values */
+/* Include network constants, macros, and error values */
 .include "netconst.inc"
 .include "../errlibt/errno.inc"
+.include "../macrolib/macrolib.inc"
 
 .bss
 .balign	4
@@ -89,17 +90,17 @@ createServer:
 // 	// Get the local host's ip name
 // 	movs	r0, r8		// Get the socket
 // 	movw	r1, #SIOCGIFNAME// Prepare to use SIOCGIFNAME Ioctl call
-// 	ldr	r2, =STRUCT	// Prepare space for the ifreq struct
+// 	mov32	r2, STRUCT	// Prepare space for the ifreq struct
 // 	bl	sysIoctl	// Call the Ioctl system call
 // 
 // 	// Get the local host's ip address
 // 	movs	r0, r8		// Get the socket
 // 	movw	r1, #SIOCGIFADDR// Prepare to use SIOCGIFADDR Ioctl call
-// 	ldr	r2, =STRUCT	// Prepare space for the ifreq struct
+// 	mov32	r2, STRUCT	// Prepare space for the ifreq struct
 // 	bl	sysIoctl	// Call the Ioctl system call
 
 	// Set the network's family to PF_INET
-	ldr	r0, =STRUCT+4	// Load the family part of the struct
+	mov32	r0, STRUCT+4	// Load the family part of the struct
 	movs	r1, #PF_INET	// Prepare to write PF_INET to family
 	strh	r1, [r0]	// Write PF_INET to family 
 
@@ -113,7 +114,7 @@ createServer:
 
 	// Bind the server to the returned address and the given port
 	movs	r0, r8		// Get the socket
-	ldr	r1, =STRUCT+4	// Get the sockaddr part of the struct
+	mov32	r1, STRUCT+4	// Get the sockaddr part of the struct
 	movs	r2, #ADDRLEN	// Give the length of the address
 	bl	sysBind		// Call the Bind system call
 
@@ -143,7 +144,7 @@ connect:
 	revsh	r2, r2		// Reverse port's byte order
 
 	// Set the network's family to PF_INET
-	ldr	r0, =STRUCT+4	// Load the family part of the struct
+	mov32	r0, STRUCT+4	// Load the family part of the struct
 	movs	r3, #PF_INET	// Prepare to write PF_INET to family
 	strh	r3, [r0]	// Write PF_INET to family 
 
@@ -157,7 +158,7 @@ connect:
 
 	// Use the connect system call
 	movs	r0, r4		// Get the socket
-	ldr	r1, =STRUCT+4	// Get the sockaddr part of the struct
+	mov32	r1, STRUCT+4	// Get the sockaddr part of the struct
 	movs	r2, #ADDRLEN	// Give the length of the address
 	bl	sysConnect	// Use the connect system call
 
@@ -184,12 +185,12 @@ createAddress:
 .global	acceptClient
 .type	acceptClient, %function
 acceptClient:
-	ldr	r1, =STRUCT	// Get the address
+	mov32	r1, STRUCT	// Get the address
 	movs	r2, #ADDRLEN	// Give the length of the address
 	push	{lr}		// Save return point for later
 
 	bl	sysAccept	// Use the accept system call
-	ldr	r1, =STRUCT	// Return the address
+	mov32	r1, STRUCT	// Return the address
 
 	pop	{pc}		// Return
 
@@ -242,13 +243,13 @@ waitForClient:
 	movs	r4, #0		// Otherwise, make no timeout
 	b	.LSkipTimeout	// Skip the timeout setup
 .LTimeout:
-	ldr	r4, =TIMEVAL	// Get the timeval struct
+	mov32	r4, TIMEVAL	// Get the timeval struct
 	movs	r1, #0		// Prepare to...
 	str	r1, [r4]	// Store 0 into the seconds area
 	adds	r0, r4, #4	// Increment to the microseconds
 	str	r6, [r0]	// Write the microseconds
 .LSkipTimeout:
-	ldr	r1, =POLL	// Set up the poll
+	mov32	r1, POLL	// Set up the poll
 	str	r5, [r1]	// Store the server's socket in the poll
 	movs	r2, #0		// Don't watch for writing in the server
 	movs	r3, #0		// Don't watch for exceptions in the server

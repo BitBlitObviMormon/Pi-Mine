@@ -1,3 +1,7 @@
+/* This driver depends on the Macro and Input/Output Libraries */
+
+.include "../macrolib/macrolib.inc"	// For mov32
+
 .text
 .arm
 .global _start
@@ -14,11 +18,11 @@ main:
 .Loop:
 	mov	r1, r4
 	bl	printErr	//  Print the error string
-	ldr	r1, =COLON	//  Load the colon string
+	mov32	r1, COLON	//  Load the colon string
 	bl	prints		//  Print a colon
 	mov	r1, r4
 	bl	printErrDetails	//  Print the error details
-	ldr	r1, =NEWLINE	//  Load the newline string
+	mov32	r1, NEWLINE	//  Load the newline string
 	bl	prints		//  Print a newline
 	sub	r4, r4, #1	//  Decrement the error code
 	cmp	r5, r4		//  If error code is less than or equal to -133

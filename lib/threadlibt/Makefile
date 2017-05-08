@@ -2,6 +2,7 @@
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a -mcpu=cortex-a7
 SYSLIBT = ../syslibt/syslibt
 MEMLIBT = ../memlibt/memlibt
+MACROLIB = ../macrolib/macrolib
 
 all: driver.out
 
@@ -14,10 +15,10 @@ $(SYSLIBT).o: $(SYSLIBT).s
 $(MEMLIBT).o: $(MEMLIBT).s
 	cd ../memlibt; make; cd ../threadlibt
 
-threadlibt.o: threadlibt.s threadconst.inc
+threadlibt.o: threadlibt.s threadconst.inc $(MACROLIB).inc
 	as $(SW) -o $@ $<
 
-driver.o: driver.s threadconst.inc
+driver.o: driver.s threadconst.inc $(MACROLIB).inc
 	as $(SW) -o $@ $<
 
 clean:
