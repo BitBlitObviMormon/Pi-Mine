@@ -2,6 +2,7 @@
 SW = -mfpu=neon-vfpv4 -mfloat-abi=hard -march=armv7-a -mcpu=cortex-a7
 SYSLIBT = ../syslibt/syslibt
 IOLIBT = ../iolibt/iolibt
+IOCONST = ../iolibt/ioconst
 
 all: driver.out
 
@@ -14,7 +15,7 @@ $(SYSLIBT).o: $(SYSLIBT).s
 $(IOLIBT).o: $(IOLIBT).s
 	cd ../iolibt; make; cd ../gamelibt
 
-gamelibt.o: gamelibt.s
+gamelibt.o: gamelibt.s $(IOCONST).inc
 	as $(SW) -o $@ $<
 
 driver.o: driver.s

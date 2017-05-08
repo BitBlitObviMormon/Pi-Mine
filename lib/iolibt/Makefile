@@ -10,7 +10,7 @@ driver.out: driver.o iolibt.o $(SYSLIBT).o
 $(SYSLIBT).o: $(SYSLIBT).s
 	cd ../syslibt; make; cd ../iolibt
 
-iolibt.o: iolibt.s ioconst.s
+iolibt.o: iolibt.s ioconst.inc
 	as $(SW) -o $@ $<
 
 driver.o: driver.s

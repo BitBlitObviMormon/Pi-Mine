@@ -17,13 +17,13 @@ $(IOLIBT).o: $(IOLIBT).s
 errlibt.o: errlibt.s
 	as $(SW) -o $@ $<
 
-driver.o: driver.s errno.s
+driver.o: driver.s errno.inc
 	as $(SW) -o $@ $<
 
 errlibt.s: generate.out
 	./generate.out
 
-errno.s: errlibt.s ;
+errno.inc: errlibt.s ;
 
 generate.out: generate.o
 	gcc -o $@ $+
@@ -32,4 +32,4 @@ generate.o: generate.c
 	gcc -c -std=c99 -Os $<
 
 clean:
-	rm -vf *.out *.o *# *~ errlibt.s errno.s
+	rm -vf *.out *.o *# *~ errlibt.s errno.inc

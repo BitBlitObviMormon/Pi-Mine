@@ -1,7 +1,7 @@
 /* Threading Library (Thumb) */
 /* Depends on System Call and Memory Libraries */
 
-.include "threadconst.s"	// Include thread flags and info
+.include "threadconst.inc"	// Include thread flags and info
 
 // FLAGS
 .set	CLONE_FLAGS,	(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_PARENT | CLONE_THREAD | CLONE_IO)

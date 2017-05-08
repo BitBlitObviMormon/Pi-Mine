@@ -1,7 +1,7 @@
 /* Memory Library (Thumb) */
 /* Depends on System Library */
 
-.include "memconst.s"
+.include "memconst.inc"
 
 .set	PROT_ANON_FLAGS, (PROT_READ | PROT_WRITE)
 .set	MAP_ANON_FLAGS,	 (MAP_SHARED | MAP_ANONYMOUS)

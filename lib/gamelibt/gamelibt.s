@@ -1,7 +1,7 @@
 /* Game Input Library (Thumb) */
 /* Depends on Input/Output Library and System Library */
 
-.include "../iolibt/ioconst.s" //  INCLUDE FILE STREAM INFO
+.include "../iolibt/ioconst.inc" //  INCLUDE FILE STREAM INFO
 
 //  FUNCTION CONSTANTS
 .set	TCGETS, 0x5401

@@ -5,8 +5,8 @@
 .set	ADDRLEN, 16	// The length of the address
 
 /* Include network constants and error values */
-.include "netconst.s"
-.include "../errlibt/errno.s"
+.include "netconst.inc"
+.include "../errlibt/errno.inc"
 
 .bss
 .balign	4

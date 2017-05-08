@@ -287,7 +287,7 @@ int main()
 {
   // Open the files
   FILE* file = fopen("errlibt.s", "w"); //Write the error library
-  FILE* hfile = fopen("errno.s", "w");//Write the error library header
+  FILE* hfile = fopen("errno.inc", "w");//Write the error library header
 
   // Write the header
   fprintf(file, "/* Error Library (Thumb) */\n/* Depends on Input/Output Library and System Library */\n\n/* FILE STREAMS */\n.set\tSTDOUT, 1\n");

@@ -1,5 +1,5 @@
 /* System Call Library (Thumb) */
-.include "sysconst.s"
+.include "sysconst.inc"
 
 .text
 .syntax	unified

@@ -62,8 +62,7 @@ $(MEMLIBT).o: $(MEMLIBT).s
 	cd $(LIB)/memlibt; make; cd ../..
 $(THREADLIBT).o: $(THREADLIBT).s
 	cd $(LIB)/threadlibt; make; cd ../..
-$(ERRLIBT).o: $(ERRLIBT).s
-	;
+$(ERRLIBT).o: $(ERRLIBT).s ;
 $(ERRLIBT).s:
 	cd $(LIB)/errlibt; make; cd ../..
 
@@ -103,7 +102,7 @@ clean:
 	rm -f mine mine-server
 
 # Clean generated code
-	rm -f $(ERRLIBT).s $(ERRNO).s
+	rm -f $(ERRLIBT).s $(ERRNO).inc
 else
 clean:
 	@./color make clean USINGSCRIPT=true

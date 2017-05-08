@@ -1,5 +1,5 @@
 /* Server.Network.s */
-.include "lib/netlibt/netconst.s"
+.include "lib/netlibt/netconst.inc"
 
 /* CONSTANTS */
 .set	PORT,      7777

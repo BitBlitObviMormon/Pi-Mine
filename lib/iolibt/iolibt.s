@@ -1,7 +1,7 @@
 /* Input/Output Library (Thumb) */
 /* Depends on System Library */
 
-.include "ioconst.s"	//  INCLUDE I/O STREAM INFO
+.include "ioconst.inc"	//  INCLUDE I/O STREAM INFO
 
 //  ASCII CONSTANTS
 .set	ZERO,    0x30

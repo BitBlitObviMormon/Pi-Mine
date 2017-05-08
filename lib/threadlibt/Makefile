@@ -14,10 +14,10 @@ $(SYSLIBT).o: $(SYSLIBT).s
 $(MEMLIBT).o: $(MEMLIBT).s
 	cd ../memlibt; make; cd ../threadlibt
 
-threadlibt.o: threadlibt.s threadconst.s
+threadlibt.o: threadlibt.s threadconst.inc
 	as $(SW) -o $@ $<
 
-driver.o: driver.s threadconst.s
+driver.o: driver.s threadconst.inc
 	as $(SW) -o $@ $<
 
 clean:

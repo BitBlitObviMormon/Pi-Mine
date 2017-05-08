@@ -14,7 +14,7 @@ mine-server
 
 # Generated source files
 errlibt.s
-errno.s
+errno.inc
 
 # Pi-Mine log files
 *.log

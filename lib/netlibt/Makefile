@@ -15,10 +15,10 @@ $(IOLIBT).o: $(IOLIBT).s
 $(SYSLIBT).o: $(SYSLIBT).s
 	cd ../syslibt; make; cd ../netlibt
 
-$(ERRNO).s:
+$(ERRNO).inc:
 	cd ../errlibt; make; cd ../netlibt
 
-netlibt.o: netlibt.s netconst.s $(ERRNO).s
+netlibt.o: netlibt.s netconst.inc $(ERRNO).inc
 	as $(SW) -o $@ $<
 
 driver.o: driver.s
