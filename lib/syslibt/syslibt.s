@@ -53,7 +53,7 @@ sysOpen:
 
 /* int[r0] sysClose(int fd[r0]) */
 /* Uses the system call to close a file */
-/* Data Races: close does not access memory */
+/* Data Races: The file stream is closed and rendered inaccessible */
 .thumb_func
 .global	sysClose
 .type	sysClose, %function
@@ -61,6 +61,30 @@ sysClose:
 	push	{r7, lr}	// Save return point for later
 	movs	r7, #CLOSE	// Prepare to invoke close system call
 	svc	#0		// Invoke close system call
+	pop	{r7, pc}	// Return
+
+/* int[r0] sysCreat(const char* pathname[r0], mode_t mode[r1]) */
+/* Uses the system call to (re)create a file for writing */
+/* Data Races: The character array pathname is read */
+.thumb_func
+.global	sysCreat
+.type	sysCreat, %function
+sysCreat:
+	push	{r7, lr}	// Save return point for later
+	movs	r7, #CREAT	// Prepare to invoke create system call
+	svc	#0		// Invoke create system call
+	pop	{r7, pc}	// Return	
+
+/* int[r0] sysUnlink(const char* pathname[r0]) */
+/* Uses the system call to unlink (delete) a file if it is accessible */
+/* Data Races: The given file is deleted if it is not being used */
+.thumb_func
+.global	sysUnlink
+.type	sysUnlink, %function
+sysUnlink:
+	push	{r7, lr}	// Save return point for layer
+	movs	r7, #UNLINK	// Prepare to invoke unlink system call
+	svc	#0		// Invoke unlink system call
 	pop	{r7, pc}	// Return
 
 /* int[r0] sysGetPID() */

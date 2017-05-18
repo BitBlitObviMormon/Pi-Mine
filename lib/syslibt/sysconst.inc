@@ -5,6 +5,8 @@
 .set	WRITE,		0004
 .set	OPEN,		0005
 .set	CLOSE,		0006
+.set	CREAT,		0010
+.set	UNLINK,		0012
 .set	GETPID,		0024
 .set	BRK,		0055
 .set	IOCTL,		0066

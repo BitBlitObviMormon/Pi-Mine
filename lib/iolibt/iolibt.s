@@ -1,16 +1,17 @@
 /* Input/Output Library (Thumb) */
-/* Depends on System and Macro Libraries */
+/* Depends on System, Memory, and Macro Libraries */
 
 .include "../macrolib/macrolib.inc"	// For mov32
 .include "ioconst.inc"	//  INCLUDE I/O STREAM INFO
 
-//  ASCII CONSTANTS
+// ASCII CONSTANTS
+.set	NULL,	 0x00
 .set	ZERO,    0x30
 .set	NINE,    0x39
 .set	DECIMAL, 0x2e
 .set	MINUS,   0x2d
 
-//  SIZE OF INT -> STRING ARRAY
+// SIZE OF INT -> STRING ARRAY
 .set	ISSIZE, 12	// sign + 10 chars + null
 
 .data
@@ -21,21 +22,25 @@ INTS:	// Space for the string of an int written backwards (int -> string)
 .text
 .syntax	unified
 
-/* void fgets(int fd[r0], char* buf[r1], int length[r2]) */
+/* int[r0] fgets(int fd[r0], char* buf[r1], int length[r2]) */
 /* Grabs a string from the stream fd and null-terminates it */
+/* It returns the number of characters read from the stream */
 /* Data Races: fgets writes to the character array buf */
 .thumb_func
 .global	fgets
 .type	fgets, %function
 fgets:
-	push	{r1, r4, lr}// Save return point for later
-	subs	r2, #1		// Make room for the null-terminator
-	push	{r2}		// Save the length of the buffer
+	push	{r4, lr}	// Save return point for later
+
+	// Get a string
 	bl	sysRead
-	movs	r3, #0
-	pop	{r1, r2}	// Get the arguments again: length, *buf
-	adds	r2, r1		// Move the buffer pointer over to the end
-	strb	r3, [r1]	// Null-terminate the buffer
+
+	// Null-terminate the string
+	adds	r1, r1, r0
+	movs	r3, #NULL
+	strb	r3, [r1]
+	subs	r1, r1, r0
+
 	pop	{r4, pc}	// Return
 
 /* int[r0] fgeti(int fd[r0])  */
@@ -115,14 +120,23 @@ fputs:
 	bl	fprints
 	pop	{pc}	// Return
 
-/* int[r0] fopen(int fd[r0]) */
+/* int[r0] fclose(int fd[r0]) */
 /* Closes the filehandle's file */
-/* Data races: No memory is accessed */
+/* Data races: The given file stream is closed and no longer valid */
 .thumb_func
 .global	fclose
 .type	fclose, %function
 fclose:
 	b	sysClose	// Close the file
+
+/* int[r0] fdelete(char* pathname[r0]) */
+/* Deletes the given file */
+/* Data races: The given file is deleted if nothing is accessing it */
+.thumb_func
+.global	fdelete
+.type	fdelete, %function
+fdelete:
+	b	sysUnlink	// Delete the file
 
 /* int[r0] fopen(const char* filename[r0]) */
 /* Opens a file for *READING AND WRITING* and returns the file handle */
@@ -146,7 +160,7 @@ fread:
 	movs	r2, #0		// Not creating a file, so no mode_t
 	b	sysOpen		// Open the file
 	
-/* int[r0] fwrite(const char* filename[r0]) */
+/* int[r0] fwrite(const char* filename[r0], mode_t permissions[r1] = 0) */
 /* Opens a file for *WRITING* and returns the file handle */
 /* It will create a file if necessary, but will not create a directory path */
 /* Data races: The character array filename is read */
@@ -154,11 +168,19 @@ fread:
 .global	fwrite
 .type	fwrite, %function
 fwrite:
-	movs	r1, #O_WRONLY	// Declare writing only
+	// Make the file writeable by the user's group and readable by all
+	movs	r2, #(S_IWUSR | S_IRUSR | S_IWGRP | S_IRGRP | S_IROTH)
 
-	// TODO: CREATING A FILE SO I NEED TO IMPLEMENT A MODE_T
-	movs	r2, #0		// Not creating a file, so no mode_t
-	b	sysOpen		// Open the file
+	// If the user did not give any permissions then use the defaults
+	cbz	r1, .LfwriteUseDefaults
+	movs	r2, r1	// Use the given file permissions
+.LfwriteUseDefaults:
+
+	// Declare writing and (re)create the file
+	movw	r1, #(O_WRONLY | O_CREAT | O_TRUNC)
+
+	// Open the file
+	b	sysOpen
 
 /* void gets(char* buf[r1], int length[r2]) */
 /* Grabs a string from the console */

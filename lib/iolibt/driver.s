@@ -1,38 +1,134 @@
 /* Input/Output (Thumb) Library Driver */
 /* Depends on System and Macro Libraries */
 
+.include "../macrolib/macrolib.inc"
+
+// SIZE OF STRING BUFFER
+.set	BUFSIZE, 255
+
+/* Allocated Data */
+.bss
+BUFFER:
+	.space	BUFSIZE
+
+/* Read-Only Data */
+.section .rodata
+PROMPT:
+	.asciz	"Word to put in file? "
+FILENAME:
+	.asciz	"temp"
+
 .text
 .arm
 .global _start
 _start:
 	blx	main	// Call the thumb function main
 
-// int main()
+.balign	2
 .thumb
+.syntax	unified
+
+/* int[r0] main() */
+.thumb_func
 .global main
 main:
-	bl	printNums	// Call printPositive()
-	mov	r0, #13		// Move #13 to r0
+	// Prompt for input
+	mov32	r1, PROMPT
+	bl	promptString
+
+	// Write to a file called "temp"
+	mov32	r0, FILENAME
+	bl	writeToFile
+
+	// Now read that file and display its contents
+	mov32	r0, FILENAME
+	bl	readFromFile
+
+	// Exit with no error code
+	mov	r0, #0		// Move #0 to r0
 	b	sysExit
 
-/* void printNums() */
-/* Prints the numbers 1-9 onto the screen */
-.thumb
-.global printNums
-printNums:
-	push	{lr}		// Save return point for later
+/* char*[r1] promptString(char* buf[r1]) */
+.thumb_func
+.global	promptString
+.type	promptString, %function
+promptString:
+	push	{lr}	// Save return point for later
 
-	// For loop
-	mov	r0, #9	// x = 9
-loop:	bl	printi	// print(x)
-	sub	r0, #1	// x--
-	bne	loop	// If x != 0 jump back to the loop
+	// Print the given string
+	bl	prints
+
+	// Use allocated memory as a string buffer
+	mov32	r1, BUFFER
+
+	// Prompt for input
+//	movs	r1, r0
+	movs	r2, #BUFSIZE
+	bl	gets
+
 	pop	{pc}	// Return
 
-TEXT:
-	.word	positiveText
-	.word	negativeText
-positiveText:
-	.ascii	" is a positive number.\012\000"
-negativeText:
-	.ascii	" is a negative number.\012\000"
+/* void writeToFile(char* filename[r0], char* buf[r1]) */
+.thumb_func
+.global	writeToFile
+.type	writeToFile, %function
+writeToFile:
+	push	{r1, r4, lr}	// Save return point for later
+
+	// Create the file and save its handle
+	movs	r1, #0		// Use the default file permissions
+	bl	fwrite
+	movs	r4, r0
+
+	// Write the passed string
+	pop	{r1}
+	bl	fprints
+
+	// Close the file
+	movs	r0, r4
+	bl	fclose
+
+	pop	{r4, pc}	// Return
+
+/* void readFromFile(char* filename[r0]) */
+.thumb_func
+.global	readFromFile
+.type	readFromFile, %function
+readFromFile:
+	push	{r0, r4-r5, lr}	// Save return point for later
+
+	// Open the file for reading
+	bl	fread
+	movs	r4, r0	// Save the file handle
+
+	// 
+
+	// Use allocated memory as a string buffer
+	mov32	r5, BUFFER
+.LKeepReading:
+
+	// Read from the file
+	movs	r0, r4		// File handle
+	movs	r1, r5		// Buffer
+	movs	r2, #BUFSIZE	// Buffer length
+	bl	fgets
+
+	// If fgets returns zero then we hit the end of the file.
+	movs	r3, #0
+	cmp	r0, r3
+	ble	.LStopReading
+
+	// Print the output read from the file
+	bl	prints
+	b	.LKeepReading
+.LStopReading:
+
+	// Close the file
+	movs	r0, r4
+	bl	fclose
+
+	// Delete the file
+	pop	{r0}
+	bl	fdelete
+
+	pop	{r4-r5, pc}	// Return
