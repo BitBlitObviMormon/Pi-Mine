@@ -45,7 +45,7 @@ main:
 	bl	readFromFile
 
 	// Exit with no error code
-	mov	r0, #0		// Move #0 to r0
+	movs	r0, #0		// Move #0 to r0
 	b	sysExit
 
 /* char*[r1] promptString(char* buf[r1]) */
@@ -62,7 +62,6 @@ promptString:
 	mov32	r1, BUFFER
 
 	// Prompt for input
-//	movs	r1, r0
 	movs	r2, #BUFSIZE
 	bl	gets
 
@@ -73,7 +72,7 @@ promptString:
 .global	writeToFile
 .type	writeToFile, %function
 writeToFile:
-	push	{r1, r4, lr}	// Save return point for later
+	push	{r1, r4-r5, lr}	// Save return point for later
 
 	// Create the file and save its handle
 	movs	r1, #0		// Use the default file permissions
@@ -84,11 +83,37 @@ writeToFile:
 	pop	{r1}
 	bl	fprints
 
+	// Write 1234567890
+	movs	r0, r4
+	mov32	r1, #1234567890
+	bl	fputi
+
+	// Write -1234567890
+	movs	r0, r4
+	mov32	r1, #-1234567890
+	bl	fputi
+
+	// Write the numbers -9 through 9
+	mov32	r5, #-9
+.LwriteLoop:
+	// Print i
+	movs	r0, r4
+	movs	r1, r5
+	bl	fputi
+
+	// i++
+	adds	r5, #1
+
+	// If i <= 9 then continue
+	movs	r0, #9
+	cmp	r5, r0
+	ble	.LwriteLoop
+
 	// Close the file
 	movs	r0, r4
 	bl	fclose
 
-	pop	{r4, pc}	// Return
+	pop	{r4-r5, pc}	// Return
 
 /* void readFromFile(char* filename[r0]) */
 .thumb_func

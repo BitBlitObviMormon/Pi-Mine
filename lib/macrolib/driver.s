@@ -21,7 +21,9 @@ main:
 	// Load a memory address without reading it from memory
 	mov32	r1, TEXT
 	bl	prints
-	mov	r0, #0
+
+	// Exit
+	movs	r0, #0
 	b	sysExit
 
 .text

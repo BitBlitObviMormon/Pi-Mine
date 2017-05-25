@@ -12,7 +12,7 @@
 .set	MINUS,   0x2d
 
 // SIZE OF INT -> STRING ARRAY
-.set	ISSIZE, 12	// sign + 10 chars + null
+.set	ISSIZE, 16	// sign + 10 chars + null
 
 .data
 	.asciz	"Ya!"
@@ -69,7 +69,6 @@ fprinti:
 	push	{r0, lr}// Save return point for later
 	movs	r0, r1
 	bl	itos	// Convert the int into a string
-	movs	r1, r0	// Ready the string for printing
 	pop	{r0}	// Get the file stream
 	bl	fprints	// Print the string
 	pop	{pc}	// Return
@@ -91,7 +90,7 @@ fprints:
 
 	pop	{pc}	// Return
 
-/* void fputi(int fd[r0], const int num[r0]) */
+/* void fputi(int fd[r0], const int num[r1]) */
 /* Prints an integer onto the stream and appends a newline */
 /* Data races: No memory is changed */
 .thumb_func
@@ -101,7 +100,6 @@ fputi:
 	push	{r0, lr}// Save return point for later
 	movs	r0, r1
 	bl	itos	// Convert the int into a string
-	movs	r1, r0	// Ready the string for printing
 	pop	{r0}	// Get the file stream
 	bl	fputs	// Print the string
 	pop	{pc}	// Return
@@ -203,16 +201,6 @@ gets:
 geti:
 	movs	r0, #STDIN	// Use the standard input stream and
 	b	fgeti		// Pretend we called fgeti instead
-
-/* char*[r1] itos(const int[r0]) */
-/* Takes an integer and returns a null-terminated char array */
-/* Data Races: Returns static memory which is overwritten on */
-/* the next itos call; Needs to be replaced with a brk call! */
-.thumb_func
-.global	itos
-.type	itos, %function
-itos:
-	b	utos	// Call utos instead (itos is still under construction)
 
 /* int[r2] len(const char* buf[r1]) */
 /* IMPORTANT: This function passes register ONE and returns register TWO! */
@@ -338,52 +326,142 @@ stoi:
 
 	pop	{r4-r7, pc}	// Return
 
-/* char*[r0] utos(int[r0]) */
-/* Takes an unsigned int and returns a null-terminated char array */
-/* Data Races: Returns static memory which is overwritten on */
-/* the next utos/itos call; Needs to be replaced with a brk call! */
-/* TODO: Allocate memory for string */
+/* char*[r1] itos(int value[r0]) */
+/* Takes an integer and returns a null-terminated char array. */
+/* Note: Don't forget to unallocate strings returned by this: */
+/* potential memory leak! */
+/* Data Races: New memory is created and used */
+.thumb_func
+.global	itos
+.type	itos, %function
+itos:
+	push	{r0, lr}	// Save return point for later
+
+	// Allocate some memory to use for itosFast
+	movs	r1, #ISSIZE
+	bl	malloc
+	movs	r1, r0
+
+	// Call itosFast
+	pop	{r0}
+	bl	itosFast
+
+	pop	{pc}		// Return
+
+/* char*[r1] utos(int value[r0]) */
+/* Takes an unsigned integer and returns a null-terminated char array. */
+/* Note: Don't forget to unallocate strings returned by this: */
+/* potential memory leak! */
+/* Data Races: New memory is created and used */
 .thumb_func
 .global	utos
 .type	utos, %function
 utos:
-	push	{r4-r5, lr}	// Save return point for later
+	push	{r0, lr}	// Save return point for later
 
-	// Write null to beginning
-	mov32	r3, INTS	// String pointer
-	movs	r4, #0
-	strb	r4, [r3]	// Write null
-	subs	r3, #1
+	// Allocate some memory to use for utosFast
+	movs	r1, #ISSIZE
+	bl	malloc
 
-	movs	r4, #10	
-	movs	r5, #0xff
-	and	r0, r5
-	b	.LutosTestNonZero
-.LutosWhileDigits:
-	//  Divide/Modulus (r1, r2)
-	udiv	r1, r0, r4
-	mls	r2, r1, r4, r0
+	// Call utosFast
+	movs	r1, r0
+	pop	{r0}
+	bl	utosFast
 
-	adds	r2, r2, #48  //  r2 = r2 + "0"
-	subs	r3, r3, #1
-	strb	r2, [r3]
+	pop	{pc}		// Return
 
-	movs	r0, r1
+/* void itosFast(int value[r0], char* buf[r1]) */
+/* Takes a signed integer and writes its string representation onto a char */
+/* array. Keep in mind that the pointer's location may be modified and that */
+/* itosFast always assumes that the length of buf is 16 bytes or more. */
+.thumb_func
+.global	itosFast
+.type	itosFast, %function
+itosFast:
+	push	{r4, lr}	// Save return point for later
 
-.LutosTestNonZero:
-	cmp	r0, #0
-	bne	.LutosWhileDigits
-	movs	r0, r3
+	movs	r2, #0
+	cmp	r0, r2
+	ITEE	GE		// If value > 0
+	  // If
+	  movge	r4, #0		// then negative = false
+	  // Else
+	  movlt	r4, #1		// else negative = true
+	  neglt r0, r0		// and value = -value
+	// End if
 
-	pop	{r4-r5, pc}	// Return
+	// Call utos
+	bl	utosFast
+
+	// If the value was positive then return, otherwise add a sign to buf
+	movs	r2, #0
+	cmp	r4, r2
+	beq	.LitosReturn
+
+	// Add a sign to the char buffer if the value was negative
+	subs	r1, #1		// buf--
+	movs	r2, #MINUS	// *buf = '-'
+	strb	r2, [r1]
+.LitosReturn:
+	pop	{r4, pc}	// Return
+
+
+/* void utosFast(int value[r0], char* buf[r1]) */
+/* Takes an unsigned integer and writes its string representation onto a char */
+/* array. Keep in mind that the pointer's location may be modified and that */
+/* utosFast always assumes that the length of buf is 16 bytes or more. */
+.thumb_func
+.global	utosFast
+.type	utosFast, %function
+utosFast:
+	push	{r4, lr}	// Save return point for later
+
+  /* C CODE *//*
+   void utosFast(int value, char* string) {
+      // Null terminate string
+      string[16] = '\0'
+      count = 0;
+	
+      do {
+         int digit = value % 10;
+
+         // Append the digit onto the string
+         count++;
+         string[16 - count] = digit;
+
+         value /= 10;
+      } while (value > 0);
+
+      string = string + count;
+   }
+*/
+
+	// Null-terminate the array
+	adds	r1, r1, #16	// buf += 16
+	movs	r2, #NULL	// *buf = '\0'
+	strb	r2, [r1]
+
+.LutosLoop:
+	// Get a digit from the value (r2 = r0 / r3)
+	movs	r3, #10		// Divide the value by ten
+	udiv	r2, r0, r3	// temp = FLOOR(value / 10)
+	mls	r3, r3, r2, r0	// digit = value - (10 * temp)
+	movs	r0, r2		// value = temp
+
+	// Append the digit onto the string
+	adds	r3, r3, #ZERO	// digit += '0'
+	subs	r1, r1, #1	// buf--
+	strb	r3, [r1]	// *buf = digit
+
+	// If value > 0 then work some more
+	movs	r3, #0
+	cmp	r0, r3
+	bhi	.LutosLoop
+
+	pop	{r4, pc}	// Return
 	
 .balign	2
 TEXT:
 	.word	ENDLINE
-	.word	HELLO
-DIV10:
-	.word	0x1999999a
 ENDLINE:
 	.asciz	"\012"
-HELLO:
-	.asciz	"Hello! \342\227\257"
