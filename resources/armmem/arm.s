@@ -1,4 +1,4 @@
-.data
+.bss
 memory:
 	.skip	40960000
 more:	

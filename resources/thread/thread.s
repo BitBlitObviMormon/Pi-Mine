@@ -39,11 +39,11 @@ SHAREDDATA: // Also used as a semaphore to exit main thread when > '9'
 TEXT1:
 	.ascii	"Thread 1: "
 DATA1:
-	.ascii	"0\n" // Edit memory to change number for TEXT1
+	.asciz	"0\n" // Edit memory to change number for TEXT1
 TEXT2:
 	.ascii	"Thread 2: "
 DATA2:
-	.ascii	"0\n" // Edit memory to change number for TEXT2
+	.asciz	"0\n" // Edit memory to change number for TEXT2
 // Makes the main thread sleep for a quarter of a second
 SLEEP1:
 	.word	0	  // seconds

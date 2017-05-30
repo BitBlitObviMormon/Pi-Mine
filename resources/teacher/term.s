@@ -25,7 +25,7 @@
 .set WRITE, 0x04
 .set IOCTL, 0x36
 
-.data
+.bss
 // This is where we will store the old termios
 // struct, so we can restore it later.
 .balign 4

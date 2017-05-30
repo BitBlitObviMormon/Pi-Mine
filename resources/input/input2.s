@@ -32,7 +32,7 @@
 .set	WRITE, 0x4
 .set	IOCTL, 0x36
 
-.data
+.bss
 savedState:
 	/* Save enough space to backup the terminal's settings */
 	/* (Replace with brk system call to allow several saved states) */
