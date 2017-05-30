@@ -1,7 +1,7 @@
 # Pi-Mine
 &emsp; The console mine delver, all in Armv7 Assembly! (No external libraries that are made by other people) The game was made for the Raspberry Pi 2 on the Raspbian Jessie operating system.
 ## Building Pi-Mine
-&emsp; Download or clone `https://github.com/BitBlitObviMormon/Pi-Mine.git` and then open its directory in the terminal. Run the `make` command and wait for it to finish building. If the build was successful then you will get two executable files, `mine` and `mine-server. mine` is the Pi-Mine client and `mine-server` is Pi-Mine's server. You'll need both in order to run the Pi-Mine client correctly.
+&emsp; Download or clone [`https://github.com/BitBlitObviMormon/Pi-Mine.git`](https://github.com/BitBlitObviMormon/Pi-Mine.git) and then open its directory in the terminal. Run the `make` command and wait for it to finish building. If the build was successful then you will get two executable files, `mine` and `mine-server. mine` is the Pi-Mine client and `mine-server` is Pi-Mine's server. You'll need both in order to run the Pi-Mine client correctly.
 ## Running Pi-Mine
 &emsp; Type `make runClient` in the terminal to build and run the client; type `make runServer` to build and run the server. If the files are already built then you can run `mine` and `mine-server` directly.
 ## Makefile commands
