@@ -42,7 +42,7 @@ paintBlock:
 	push	{r0, r1}	// Save the passed arguments for later
 	movs	r0, r2		// Use the foreground paint info as an argument
 	bl	utos		// Convert the foreground paint info to ascii
-	movs	r2, r0		// Get the resulting string
+	movs	r2, r1		// Get the resulting string
 	pop	{r0, r1}	// Get back the original arguments
 
 	// Store the foreground paint information
@@ -68,7 +68,7 @@ paintBlock:
 	push	{r0, r1}	// Save the passed arguments for later
 	movs	r0, r2		// Use the background paint info as an argument
 	bl	utos		// Convert the background paint info to ascii
-	movs	r2, r0		// Get the resulting string
+	movs	r2, r1		// Get the resulting string
 	pop	{r0, r1}	// Get back the original arguments
 
 	// Store the background paint information

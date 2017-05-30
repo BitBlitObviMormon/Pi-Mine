@@ -68,10 +68,9 @@ write3Digits:
 
 	// Convert the number into a string and save it
 	bl	utos
-	movs	r5, r0
+	movs	r5, r1
 
 	// Get the length of the string
-	movs	r1, r0		// Len gets its number from r1!
 	bl	len		// Returns len in r2!
 	adds	r5, r2		// Shift the string by len-1 bytes
 	subs	r5, #1
