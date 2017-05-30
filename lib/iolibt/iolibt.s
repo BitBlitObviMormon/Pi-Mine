@@ -4,6 +4,9 @@
 .include "../macrolib/macrolib.inc"	// For mov32
 .include "ioconst.inc"	//  INCLUDE I/O STREAM INFO
 
+// REFERENCE TO MALLOC (IF MEMLIBT IS NOT LINKED)
+.weakref malloc, .LmallocFromData
+
 // ASCII CONSTANTS
 .set	NULL,	 0x00
 .set	ZERO,    0x30
@@ -21,6 +24,14 @@ INTS:	// Space for the string of an int written backwards (int -> string)
 
 .text
 .syntax	unified
+
+/* void*[r0] mallocFromData() */
+/* Returns 16 bytes of global data - Used only when memlibt is not linked */
+/* Data Races: Returns the same memory region every time - NOT THREAD SAFE! */
+.thumb_func
+.LmallocFromData:
+	mov32	r0, INTS
+	bx	lr
 
 /* int[r0] fgets(int fd[r0], char* buf[r1], int length[r2]) */
 /* Grabs a string from the stream fd and null-terminates it */
