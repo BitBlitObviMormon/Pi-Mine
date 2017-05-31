@@ -32,8 +32,8 @@ main:
 	movs	r2, #1
 	svc	#0
 
-	//  If nothing was read, don't bother writing
-	cmp	r0, #0
+	//  If we get a ctrl-sig then exit the program
+	cmp	r0, #3
 	beq	.Lskip_print
 
 	ldrb	r0, [sp]

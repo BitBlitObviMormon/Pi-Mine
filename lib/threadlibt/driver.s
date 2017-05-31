@@ -4,9 +4,6 @@
 .include "threadconst.inc"	// Include thread flags and info
 .include "../macrolib/macrolib.inc"	// For mov32
 
-// FLAGS
-.set	CLONE_FLAGS,	(CLONE_VM | CLONE_FS | CLONE_FILES | CLONE_SIGHAND | CLONE_PARENT | CLONE_THREAD | CLONE_IO)
-
 // OTHER CONSTANTS
 .set	STDOUT,	   0x1	     // The standard output stream
 .set	STRLEN,	   12	     // How many characters to print
@@ -22,11 +19,11 @@ SHAREDDATA:
 TEXT1:
 	.ascii	"Thread 1: "
 DATA1:
-	.ascii	"0\n" // Edit memory to change number for TEXT1
+	.asciz	"0\n" // Edit memory to change number for TEXT1
 TEXT2:
 	.ascii	"Thread 2: "
 DATA2:
-	.ascii	"0\n" // Edit memory to change number for TEXT2
+	.asciz	"0\n" // Edit memory to change number for TEXT2
 .text
 
 /* void main() */
