@@ -4,7 +4,7 @@
 .include "../macrolib/macrolib.inc"	// For mov32
 .include "ioconst.inc"	//  INCLUDE I/O STREAM INFO
 
-// REFERENCE TO MALLOC (IF MEMLIBT IS NOT LINKED)
+// Reference malloc if the memory library is linked, but use a data region if it is not linked
 .weakref malloc, .LmallocFromData
 
 // ASCII CONSTANTS
