@@ -1,2 +1,2 @@
-*.inc linguist-language=Java
-*.s linguist-language=Java
+*.inc linguist-language=Assembly
+*.s linguist-language=Assembly
