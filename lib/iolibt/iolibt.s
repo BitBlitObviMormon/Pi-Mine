@@ -1,5 +1,5 @@
 /* Input/Output Library (Thumb) */
-/* Depends on System, Memory, and Macro Libraries */
+/* Depends on System and Macro Libraries */
 
 .include "../macrolib/macrolib.inc"	// For mov32
 .include "ioconst.inc"	//  INCLUDE I/O STREAM INFO
