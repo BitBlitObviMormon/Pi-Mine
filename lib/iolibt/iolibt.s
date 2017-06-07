@@ -246,7 +246,7 @@ pow:	// X(r0)^N(r1)
 	bx	lr	// Return
 
 /* void printi(const int[r1]) */
-/* Prints an integer onto the console and appends a new line */
+/* Prints an integer onto the console */
 /* Data Races: No memory is changed */
 .thumb_func
 .global	printi
@@ -266,7 +266,7 @@ prints:
 	b	fprints		// Pretend we called fprints instead
 
 /* void puti(const int num[r1]) */
-/* Prints an integer onto the console */
+/* Prints an integer onto the console and appends a newline */
 /* Data races: No memory is changed */
 .thumb_func
 .global	puti

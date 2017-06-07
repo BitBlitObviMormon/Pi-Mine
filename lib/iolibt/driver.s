@@ -83,14 +83,14 @@ writeToFile:
 	pop	{r1}
 	bl	fprints
 
-	// Write 1234567890
+	// Write int max
 	movs	r0, r4
-	mov32	r1, #1234567890
+	mov32	r1, #0x7fffffff
 	bl	fputi
 
-	// Write -1234567890
+	// Write int min
 	movs	r0, r4
-	mov32	r1, #-1234567890
+	mov32	r1, #0x80000000
 	bl	fputi
 
 	// Write the numbers -9 through 9
@@ -125,8 +125,6 @@ readFromFile:
 	// Open the file for reading
 	bl	fread
 	movs	r4, r0	// Save the file handle
-
-	// 
 
 	// Use allocated memory as a string buffer
 	mov32	r5, BUFFER
