@@ -29,4 +29,19 @@ malloc:
 
 	pop	{r4, r5, pc}		// Return
 
+/* void free(void* addr[r0], int length[r1]) */
+/* Frees the memory that's been allocated with malloc */
+.thumb_func
+.global	free
+.type	free, %function
+free:
+	b	sysMunMap
 
+/* void*[r0] getBreak() */
+/* Returns the address of the memory break */
+.thumb_func
+.global	getBreak
+.type	getBreak, %function
+getBreak:
+	mov	r0, #0
+	b	sysBrk

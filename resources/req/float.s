@@ -31,7 +31,7 @@ main:
 printFloat:
 	push	{r0, lr}
 
-	// Convert the float to a double
+	// Convert the Cortex float to an ARM double
 	vcvt.f64.f32	d0, s0
 	vmov	r2, r3, d0
 

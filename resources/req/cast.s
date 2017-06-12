@@ -2,9 +2,9 @@
 _start:
 	// Start with a 1 and a 2
 	mov	r0, #1
-	mov	r2, #2
-//	mov	r2, #0	// For -2 instead
-//	sub	r2, #2
+//	mov	r2, #2
+	mov	r2, #0	// For -2 instead
+	sub	r2, #2
 
 	// Do some math with bytes
 	sadd8	r0, r0, r2
