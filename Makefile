@@ -19,13 +19,14 @@ THREADLIBT = $(LIB)/threadlibt/threadlibt
 MACROLIB   = $(LIB)/macrolib/macrolib
 
 # Source Files
-CLIENT    = /client/client
-SERVER    = /server/server
-DRAW      = /client/draw
-PAINT     = /client/paint
-NETCLIENT = /client/network/network
-NETSERVER = /server/network/network
-MESSENGER = /client/gui/messenger
+CLIENT         = /client/client
+SERVER         = /server/server
+DRAW           = /client/draw
+PAINT          = /client/paint
+NETCLIENT      = /client/network/network
+NETSERVER      = /server/network/network
+MESSENGER      = /client/gui/messenger
+MESSAGEHISTORY = /client/data/messagehistory
 
 # Specify the phony targets
 .PHONY: clean todo runClient runServer
@@ -41,7 +42,7 @@ pre-build:
 	@./color make USINGSCRIPT=true
 
 # Build the Pi-Mine client
-mine: $(MEMLIBT).o $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(THREADLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o $(BIN)$(PAINT).o $(BIN)$(NETCLIENT).o $(BIN)$(MESSENGER).o
+mine: $(MEMLIBT).o $(IOLIBT).o $(GAMELIBT).o $(NETLIBT).o $(SYSLIBT).o $(ERRLIBT).o $(THREADLIBT).o $(BIN)$(DRAW).o $(BIN)$(CLIENT).o $(BIN)$(PAINT).o $(BIN)$(NETCLIENT).o $(BIN)$(MESSENGER).o $(BIN)$(MESSAGEHISTORY).o
 	ld -o $@ $+
 
 # Build the Pi-Mine server
@@ -72,6 +73,7 @@ $(BIN):
 	mkdir -p $(BIN)/server/network
 	mkdir -p $(BIN)/client/network
 	mkdir -p $(BIN)/client/gui
+	mkdir -p $(BIN)/client/data
 
 # SOURCE CODE
 $(BIN)$(DRAW).o: $(SRC)$(DRAW).s $(MACROLIB).inc $(BIN)
@@ -87,6 +89,8 @@ $(BIN)$(NETCLIENT).o: $(SRC)$(NETCLIENT).s $(MACROLIB).inc $(BIN)
 $(BIN)$(NETSERVER).o: $(SRC)$(NETSERVER).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
 $(BIN)$(MESSENGER).o: $(SRC)$(MESSENGER).s $(MACROLIB).inc $(BIN)
+	as $(SW) -o $@ $<
+$(BIN)$(MESSAGEHISTORY).o: $(SRC)$(MESSAGEHISTORY).s $(MACROLIB).inc $(BIN)
 	as $(SW) -o $@ $<
 
 # Clean all built and backup files

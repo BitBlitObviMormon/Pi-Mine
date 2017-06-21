@@ -29,6 +29,9 @@ main:
 	subs	sp, #BUFLEN
 	mov	r5, sp
 
+	// Start up the message history
+	bl	initMessageHistory
+
 	// Initialize the gui
 	movs	r0, #WIDTH	// width  = 80
 	movs	r1, #HEIGHT	// height = 24
@@ -59,7 +62,17 @@ main:
 
 	// Get input from the messenger
 	bl	messengerInput
+	movs	r6, r0
+	movs	r7, r1
 
+	// Print the input and write it to the message history
+	bl	writeToMessageHistory
+	movs	r1, r7
+	bl	prints
+
+	// Close the Message History
+	bl	closeMessageHistory
+	
 	// Unallocate all of the buffers
 	adds	sp, #BUFLEN
 	adds	sp, #BLOCKLEN

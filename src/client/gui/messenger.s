@@ -20,9 +20,15 @@
 .set	EMPHCLR, 0xB	// Emphasis Color
 .set	ERRCLR,  0x9	// Error Color
 
+/* MISC */
+.set	BUFLEN,	 256	// The length of the input buffer
+
 .include "lib/macrolib/macrolib.inc"
 
 .bss
+.balign	2
+TEXTBUF:// The buffer for storing text
+	.skip	BUFLEN
 WIDTH:	// The width of the console
 	.word	0
 HEIGHT:	// The height of the console
@@ -34,6 +40,7 @@ LINEX:	// The X location of the cursor
 	.word	0
 
 .data
+.balign	2
 LINEY:	// The Y location of the next message
 	.word	1
 
@@ -382,8 +389,9 @@ messengerMessage:
 
 	pop	{r4-r8, pc}	// Return
 
-/* char*[r0] messengerInput() */
-/* Accepts input from the messenger gui */
+/* int[r0], char*[r1] messengerInput() */
+/* Accepts input from the messenger gui and returns the */
+/* string buffer as well as the number of characters read */
 .thumb_func
 .global	messengerInput
 .type	messengerInput, %function
@@ -397,7 +405,9 @@ messengerInput:
 	subs	r1, #1
 	bl	setCursor
 
-	// Allocate memory for storing input
-	
+	// Grab some input
+	mov32	r1, TEXTBUF
+	movw	r2, BUFLEN
+	bl	gets
 
 	pop	{pc}	// Return
