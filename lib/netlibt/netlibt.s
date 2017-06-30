@@ -187,12 +187,13 @@ createAddress:
 acceptClient:
 	mov32	r1, STRUCT	// Get the address
 	movs	r2, #ADDRLEN	// Give the length of the address
-	push	{lr}		// Save return point for later
+	push	{r2, lr}	// Put length in memory space
+	mov	r2, sp		// Get the address of the *int
 
 	bl	sysAccept	// Use the accept system call
 	mov32	r1, STRUCT	// Return the address
 
-	pop	{pc}		// Return
+	pop	{r2, pc}	// Return
 
 /* int[r0] closeSocket(sockfd socket[r0]) */
 /* Closes the given socket and returns zero if successful */

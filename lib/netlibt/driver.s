@@ -2,6 +2,10 @@
 
 .include "../macrolib/macrolib.inc"	// For mov32
 
+/* CONSTANTS */
+.set	PORT,   7777
+.set	BACKLOG, 255
+
 .bss
 BUF:
 	.skip	256	// Enough data to hold a string buffer
@@ -24,8 +28,8 @@ main:
 	// Create a server
 	mov32	r0, ADDRESS	// Get the pointer of the ip address
 	ldr	r0, [r0]	// Get the ip address
-	movw	r1, #7777	// Host on port 7777
-	movs	r2, #255	// Only 255 bytes of backlog
+	movw	r1, #PORT	// Host on port 7777
+	movs	r2, #BACKLOG	// Only 255 bytes of backlog
 	movs	r3, #0		// Don't block in order to wait for clients
 	movs	r5, r0		// Save the ip address
 	movs	r6, r1		// Save the port

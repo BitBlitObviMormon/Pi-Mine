@@ -53,7 +53,7 @@ startNetServer:
 	mov32	r0, ADDRESS	// Ip address
 	movw	r1, #PORT	// Port
 	movw	r2, #BACKLOG	// Maximum backlog
-	movs	r3, #BLOCK	// Allow blocking?
+	movs	r3, #BLOCKS	// Allow blocking?
 	ldr	r0, [r0]
 	bl	createServer
 
