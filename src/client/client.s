@@ -22,12 +22,14 @@ _start:
 .global main
 main:
 	// Allocate 5,760 bytes of space for block data
-	subs	sp, #BLOCKLEN
-	mov	r4, sp
+	movw	r1, #BLOCKLEN
+	bl	malloc
+	movs	r4, r0
 
 	// Allocate 57,600 bytes of space for buffer
-	subs	sp, #BUFLEN
-	mov	r5, sp
+	movw	r1, #BUFLEN
+	bl	malloc
+	movs	r5, r0
 
 	// Start up the message history
 	bl	initMessageHistory
@@ -37,6 +39,7 @@ main:
 	movs	r1, #HEIGHT	// height = 24
 	movs	r2, r4		// blockBuffer
 	bl	initMessenger
+	bl	initMessageHistory
 
 	// Add a few messages
 	mov32	r1, PITEXT
@@ -44,11 +47,21 @@ main:
 	mov32	r0, PITEXT
 	movs	r1, r4
 	bl	messengerMessage
+	mov32	r1, PITEXT
+	bl	len
+	mov32	r1, PITEXT
+	mov	r0, r2
+	bl	writeToMessageHistory
 	mov32	r1, NAMETEXT
 	bl	len
 	mov32	r0, NAMETEXT
 	movs	r1, r4
 	bl	messengerMessage
+	mov32	r1, NAMETEXT
+	bl	len
+	mov32	r0, NAMETEXT
+	mov	r0, r2
+	bl	writeToMessageHistory
 
 	// Paint the gui into a printable format
 	movs	r0, r4		// blockBuffer
@@ -74,8 +87,12 @@ main:
 	bl	closeMessageHistory
 	
 	// Unallocate all of the buffers
-	adds	sp, #BUFLEN
-	adds	sp, #BLOCKLEN
+	movs	r0, r4
+	movw	r1, #BUFLEN
+	bl	free
+	movs	r0, r5
+	movw	r1, #BLOCKLEN
+	bl	free
 
 	// Exit
 	movs	r0, #2		// Move #13 to r0

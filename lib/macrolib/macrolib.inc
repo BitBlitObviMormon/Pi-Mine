@@ -6,3 +6,9 @@
 	movw	\reg, #:lower16:\val
 	movt	\reg, #:upper16:\val
 .endm
+
+/* Counts Trailing Zeros */
+.macro	ctz, reg0, reg1
+	rbit	\reg0, \reg1
+	clz	\reg0, \reg0
+.endm

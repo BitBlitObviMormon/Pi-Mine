@@ -1,3 +1,9 @@
+// void SixParam(arg1[r0], arg2[r1], arg3[r2], arg4[r3], arg5[sp:1], arg6[sp:2])
+sixParam:
+	pop	{r0, r1} // Parameters r4, r5
+	push	{lr}
+	pop	{pc}
+
 .global	_start
 _start:
 	// Start with a 1 and a 2
@@ -36,6 +42,13 @@ _start:
 	// Do some more math with longs
 	add	r1, r1, r3
 	adc	r0, r0, r2
+
+	// Multiply longs
+	
+
+	// Call 6 parameter function
+	push	{r0, r1}
+	bl	sixParam
 
 	// Exit with error code 9 (Or -7 if adding -2)
 	mov	r0, r1

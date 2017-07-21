@@ -34,7 +34,7 @@ malloc:
 .thumb_func
 .global	free
 .type	free, %function
-free:
+free:	
 	b	sysMunMap
 
 /* void*[r0] getBreak() */

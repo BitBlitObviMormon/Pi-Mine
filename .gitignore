@@ -20,4 +20,4 @@ errno.inc
 *temp*
 
 # Pi-Mine log files
-*.log
+*log*
