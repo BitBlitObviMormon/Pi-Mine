@@ -22,11 +22,11 @@
 arg6:
 	// Do stuff with args 0-3...
 
-	// Get args 5-6 (Yeah, ldr is better, but this is easier.)
+	// Get args 4-5 (Yeah, ldr is better, but this is easier.)
 	pop	{r0, r1}
 	push	{r0, r1}
 
-	// Do stuff with args 5-6...
+	// Do stuff with args 4-5...
 
 	// Return
 	bx	lr
