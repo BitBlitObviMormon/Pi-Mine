@@ -16,6 +16,21 @@
 .arm
 .syntax	unified
 
+/* void arg6(int[r0], int[r1], int[r2], int[r3], int[sp0], int[sp1]) */
+/* Just to prove that the stack can be useful... */
+.type	arg6, %function
+arg6:
+	// Do stuff with args 0-3...
+
+	// Get args 5-6 (Yeah, ldr is better, but this is easier.)
+	pop	{r0, r1}
+	push	{r0, r1}
+
+	// Do stuff with args 5-6...
+
+	// Return
+	bx	lr
+
 /* long[r0-r1] mul64(int[r0], int[r1]) */
 /* Signed 64-bit multiply */
 .type	mul64, %function
@@ -81,6 +96,11 @@ isPow2:
 _start:
 .global main
 main:
+	// Push some args for the arg6 function
+	push	{r0, r1}
+	bl	arg6
+	pop	{r0, r1}
+
 	// 150123 * 508716
 	mov32	r0, #150123
 	mov32	r1, #508716
